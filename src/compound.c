@@ -61,6 +61,9 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
 
+  mpfr_printf ("enter mpfr_compound_si x=%Ra n=%ld rnd=%s\n", x, n,
+               mpfr_print_rnd_mode (rnd_mode));
+
   MPFR_LOG_FUNC
     (("x[%Pu]=%.*Rg n=%ld rnd=%d",
       mpfr_get_prec(x), mpfr_log_prec, x, n, rnd_mode),
@@ -149,51 +152,38 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
     {
       unsigned int inex;
 
-      /* we compute (1+x)^n as 2^(n*log2p1(x)) */
-      inex = mpfr_log2p1 (t, x, MPFR_RNDN) != 0;
+      printf ("nloop=%d prec=%lu\n", nloop, prec);
+
+      /* We compute (1+x)^n as 2^(n*log2p1(x)),
+         and we round towards 1, thus we round n*log2p1(x) towards 0,
+         thus for n > 0 we round log2p1(x) towards -Inf, and for n < 0
+         we round log2p1(x) towards +Inf. */
+      mpfr_rnd_t rnd1 = (n > 0) ? MPFR_RNDD : MPFR_RNDU;
+      inex = mpfr_log2p1 (t, x, rnd1) != 0;
       e = MPFR_GET_EXP(t);
-      /* |t - log2(1+x)| <= 1/2*ulp(t) = 2^(e-prec-1) */
-      inex |= mpfr_mul_si (t, t, n, MPFR_RNDN) != 0;
-      /* |t - n*log2(1+x)| <= 2^(e2-prec-1) + |n|*2^(e-prec-1)
-                           <= 2^(e2-prec-1) + 2^(e+k-prec-1) <= 2^(e+k-prec)
+      /* |t - log2(1+x)| <= ulp(t) = 2^(e-prec) */
+      inex |= mpfr_mul_si (t, t, n, MPFR_RNDZ) != 0;
+      /* |t - n*log2(1+x)| <= 2^(e2-prec) + |n|*2^(e-prec)
+                           <= 2^(e2-prec) + 2^(e+k-prec) <= 2^(e+k+1-prec)
                           where |n| <= 2^k, and e2 is the new exponent of t. */
-      MPFR_ASSERTD(MPFR_GET_EXP(t) <= e + k);
-      e += k;
+      MPFR_ASSERTD(MPFR_GET_EXP(t) <= e + k); /* check e2 <= e+k */
+      e += k + 1;
       /* |t - n*log2(1+x)| <= 2^(e-prec) */
-      /* detect overflow */
-      mpfr_set_ui (u, 2, MPFR_RNDN);
-      mpfr_pow_si (u, u, e - prec, MPFR_RNDN);
-      /* now u = 2^(e-prec) */
-      mpfr_sub (u, t, u, MPFR_RNDD);
-      /* FIXME: An exponent check is not sufficient because the overflow
-         and underflow thresholds before rounding are not necessarily
-         powers of 2, i.e. one can have an infinite loop (a possible
-         solution would be to compare the log2 of the result with the
-         log2 of the overflow/underflow threshold, taking the error bound
-         into account). Conversely, Patrick Pelissier also reported an
-         independent failure about a spurious overflow, which would mean
-         that the error analysis is incorrect, as an overflow is generated
-         while (1+x)^n < 2^__gmpfr_emax.
-         Note: getting the intermediate result with rounding toward 1
-         might be a solution to avoid spurious overflow and underflow. */
-      /* u <= n*log2(1+x) thus if u >= __gmpfr_emax, then
-         (1+x)^n >= 2^__gmpfr_emax and we have overflow */
+      /* detect overflow: since we rounded n*log2p1(x) towards 0,
+         if n*log2p1(x) >= __gmpfr_emax, we are sure there is overflow. */
+      mpfr_printf ("emax=%ld t[%ld]=%Ra\n", __gmpfr_emax, mpfr_get_prec (t), t);
       if (mpfr_cmp_si (t, __gmpfr_emax) >= 0)
         {
+          printf ("detected overflow\n");
           MPFR_ZIV_FREE (loop);
           mpfr_clear (t);
           mpfr_clear (u);
           MPFR_SAVE_EXPO_FREE (expo);
           return mpfr_overflow (y, rnd_mode, 1);
         }
-      /* detect underflow */
-      mpfr_set_ui (u, 2, MPFR_RNDN);
-      mpfr_pow_si (u, u, e - prec, MPFR_RNDN);
-      /* now u = 2^(e-prec) */
-      mpfr_add (u, t, u, MPFR_RNDU);
-      /* n*log2(1+x) <= u thus if u <= __gmpfr_emin-1, then
-         (1+x)^n <= 2^(__gmpfr_emin-1) and we have underflow */
-      if (mpfr_cmp_si (u, __gmpfr_emin - 1) <= 0)
+      /* detect underflow: similarly, since we rounded n*log2p1(x) towards 0,
+         if n*log2p1(x) <= __gmpfr_emin-1, we are sure there is underflow. */
+      if (mpfr_cmp_si (t, __gmpfr_emin - 1) <= 0)
         {
           MPFR_ZIV_FREE (loop);
           mpfr_clear (t);
@@ -216,11 +206,16 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
          since MPFR_RNDA is used, and this case will not be detected by
          MPFR_CAN_ROUND (see BUGS). Either fix that, or do early underflow
          detection (which may be necessary). */
-      inex |= mpfr_exp2 (t, t, MPFR_RNDA) != 0;
+      /* round 2^t towards 1 */
+      mpfr_rnd_t rnd2 = MPFR_IS_POS(t) ? MPFR_RNDD : MPFR_RNDU;
+      inex |= mpfr_exp2 (t, t, rnd2) != 0;
+      mpfr_printf ("t=[%ld]%Ra\n", mpfr_get_prec (t), t);
       /* |t - (1+x)^n| <= ulp(t) + |t|*log(2)*2^(e-prec)
                        < 2^(EXP(t)-prec) + 2^(EXP(t)+e-prec) */
       e = (e >= 0) ? e + 1 : 1;
       /* now |t - (1+x)^n| < 2^(EXP(t)+e-prec) */
+
+      printf ("e=%ld\n", e);
 
       if (MPFR_LIKELY (!inex ||
                        MPFR_CAN_ROUND (t, prec - e, MPFR_PREC(y), rnd_mode)))
