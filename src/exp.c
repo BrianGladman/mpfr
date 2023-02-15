@@ -132,6 +132,9 @@ mpfr_exp (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   precy = MPFR_PREC (y);
 
   /* if x < 2^(-precy), then exp(x) gives 1 +/- 1 ulp(1) */
+  /* Note: MPFR_FAST_COMPUTE_IF_SMALL_INPUT could probably be used,
+     but this case was handled before MPFR_FAST_COMPUTE_IF_SMALL_INPUT
+     was written. */
   if (MPFR_UNLIKELY (expx < 0 && (mpfr_uexp_t) (-expx) > precy))
     {
       mpfr_exp_t emin = __gmpfr_emin;
