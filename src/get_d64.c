@@ -200,7 +200,7 @@ string_to_Decimal64 (char *s)
   if (*s == '-')
     {
       x.s.sig = 1;
-      s ++;
+      s++;
     }
   else
     x.s.sig = 0;
@@ -218,11 +218,11 @@ string_to_Decimal64 (char *s)
   MPFR_ASSERTN(*s == 'E');
   exp += strtol (s + 1, endptr, 10);
   MPFR_ASSERTN(**endptr == '\0');
-  MPFR_ASSERTN(-398 <= exp && exp <= (long) (385 - n));
+  MPFR_ASSERTN(-398 <= exp && exp <= 385 - n);
   while (n < 16)
     {
       m[n++] = '0';
-      exp --;
+      exp--;
     }
   /* now n=16 and -398 <= exp <= 369 */
   m[n] = '\0';
@@ -242,7 +242,7 @@ string_to_Decimal64 (char *s)
       for (i = 16 - n - 1; i >= 0; i--)
         m[i + n] = m[i];
       /* zero the first n digits */
-      for (i = 0; i < n; i ++)
+      for (i = 0; i < n; i++)
         m[i] = '0';
       exp = 0;
     }
@@ -333,7 +333,7 @@ string_to_Decimal64 (char *s)
   if (*s == '-')
     {
       sign = 1;
-      s ++;
+      s++;
     }
   /* read mantissa */
   while (ISDIGIT (*s))
@@ -351,7 +351,7 @@ string_to_Decimal64 (char *s)
   while (n < 16)
     {
       m[n++] = '0';
-      exp --;
+      exp--;
     }
   /* now n=16 and -398 <= exp <= 369 */
   m[n] = '\0';
@@ -374,7 +374,7 @@ string_to_Decimal64 (char *s)
       for (i = 16 - n - 1; i >= 0; i--)
         m[i + n] = m[i];
       /* zero the first n digits */
-      for (i = 0; i < n; i ++)
+      for (i = 0; i < n; i++)
         m[i] = '0';
       exp = 0;
     }
@@ -590,7 +590,7 @@ mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
                  nearest or away from zero. */
               s[negative + digits] = 'E';
               sprintf (s + negative + digits + 1, "%ld",
-                       (long int)e2 - digits);
+                       (long int) e2 - digits);
               return string_to_Decimal64 (s);
             }
         }
@@ -606,7 +606,7 @@ mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
       else /* -382 <= e <= 385 */
         {
           s[16 + negative] = 'E';
-          sprintf (s + 17 + negative, "%ld", (long int)e - 16);
+          sprintf (s + 17 + negative, "%ld", (long int) e - 16);
           return string_to_Decimal64 (s);
         }
     }

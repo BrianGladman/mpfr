@@ -124,7 +124,7 @@ string_to_Decimal128 (char *s) /* portable version */
   if (*s == '-')
     {
       sign = 1;
-      s ++;
+      s++;
     }
   /* read mantissa */
   while (ISDIGIT (*s))
@@ -138,11 +138,11 @@ string_to_Decimal128 (char *s) /* portable version */
   MPFR_ASSERTN(*s == 'E');
   exp = strtol (s + 1, endptr, 10);
   MPFR_ASSERTN(**endptr == '\0');
-  MPFR_ASSERTN(-6176 <= exp && exp <= (long) (6145 - n));
+  MPFR_ASSERTN(-6176 <= exp && exp <= 6145 - n);
   while (n < 34)
     {
       m[n++] = '0';
-      exp --;
+      exp--;
     }
   /* now n=34 and -6176 <= exp <= 6111, cf (b2) */
   m[n] = '\0';
@@ -165,7 +165,7 @@ string_to_Decimal128 (char *s) /* portable version */
       for (i = 34 - n - 1; i >= 0; i--)
         m[i + n] = m[i];
       /* zero the first n digits */
-      for (i = 0; i < n; i ++)
+      for (i = 0; i < n; i++)
         m[i] = '0';
       exp = 0;
     }
@@ -435,7 +435,7 @@ mpfr_get_decimal128 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
                  nearest or away from zero. */
               s[negative + digits] = 'E';
               sprintf (s + negative + digits + 1, "%ld",
-                       (long int)e2 - digits);
+                       (long int) e2 - digits);
               return string_to_Decimal128 (s);
             }
         }
