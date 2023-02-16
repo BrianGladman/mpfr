@@ -163,14 +163,14 @@ string_to_Decimal128 (char *s, int exp)  /* portable version only */
   /* compute biased exponent */
   exp += 6176;
 
-  MPFR_ASSERTN(exp >= -33);
+  MPFR_ASSERTD (exp >= -33);
   if (exp < 0)
     {
       int i;
       n = -exp;
       /* check the last n digits of the mantissa are zero */
       for (i = 1; i <= n; i++)
-        MPFR_ASSERTN(m[34 - n] == '0');
+        MPFR_ASSERTD (m[34 - n] == '0');
       /* shift the first (34-n) digits to the right */
       for (i = 34 - n - 1; i >= 0; i--)
         m[i + n] = m[i];

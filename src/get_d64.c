@@ -223,7 +223,7 @@ string_to_Decimal64 (char *s, int exp)
       n = -exp;
       /* check the last n digits of the mantissa are zero */
       for (i = 1; i <= n; i++)
-        MPFR_ASSERTN (m[16 - n] == '0');
+        MPFR_ASSERTD (m[16 - n] == '0');
       /* shift the first (16-n) digits to the right */
       for (i = 16 - n - 1; i >= 0; i--)
         m[i + n] = m[i];
