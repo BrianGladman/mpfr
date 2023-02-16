@@ -175,10 +175,10 @@ get_decimal64_max (int negative)
    s is a decimal string representing a number x = m * 10^e which must be
    exactly representable in the decimal64 format, i.e.
    (a) the mantissa m has at most 16 decimal digits
-   (b1) -383 <= e <= 384 with m integer multiple of 10^(-15), |m| < 10
-   (b2) or -398 <= e <= 369 with m integer, |m| < 10^16.
+   (b1) -383 <= exp <= 384 with m integer multiple of 10^(-15), |m| < 10
+   (b2) or -398 <= exp <= 369 with m integer, |m| < 10^16.
    Assumes s is neither NaN nor +Inf nor -Inf.
-   s = [-][0-9]+E[-][0-9]+
+   s = [-][0-9]+ with exponent exp provided in argument
 */
 static _Decimal64
 string_to_Decimal64 (char *s, int exp)

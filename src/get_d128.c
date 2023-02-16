@@ -94,10 +94,10 @@ get_decimal128_max (int negative)
    s is a decimal string representing a number x = m * 10^e which must be
    exactly representable in the decimal128 format, i.e.
    (a) the mantissa m has at most 34 decimal digits
-   (b1) -6143 <= e <= 6144 with m integer multiple of 10^(-33), |m| < 10
-   (b2) or -6176 <= e <= 6111 with m integer, |m| < 10^34.
+   (b1) -6143 <= exp <= 6144 with m integer multiple of 10^(-33), |m| < 10
+   (b2) or -6176 <= exp <= 6111 with m integer, |m| < 10^34.
    Assumes s is neither NaN nor +Inf nor -Inf.
-   s = [-][0-9]+E[-][0-9]+
+   s = [-][0-9]+ with exponent exp provided in argument
 
    The decimal128 format (cf table 3.6 of IEEE 754-2008) has the following
    parameters:
