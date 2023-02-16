@@ -180,153 +180,11 @@ get_decimal64_max (int negative)
    Assumes s is neither NaN nor +Inf nor -Inf.
    s = [-][0-9]+E[-][0-9]+
 */
-
-#if _MPFR_IEEE_FLOATS && !defined(DECIMAL_GENERIC_CODE)
-
 static _Decimal64
-string_to_Decimal64 (char *s)
+string_to_Decimal64 (char *s, int exp)
 {
-  long int exp;
   char m[17];
-  long n = 0; /* mantissa length */
-  char *endptr[1];
-  union mpfr_ieee_double_extract x;
-  union ieee_double_decimal64 y;
-#ifdef DECIMAL_DPD_FORMAT
-  unsigned int G, d1, d2, d3, d4, d5;
-#endif
-
-  /* read sign */
-  if (*s == '-')
-    {
-      x.s.sig = 1;
-      s++;
-    }
-  else
-    x.s.sig = 0;
-  /* read mantissa */
-  while (ISDIGIT (*s))
-    m[n++] = *s++;
-  exp = n;
-
-  /* as constructed in mpfr_get_decimal64, s cannot have any '.' separator */
-
-  /* we have exp digits before decimal point, and a total of n digits */
-  exp -= n; /* we will consider an integer mantissa */
-  MPFR_ASSERTN(n <= 16);
-  /* s always have an exponent separator 'E' */
-  MPFR_ASSERTN(*s == 'E');
-  exp += strtol (s + 1, endptr, 10);
-  MPFR_ASSERTN(**endptr == '\0');
-  MPFR_ASSERTN(-398 <= exp && exp <= 385 - n);
-  while (n < 16)
-    {
-      m[n++] = '0';
-      exp--;
-    }
-  /* now n=16 and -398 <= exp <= 369 */
-  m[n] = '\0';
-
-  /* compute biased exponent */
-  exp += 398;
-
-  MPFR_ASSERTN(exp >= -15);
-  if (exp < 0)
-    {
-      int i;
-      n = -exp;
-      /* check the last n digits of the mantissa are zero */
-      for (i = 1; i <= n; i++)
-        MPFR_ASSERTN(m[16 - n] == '0');
-      /* shift the first (16-n) digits to the right */
-      for (i = 16 - n - 1; i >= 0; i--)
-        m[i + n] = m[i];
-      /* zero the first n digits */
-      for (i = 0; i < n; i++)
-        m[i] = '0';
-      exp = 0;
-    }
-
-  /* now convert to DPD or BID */
-#ifdef DECIMAL_DPD_FORMAT
-#define CH(d) (d - '0')
-  if (m[0] >= '8')
-    G = (3 << 11) | ((exp & 768) << 1) | ((CH(m[0]) & 1) << 8);
-  else
-    G = ((exp & 768) << 3) | (CH(m[0]) << 8);
-  /* now the most 5 significant bits of G are filled */
-  G |= exp & 255;
-  d1 = T[100 * CH(m[1]) + 10 * CH(m[2]) + CH(m[3])]; /* 10-bit encoding */
-  d2 = T[100 * CH(m[4]) + 10 * CH(m[5]) + CH(m[6])]; /* 10-bit encoding */
-  d3 = T[100 * CH(m[7]) + 10 * CH(m[8]) + CH(m[9])]; /* 10-bit encoding */
-  d4 = T[100 * CH(m[10]) + 10 * CH(m[11]) + CH(m[12])]; /* 10-bit encoding */
-  d5 = T[100 * CH(m[13]) + 10 * CH(m[14]) + CH(m[15])]; /* 10-bit encoding */
-  x.s.exp = G >> 2;
-  x.s.manh = ((G & 3) << 18) | (d1 << 8) | (d2 >> 2);
-  x.s.manl = (d2 & 3) << 30;
-  x.s.manl |= (d3 << 20) | (d4 << 10) | d5;
-#else /* BID */
-  {
-    unsigned int rp[2]; /* rp[0] and rp[1]  should contain at least 32 bits */
-#define NLIMBS (64 / GMP_NUMB_BITS)
-    mp_limb_t sp[NLIMBS];
-    mp_size_t sn;
-    int case_i = strcmp (m, "9007199254740992") < 0;
-
-    for (n = 0; n < 16; n++)
-      m[n] -= '0';
-    sn = mpn_set_str (sp, (unsigned char *) m, 16, 10);
-    while (sn < NLIMBS)
-      sp[sn++] = 0;
-    /* now convert {sp, sn} to {rp, 2} */
-#if GMP_NUMB_BITS >= 64
-    MPFR_ASSERTD(sn <= 1);
-    rp[0] = sp[0] & 4294967295UL;
-    rp[1] = sp[0] >> 32;
-#elif GMP_NUMB_BITS == 32
-    MPFR_ASSERTD(sn <= 2);
-    rp[0] = sp[0];
-    rp[1] = sp[1];
-#elif GMP_NUMB_BITS == 16
-    rp[0] = sp[0] | ((unsigned int) sp[1] << 16);
-    rp[1] = sp[2] | ((unsigned int) sp[3] << 16);
-#elif GMP_NUMB_BITS == 8
-    rp[0] = sp[0] | ((unsigned int) sp[1] << 8)
-      | ((unsigned int) sp[2] << 16) | ((unsigned int) sp[3] << 24);
-    rp[1] = sp[4] | ((unsigned int) sp[5] << 8)
-      | ((unsigned int) sp[6] << 16) | ((unsigned int) sp[7] << 24);
-#else
-#error "GMP_NUMB_BITS should be 8, 16, 32, or >= 64"
-#endif
-    if (case_i)
-      {  /* s < 2^53: case i) */
-        x.s.exp = exp << 1;
-        x.s.manl = rp[0];           /* 32 bits */
-        x.s.manh = rp[1] & 1048575; /* 20 low bits */
-        x.s.exp |= rp[1] >> 20;     /* 1 bit */
-      }
-    else /* s >= 2^53: case ii) */
-      {
-        x.s.exp = 1536 | (exp >> 1);
-        x.s.manl = rp[0];
-        x.s.manh = (rp[1] ^ 2097152) | ((exp & 1) << 19);
-      }
-  }
-#endif /* DPD or BID */
-  y.d = x.d;
-  return y.d64;
-}
-
-#else  /* portable version */
-
-static _Decimal64
-string_to_Decimal64 (char *s)
-{
-  long int exp = 0;
-  char m[17];
-  long n = 0; /* mantissa length */
-  char *endptr[1];
-  _Decimal64 x = 0;
+  int n = 0; /* mantissa length */
   int sign = 0;
 
   /* read sign */
@@ -335,41 +193,37 @@ string_to_Decimal64 (char *s)
       sign = 1;
       s++;
     }
+
   /* read mantissa */
   while (ISDIGIT (*s))
     m[n++] = *s++;
 
   /* as constructed in mpfr_get_decimal64, s cannot have any '.' separator */
 
-  /* we will consider an integer mantissa m*10^exp */
-  MPFR_ASSERTN(n <= 16);
-  /* s always has an exponent separator 'E' */
-  MPFR_ASSERTN(*s == 'E');
-  exp = strtol (s + 1, endptr, 10);
-  MPFR_ASSERTN(**endptr == '\0');
-  MPFR_ASSERTN(-398 <= exp && exp <= (long) (385 - n));
+  /* we have exp digits before decimal point, and a total of n digits */
+  MPFR_ASSERTD (n <= 16);
+  MPFR_ASSERTD (*s == '\0');
+  MPFR_ASSERTD (-398 <= exp && exp <= 385 - n);
   while (n < 16)
     {
       m[n++] = '0';
       exp--;
     }
-  /* now n=16 and -398 <= exp <= 369 */
+  MPFR_ASSERTD (n == 16);
+  MPFR_ASSERTD (exp <= 369);  /* 369 = 385 - 16 */
   m[n] = '\0';
-
-  /* the number to convert is m[] * 10^exp where the mantissa is a 16-digit
-     integer */
 
   /* compute biased exponent */
   exp += 398;
 
-  MPFR_ASSERTN(exp >= -15);
+  MPFR_ASSERTD (exp >= -15);
   if (exp < 0)
     {
       int i;
       n = -exp;
       /* check the last n digits of the mantissa are zero */
       for (i = 1; i <= n; i++)
-        MPFR_ASSERTN(m[16 - n] == '0');
+        MPFR_ASSERTN (m[16 - n] == '0');
       /* shift the first (16-n) digits to the right */
       for (i = 16 - n - 1; i >= 0; i--)
         m[i + n] = m[i];
@@ -379,129 +233,218 @@ string_to_Decimal64 (char *s)
       exp = 0;
     }
 
-  /* the number to convert is m[] * 10^(exp-398) */
-  exp -= 398;
+#if _MPFR_IEEE_FLOATS && !defined(DECIMAL_GENERIC_CODE)
 
-  for (n = 0; n < 16; n++)
-    x = (_Decimal64) 10.0 * x + (_Decimal64) (m[n] - '0');
+  {
+    unsigned int uexp;
+    union mpfr_ieee_double_extract x;
+    union ieee_double_decimal64 y;
+#ifdef DECIMAL_DPD_FORMAT
+    unsigned int G, d1, d2, d3, d4, d5;
+#endif
 
-  /* multiply by 10^exp */
-  if (exp > 0)
+    /* now convert to DPD or BID */
+    x.s.sig = sign;
+    MPFR_ASSERTD (exp >= 0);
+    uexp = exp;
+
+#ifdef DECIMAL_DPD_FORMAT
+
+#define CH(d) ((d) - '0')
+    if (m[0] >= '8')
+      G = (3 << 11) | ((uexp & 768) << 1) | ((CH(m[0]) & 1) << 8);
+    else
+      G = ((uexp & 768) << 3) | (CH(m[0]) << 8);
+    /* now the most 5 significant bits of G are filled */
+    G |= uexp & 255;
+    d1 = T[100 * CH(m[1]) + 10 * CH(m[2]) + CH(m[3])]; /* 10-bit encoding */
+    d2 = T[100 * CH(m[4]) + 10 * CH(m[5]) + CH(m[6])]; /* 10-bit encoding */
+    d3 = T[100 * CH(m[7]) + 10 * CH(m[8]) + CH(m[9])]; /* 10-bit encoding */
+    d4 = T[100 * CH(m[10]) + 10 * CH(m[11]) + CH(m[12])]; /* 10-bit encoding */
+    d5 = T[100 * CH(m[13]) + 10 * CH(m[14]) + CH(m[15])]; /* 10-bit encoding */
+    x.s.exp = G >> 2;
+    x.s.manh = ((G & 3) << 18) | (d1 << 8) | (d2 >> 2);
+    x.s.manl = (d2 & 3) << 30;
+    x.s.manl |= (d3 << 20) | (d4 << 10) | d5;
+
+#else /* BID */
+
     {
-      _Decimal64 ten16 = (double) 1e16; /* 10^16 is exactly representable
-                                           in binary64 */
-      _Decimal64 ten32 = ten16 * ten16;
-      _Decimal64 ten64 = ten32 * ten32;
-      _Decimal64 ten128 = ten64 * ten64;
-      _Decimal64 ten256 = ten128 * ten128;
-      if (exp >= 256)
-        {
-          x *= ten256;
-          exp -= 256;
+      unsigned int rp[2]; /* rp[0] and rp[1] should contain at least 32 bits */
+#define NLIMBS (64 / GMP_NUMB_BITS)
+      mp_limb_t sp[NLIMBS];
+      mp_size_t sn;
+      int case_i = strcmp (m, "9007199254740992") < 0;
+
+      for (n = 0; n < 16; n++)
+        m[n] -= '0';
+      sn = mpn_set_str (sp, (unsigned char *) m, 16, 10);
+      while (sn < NLIMBS)
+        sp[sn++] = 0;
+      /* now convert {sp, sn} to {rp, 2} */
+#if GMP_NUMB_BITS >= 64
+      MPFR_ASSERTD (sn <= 1);
+      rp[0] = sp[0] & 4294967295UL;
+      rp[1] = sp[0] >> 32;
+#elif GMP_NUMB_BITS == 32
+      MPFR_ASSERTD (sn <= 2);
+      rp[0] = sp[0];
+      rp[1] = sp[1];
+#elif GMP_NUMB_BITS == 16
+      rp[0] = sp[0] | ((unsigned int) sp[1] << 16);
+      rp[1] = sp[2] | ((unsigned int) sp[3] << 16);
+#elif GMP_NUMB_BITS == 8
+      rp[0] = sp[0] | ((unsigned int) sp[1] << 8)
+        | ((unsigned int) sp[2] << 16) | ((unsigned int) sp[3] << 24);
+      rp[1] = sp[4] | ((unsigned int) sp[5] << 8)
+        | ((unsigned int) sp[6] << 16) | ((unsigned int) sp[7] << 24);
+#else
+#error "GMP_NUMB_BITS should be 8, 16, 32, or >= 64"
+#endif
+      if (case_i)
+        {  /* s < 2^53: case i) */
+          x.s.exp = uexp << 1;
+          x.s.manl = rp[0];           /* 32 bits */
+          x.s.manh = rp[1] & 1048575; /* 20 low bits */
+          x.s.exp |= rp[1] >> 20;     /* 1 bit */
         }
-      if (exp >= 128)
+      else /* s >= 2^53: case ii) */
         {
-          x *= ten128;
-          exp -= 128;
-        }
-      if (exp >= 64)
-        {
-          x *= ten64;
-          exp -= 64;
-        }
-      if (exp >= 32)
-        {
-          x *= ten32;
-          exp -= 32;
-        }
-      if (exp >= 16)
-        {
-          x *= (_Decimal64) 10000000000000000.0;
-          exp -= 16;
-        }
-      if (exp >= 8)
-        {
-          x *= (_Decimal64) 100000000.0;
-          exp -= 8;
-        }
-      if (exp >= 4)
-        {
-          x *= (_Decimal64) 10000.0;
-          exp -= 4;
-        }
-      if (exp >= 2)
-        {
-          x *= (_Decimal64) 100.0;
-          exp -= 2;
-        }
-      if (exp >= 1)
-        {
-          x *= (_Decimal64) 10.0;
-          exp -= 1;
-        }
-    }
-  else if (exp < 0)
-    {
-      _Decimal64 ten16 = (double) 1e16; /* 10^16 is exactly representable
-                                           in binary64 */
-      _Decimal64 ten32 = ten16 * ten16;
-      _Decimal64 ten64 = ten32 * ten32;
-      _Decimal64 ten128 = ten64 * ten64;
-      _Decimal64 ten256 = ten128 * ten128;
-      if (exp <= -256)
-        {
-          x /= ten256;
-          exp += 256;
-        }
-      if (exp <= -128)
-        {
-          x /= ten128;
-          exp += 128;
-        }
-      if (exp <= -64)
-        {
-          x /= ten64;
-          exp += 64;
-        }
-      if (exp <= -32)
-        {
-          x /= ten32;
-          exp += 32;
-        }
-      if (exp <= -16)
-        {
-          x /= (_Decimal64) 10000000000000000.0;
-          exp += 16;
-        }
-      if (exp <= -8)
-        {
-          x /= (_Decimal64) 100000000.0;
-          exp += 8;
-        }
-      if (exp <= -4)
-        {
-          x /= (_Decimal64) 10000.0;
-          exp += 4;
-        }
-      if (exp <= -2)
-        {
-          x /= (_Decimal64) 100.0;
-          exp += 2;
-        }
-      if (exp <= -1)
-        {
-          x /= (_Decimal64) 10.0;
-          exp += 1;
+          x.s.exp = 1536 | (uexp >> 1);
+          x.s.manl = rp[0];
+          x.s.manh = (rp[1] ^ 2097152) | ((uexp & 1) << 19);
         }
     }
 
-  if (sign)
-    x = -x;
+#endif /* DPD or BID */
 
-  return x;
-}
+    y.d = x.d;
+    return y.d64;
+  }
+
+#else  /* portable version */
+
+  {
+    _Decimal64 x = 0;
+    _Decimal64 ten16 = (double) 1e16; /* 10^16 is exactly representable
+                                         in binary64 */
+    _Decimal64 ten32 = ten16 * ten16;
+    _Decimal64 ten64 = ten32 * ten32;
+    _Decimal64 ten128 = ten64 * ten64;
+    _Decimal64 ten256 = ten128 * ten128;
+
+    /* the number to convert is m[] * 10^(exp-398) */
+    exp -= 398;
+
+    for (n = 0; n < 16; n++)
+      x = (_Decimal64) 10.0 * x + (_Decimal64) (m[n] - '0');
+
+    /* multiply by 10^exp */
+    if (exp > 0)
+      {
+        if (exp >= 256)
+          {
+            x *= ten256;
+            exp -= 256;
+          }
+        if (exp >= 128)
+          {
+            x *= ten128;
+            exp -= 128;
+          }
+        if (exp >= 64)
+          {
+            x *= ten64;
+            exp -= 64;
+          }
+        if (exp >= 32)
+          {
+            x *= ten32;
+            exp -= 32;
+          }
+        if (exp >= 16)
+          {
+            x *= (_Decimal64) 10000000000000000.0;
+            exp -= 16;
+          }
+        if (exp >= 8)
+          {
+            x *= (_Decimal64) 100000000.0;
+            exp -= 8;
+          }
+        if (exp >= 4)
+          {
+            x *= (_Decimal64) 10000.0;
+            exp -= 4;
+          }
+        if (exp >= 2)
+          {
+            x *= (_Decimal64) 100.0;
+            exp -= 2;
+          }
+        if (exp >= 1)
+          {
+            x *= (_Decimal64) 10.0;
+            exp -= 1;
+          }
+      }
+    else if (exp < 0)
+      {
+        if (exp <= -256)
+          {
+            x /= ten256;
+            exp += 256;
+          }
+        if (exp <= -128)
+          {
+            x /= ten128;
+            exp += 128;
+          }
+        if (exp <= -64)
+          {
+            x /= ten64;
+            exp += 64;
+          }
+        if (exp <= -32)
+          {
+            x /= ten32;
+            exp += 32;
+          }
+        if (exp <= -16)
+          {
+            x /= (_Decimal64) 10000000000000000.0;
+            exp += 16;
+          }
+        if (exp <= -8)
+          {
+            x /= (_Decimal64) 100000000.0;
+            exp += 8;
+          }
+        if (exp <= -4)
+          {
+            x /= (_Decimal64) 10000.0;
+            exp += 4;
+          }
+        if (exp <= -2)
+          {
+            x /= (_Decimal64) 100.0;
+            exp += 2;
+          }
+        if (exp <= -1)
+          {
+            x /= (_Decimal64) 10.0;
+            exp += 1;
+          }
+      }
+
+    if (sign)
+      x = -x;
+
+    return x;
+  }
 
 #endif  /* definition of string_to_Decimal64 (DPD, BID, or portable) */
+}
 
 _Decimal64
 mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
@@ -553,25 +496,27 @@ mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
     }
   else
     {
-      /* we need to store the sign (1 character), the significand (at most 16
-         characters), the exponent part (at most 5 characters for "E-398"),
-         and the terminating character, thus we need at least 23 characters */
-      char s[23];
-      mpfr_get_str (s, &e, 10, 16, src, rnd_mode);
+      /* We need to store the sign (1 character), the significand
+         (at most 16 characters), and the terminating null character,
+         thus we need at least 18 characters in s. */
+      char s[18];
+      mpfr_exp_t decimal_exp;
+
+      mpfr_get_str (s, &decimal_exp, 10, 16, src, rnd_mode);
       /* the smallest normal number is 1.000...000E-383,
-         which corresponds to s=[0.]1000...000 and e=-382 */
-      if (e < -382)
+         which corresponds to s = [0.]1000...000 and decimal_exp = -382 */
+      if (decimal_exp < -382)
         {
           /* the smallest subnormal number is 0.000...001E-383 = 1E-398,
-             which corresponds to s=[0.]1000...000 and e=-397 */
-          if (e < -397)
+             which corresponds to s = [0.]1000...000 and decimal_exp = -397 */
+          if (decimal_exp < -397)
             {
-              if (rnd_mode == MPFR_RNDN && e == -398)
+              if (rnd_mode == MPFR_RNDN && decimal_exp == -398)
                 {
                   /* If 0.5E-398 < |src| < 1E-398 (smallest subnormal),
                      src should round to +/- 1E-398 in MPFR_RNDN. */
-                  mpfr_get_str (s, &e, 10, 1, src, MPFR_RNDA);
-                  return e == -398 && s[negative] <= '5' ?
+                  mpfr_get_str (s, &decimal_exp, 10, 1, src, MPFR_RNDA);
+                  return decimal_exp == -398 && s[negative] <= '5' ?
                     get_decimal64_zero (negative) :
                     get_decimal64_min (negative);
                 }
@@ -583,31 +528,29 @@ mpfr_get_decimal64 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
           else
             {
               mpfr_exp_t e2;
-              long digits = 16 - (-382 - e);
-              /* if e = -397 then 16 - (-382 - e) = 1 */
+              long digits = 16 - (-382 - decimal_exp);
+              /* if decimal_exp = -397 then 16 - (-382 - decimal_exp) = 1 */
+
+              MPFR_ASSERTD (-397 <= decimal_exp && decimal_exp <= -383);
               mpfr_get_str (s, &e2, 10, digits, src, rnd_mode);
-              /* Warning: we can have e2 = e + 1 here, when rounding to
-                 nearest or away from zero. */
-              s[negative + digits] = 'E';
-              sprintf (s + negative + digits + 1, "%ld",
-                       (long int) e2 - digits);
-              return string_to_Decimal64 (s);
+              /* Warning: we can have e2 = decimal_exp + 1 here,
+                 when rounding to nearest or away from zero. */
+              return string_to_Decimal64 (s, e2 - digits);
             }
         }
       /* the largest number is 9.999...999E+384,
-         which corresponds to s=[0.]9999...999 and e=385 */
-      else if (e > 385)
+         which corresponds to s = [0.]9999...999 and decimal_exp = 385 */
+      else if (decimal_exp > 385)
         {
           if (rnd_mode == MPFR_RNDZ)
             return get_decimal64_max (negative);
           else /* RNDN, RNDA, RNDF: round away */
             return get_decimal64_inf (negative);
         }
-      else /* -382 <= e <= 385 */
+      else /* -382 <= decimal_exp <= 385 */
         {
-          s[16 + negative] = 'E';
-          sprintf (s + 17 + negative, "%ld", (long int) e - 16);
-          return string_to_Decimal64 (s);
+          MPFR_ASSERTD (-382 <= decimal_exp && decimal_exp <= 385);
+          return string_to_Decimal64 (s, decimal_exp - 16);
         }
     }
 }

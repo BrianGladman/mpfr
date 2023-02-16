@@ -111,14 +111,25 @@ get_decimal128_max (int negative)
    We have k = 1 + 5 + w + t = 128.
 */
 static _Decimal128
-string_to_Decimal128 (char *s) /* portable version */
+string_to_Decimal128 (char *s, int exp)  /* portable version only */
 {
-  long int exp = 0;
   char m[35];
-  long n = 0; /* mantissa length */
-  char *endptr[1];
-  _Decimal128 x = 0;
+  int n = 0; /* mantissa length */
   int sign = 0;
+  _Decimal128 x = 0;
+  _Decimal128 ten = 10;
+  _Decimal128 ten2 = ten * ten;
+  _Decimal128 ten4 = ten2 * ten2;
+  _Decimal128 ten8 = ten4 * ten4;
+  _Decimal128 ten16 = ten8 * ten8;
+  _Decimal128 ten32 = ten16 * ten16;
+  _Decimal128 ten64 = ten32 * ten32;
+  _Decimal128 ten128 = ten64 * ten64;
+  _Decimal128 ten256 = ten128 * ten128;
+  _Decimal128 ten512 = ten256 * ten256;
+  _Decimal128 ten1024 = ten512 * ten512;
+  _Decimal128 ten2048 = ten1024 * ten1024;
+  _Decimal128 ten4096 = ten2048 * ten2048;
 
   /* read sign */
   if (*s == '-')
@@ -126,6 +137,7 @@ string_to_Decimal128 (char *s) /* portable version */
       sign = 1;
       s++;
     }
+
   /* read mantissa */
   while (ISDIGIT (*s))
     m[n++] = *s++;
@@ -133,18 +145,16 @@ string_to_Decimal128 (char *s) /* portable version */
   /* as constructed in mpfr_get_decimal128, s cannot have any '.' separator */
 
   /* we will consider an integer mantissa m*10^exp */
-  MPFR_ASSERTN(n <= 34);
-  /* s always has an exponent separator 'E' */
-  MPFR_ASSERTN(*s == 'E');
-  exp = strtol (s + 1, endptr, 10);
-  MPFR_ASSERTN(**endptr == '\0');
-  MPFR_ASSERTN(-6176 <= exp && exp <= 6145 - n);
+  MPFR_ASSERTD (n <= 34);
+  MPFR_ASSERTD (*s == '\0');
+  MPFR_ASSERTD (-6176 <= exp && exp <= 6145 - n);
   while (n < 34)
     {
       m[n++] = '0';
       exp--;
     }
-  /* now n=34 and -6176 <= exp <= 6111, cf (b2) */
+  MPFR_ASSERTD (n == 34);
+  MPFR_ASSERTD (exp <= 6111);  /* 6111 = 6145 - 34 */
   m[n] = '\0';
 
   /* the number to convert is m[] * 10^exp where the mantissa is a 34-digit
@@ -179,20 +189,6 @@ string_to_Decimal128 (char *s) /* portable version */
   /* multiply by 10^exp */
   if (exp > 0)
     {
-      _Decimal128 ten = 10;
-      _Decimal128 ten2 = ten * ten;
-      _Decimal128 ten4 = ten2 * ten2;
-      _Decimal128 ten8 = ten4 * ten4;
-      _Decimal128 ten16 = ten8 * ten8;
-      _Decimal128 ten32 = ten16 * ten16;
-      _Decimal128 ten64 = ten32 * ten32;
-      _Decimal128 ten128 = ten64 * ten64;
-      _Decimal128 ten256 = ten128 * ten128;
-      _Decimal128 ten512 = ten256 * ten256;
-      _Decimal128 ten1024 = ten512 * ten512;
-      _Decimal128 ten2048 = ten1024 * ten1024;
-      _Decimal128 ten4096 = ten2048 * ten2048;
-
       if (exp >= 4096)
         {
           x *= ten4096;
@@ -261,20 +257,6 @@ string_to_Decimal128 (char *s) /* portable version */
     }
   else if (exp < 0)
     {
-      _Decimal128 ten = 10;
-      _Decimal128 ten2 = ten * ten;
-      _Decimal128 ten4 = ten2 * ten2;
-      _Decimal128 ten8 = ten4 * ten4;
-      _Decimal128 ten16 = ten8 * ten8;
-      _Decimal128 ten32 = ten16 * ten16;
-      _Decimal128 ten64 = ten32 * ten32;
-      _Decimal128 ten128 = ten64 * ten64;
-      _Decimal128 ten256 = ten128 * ten128;
-      _Decimal128 ten512 = ten256 * ten256;
-      _Decimal128 ten1024 = ten512 * ten512;
-      _Decimal128 ten2048 = ten1024 * ten1024;
-      _Decimal128 ten4096 = ten2048 * ten2048;
-
       if (exp <= -4096)
         {
           x /= ten4096;
@@ -397,26 +379,27 @@ mpfr_get_decimal128 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
     }
   else
     {
-      /* we need to store the sign (1 character), the significand (at most 34
-         characters), the exponent part (at most 6 characters for "E-6176"),
-         and the terminating null character, thus we need at least 42
-         characters in s. */
-      char s[42];
-      mpfr_get_str (s, &e, 10, 34, src, rnd_mode);
+      /* We need to store the sign (1 character), the significand
+         (at most 34 characters), and the terminating null character,
+         thus we need at least 36 characters in s. */
+      char s[36];
+      mpfr_exp_t decimal_exp;
+
+      mpfr_get_str (s, &decimal_exp, 10, 34, src, rnd_mode);
       /* the smallest normal number is 1.000...000E-6143,
-         which corresponds to s=[0.]1000...000 and e=-6142 */
-      if (e < -6142)
+         which corresponds to s = [0.]1000...000 and decimal_exp = -6142 */
+      if (decimal_exp < -6142)
         {
           /* the smallest subnormal number is 0.000...001E-6143 = 1E-6176,
-             which corresponds to s=[0.]1000...000 and e=-6175 */
-          if (e < -6175)
+             which corresponds to s = [0.]1000...000 and decimal_exp = -6175 */
+          if (decimal_exp < -6175)
             {
-              if (rnd_mode == MPFR_RNDN && e == -6176)
+              if (rnd_mode == MPFR_RNDN && decimal_exp == -6176)
                 {
                   /* If 0.5E-6176 < |src| < 1E-6176 (smallest subnormal),
                      src should round to +/- 1E-6176 in MPFR_RNDN. */
-                  mpfr_get_str (s, &e, 10, 1, src, MPFR_RNDA);
-                  return e == -6176 && s[negative] <= '5' ?
+                  mpfr_get_str (s, &decimal_exp, 10, 1, src, MPFR_RNDA);
+                  return decimal_exp == -6176 && s[negative] <= '5' ?
                     get_decimal128_zero (negative) :
                     get_decimal128_min (negative);
                 }
@@ -428,31 +411,27 @@ mpfr_get_decimal128 (mpfr_srcptr src, mpfr_rnd_t rnd_mode)
           else
             {
               mpfr_exp_t e2;
-              long digits = 34 - (-6142 - e);
-              /* if e = -6175 then 34 - (-6142 - e) = 1 */
+              long digits = 34 - (-6142 - decimal_exp);
+              /* if decimal_exp = -6175 then 34 - (-6142 - decimal_exp) = 1 */
+
               mpfr_get_str (s, &e2, 10, digits, src, rnd_mode);
-              /* Warning: we can have e2 = e + 1 here, when rounding to
-                 nearest or away from zero. */
-              s[negative + digits] = 'E';
-              sprintf (s + negative + digits + 1, "%ld",
-                       (long int) e2 - digits);
-              return string_to_Decimal128 (s);
+              /* Warning: we can have e2 = decimal_exp + 1 here,
+                 when rounding to nearest or away from zero. */
+              return string_to_Decimal128 (s, e2 - digits);
             }
         }
       /* the largest number is 9.999...999E+6144,
-         which corresponds to s=[0.]9999...999 and e=6145 */
-      else if (e > 6145)
+         which corresponds to s = [0.]9999...999 and decimal_exp = 6145 */
+      else if (decimal_exp > 6145)
         {
           if (rnd_mode == MPFR_RNDZ)
             return get_decimal128_max (negative);
           else /* RNDN, RNDA, RNDF: round away */
             return get_decimal128_inf (negative);
         }
-      else /* -6142 <= e <= 6145 */
+      else /* -6142 <= decimal_exp <= 6145 */
         {
-          s[34 + negative] = 'E';
-          sprintf (s + 35 + negative, "%ld", (long int) e - 34);
-          return string_to_Decimal128 (s);
+          return string_to_Decimal128 (s, decimal_exp - 34);
         }
     }
 }
