@@ -173,55 +173,18 @@ huge (void)
   set_emax (old_emax);
 }
 
-int
-main (int argc, char *argv[])
+static void
+test2 (void)
 {
-  mpfr_t x, y;
-  unsigned long int n;
-
-  tests_start_mpfr ();
-
-  mpfr_init (x);
-  mpfr_init (y);
-
-  do n = randlimb (); while (n <= 1);
-
-  MPFR_SET_INF(x);
-  mpfr_ui_pow (y, n, x, MPFR_RNDN);
-  if(!MPFR_IS_INF(y))
-    {
-      printf ("evaluation of function at INF does not return INF\n");
-      exit (1);
-    }
-
-  MPFR_CHANGE_SIGN(x);
-  mpfr_ui_pow (y, n, x, MPFR_RNDN);
-  if(!MPFR_IS_ZERO(y))
-    {
-      printf ("evaluation of function in -INF does not return 0");
-      exit (1);
-    }
-
-  MPFR_SET_NAN(x);
-  mpfr_ui_pow (y, n, x, MPFR_RNDN);
-  if(!MPFR_IS_NAN(y))
-    {
-      printf ("evaluation of function in NAN does not return NAN");
-      exit (1);
-    }
-
-  test1 ();
-  huge ();
-
-  {
-  mpfr_t z, t;
+  mpfr_t x, y, z, t;
   mpfr_prec_t prec;
   mpfr_rnd_t rnd;
   unsigned int n;
+  mpfr_prec_t p0 = 2, p1 = 100;
+  unsigned int N = 20;
 
-  mpfr_prec_t p0=2, p1=100;
-  unsigned int N=20;
-
+  mpfr_init2 (x, 2);
+  mpfr_init2 (y, 2);
   mpfr_init2 (z, 38);
   mpfr_init2 (t, 6);
 
@@ -229,38 +192,30 @@ main (int argc, char *argv[])
   mpfr_set_str_binary (t, "0.110000E5");
   mpfr_ui_pow (z, 3, t, MPFR_RNDN);
 
-  mpfr_set_prec (x, 2);
-  mpfr_set_prec (y, 2);
   mpfr_set_str (x, "-0.5", 10, MPFR_RNDZ);
   mpfr_ui_pow (y, 4, x, MPFR_RNDD);
-  if (mpfr_cmp_ui_2exp(y, 1, -1))
+  if (mpfr_cmp_ui_2exp (y, 1, -1))
     {
-      fprintf (stderr, "Error for 4^(-0.5), prec=2, MPFR_RNDD\n");
-      fprintf (stderr, "expected 0.5, got ");
-      mpfr_out_str (stderr, 2, 0, y, MPFR_RNDN);
-      fprintf (stderr, "\n");
+      printf ("Error for 4^(-0.5), prec=2, MPFR_RNDD\n");
+      printf ("expected 0.5, got ");
+      mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
+      printf ("\n");
       exit (1);
     }
 
   /* problem found by Kevin on spe175.testdrive.compaq.com
      (03 Sep 2003), ia64 under HP-UX */
-  mpfr_set_prec (x, 2);
-  mpfr_set_prec (y, 2);
   mpfr_set_str (x, "0.5", 10, MPFR_RNDN);
   mpfr_ui_pow (y, 398441521, x, MPFR_RNDN);
-  if (mpfr_cmp_ui_2exp(y, 1, 14))
+  if (mpfr_cmp_ui_2exp (y, 1, 14))
     {
-      fprintf (stderr, "Error for 398441521^(0.5), prec=2, MPFR_RNDN\n");
-      fprintf (stderr, "expected 1.0e14, got ");
-      mpfr_out_str (stderr, 2, 0, y, MPFR_RNDN);
-      fprintf (stderr, "\n");
+      printf ("Error for 398441521^(0.5), prec=2, MPFR_RNDN\n");
+      printf ("expected 1.0e14, got ");
+      mpfr_out_str (stdout, 2, 0, y, MPFR_RNDN);
+      printf ("\n");
       exit (1);
     }
 
-  mpfr_clear (z);
-  mpfr_clear (t);
-
-  mpfr_set_prec (x, 2);
   mpfr_set_str (x, "0.5", 10, MPFR_RNDN);
   check1 (x, 2, 398441521, MPFR_RNDN);  /* 398441521 = 19961^2 */
 
@@ -277,10 +232,53 @@ main (int argc, char *argv[])
           check1 (x, prec, nt, rnd);
         }
     }
-  }
+
+  mpfr_clears (x, y, z, t, (mpfr_ptr) 0);
+}
+
+int
+main (int argc, char *argv[])
+{
+  mpfr_t x, y;
+  unsigned long int n;
+
+  tests_start_mpfr ();
+
+  mpfr_init (x);
+  mpfr_init (y);
+
+  do n = randlimb (); while (n <= 1);
+
+  MPFR_SET_INF (x);
+  mpfr_ui_pow (y, n, x, MPFR_RNDN);
+  if (! MPFR_IS_INF (y))
+    {
+      printf ("evaluation of function at INF does not return INF\n");
+      exit (1);
+    }
+
+  MPFR_CHANGE_SIGN (x);
+  mpfr_ui_pow (y, n, x, MPFR_RNDN);
+  if (! MPFR_IS_ZERO (y))
+    {
+      printf ("evaluation of function in -INF does not return 0\n");
+      exit (1);
+    }
+
+  MPFR_SET_NAN (x);
+  mpfr_ui_pow (y, n, x, MPFR_RNDN);
+  if (! MPFR_IS_NAN (y))
+    {
+      printf ("evaluation of function in NAN does not return NAN\n");
+      exit (1);
+    }
 
   mpfr_clear (x);
   mpfr_clear (y);
+
+  test1 ();
+  test2 ();
+  huge ();
 
   tests_end_mpfr ();
   return 0;
