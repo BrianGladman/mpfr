@@ -142,6 +142,37 @@ check1 (mpfr_ptr x, mpfr_prec_t prec, unsigned long nt, mpfr_rnd_t rnd)
   mpfr_clear (t);
 }
 
+static void
+huge (void)
+{
+  mpfr_exp_t old_emin, old_emax;
+  mpfr_t x;
+
+  old_emin = mpfr_get_emin ();
+  old_emax = mpfr_get_emax ();
+
+  set_emin (MPFR_EMIN_MIN);
+  set_emax (MPFR_EMAX_MAX);
+
+  mpfr_init2 (x, 8);
+
+  /* The purpose of this test is more to check that mpfr_ui_pow_ui
+     terminates (without taking much memory) rather than checking
+     the value of x. On 2023-02-13, the +Inf case was not handled
+     in the Ziv iteration, yielding an infinite loop, affecting
+     mpfr_log10 in particular. See
+       commit 90de094f0d9c309daca707aa227470d810866616
+  */
+  mpfr_ui_pow_ui (x, 5, ULONG_MAX, MPFR_RNDN);
+  if (MPFR_EMAX_MAX <= ULONG_MAX)  /* true with default _MPFR_EXP_FORMAT */
+    MPFR_ASSERTN (MPFR_IS_INF (x));
+
+  mpfr_clear (x);
+
+  set_emin (old_emin);
+  set_emax (old_emax);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -180,6 +211,7 @@ main (int argc, char *argv[])
     }
 
   test1 ();
+  huge ();
 
   {
   mpfr_t z, t;
