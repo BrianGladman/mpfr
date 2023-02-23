@@ -501,7 +501,7 @@ main (void)
   tests_start_mpfr ();
 
   ofuf_thresholds (mpfr_compound2, inv_compound2, "mpfr_compound2",
-                   128, 128, 0, POSOF);
+                   128, 128, 0, POSUF);
 
   check_ieee754 ();
   bug_20230206 ();

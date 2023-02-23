@@ -159,14 +159,14 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       mpfr_prec_t precu = prec + extra;
 
       printf ("nloop=%d prec=%lu precu=%lu\n", nloop, prec, precu);
-      if (nloop>3) abort();
 
       /* We compute (1+x)^n as 2^(n*log2p1(x)),
          and we round towards 1, thus we round n*log2p1(x) towards 0,
-         thus for n > 0 we round log2p1(x) towards -Inf, and for n < 0
+         thus for x*n > 0 we round log2p1(x) towards -Inf, and for x*n < 0
          we round log2p1(x) towards +Inf. */
-      mpfr_rnd_t rnd1 = (n > 0) ? MPFR_RNDD : MPFR_RNDU;
+      mpfr_rnd_t rnd1 = (n * MPFR_SIGN(x) > 0) ? MPFR_RNDD : MPFR_RNDU;
       inex = mpfr_log2p1 (u, x, rnd1) != 0;
+      mpfr_printf ("170: u=%Ra\n", u);
       e = MPFR_GET_EXP(u);
       /* |u - log2(1+x)| <= ulp(t) = 2^(e-precu) */
       inex |= mpfr_mul_si (u, u, n, MPFR_RNDZ) != 0;
@@ -190,9 +190,11 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
           return mpfr_overflow (y, rnd_mode, 1);
         }
       /* detect underflow: similarly, since we rounded n*log2p1(x) towards 0,
-         if n*log2p1(x) <= __gmpfr_emin-1, we are sure there is underflow. */
-      if (mpfr_cmp_si (u, __gmpfr_emin - 1) <= 0)
+         if n*log2p1(x) < __gmpfr_emin-1, we are sure there is underflow. */
+      mpfr_printf ("u=%Ra __gmpfr_emin=%ld\n", u, __gmpfr_emin);
+      if (mpfr_cmp_si (u, __gmpfr_emin - 1) < 0)
         {
+          printf ("detected underflow\n");
           MPFR_ZIV_FREE (loop);
           mpfr_clear (t);
           mpfr_clear (u);
@@ -207,6 +209,7 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
           /* since ulp(1) = 2^(1-PREC(y)), we have |u| < 1/4*ulp(1) */
           /* mpfr_compound_near_one must be called in the extended
              exponent range, so that 1 is representable. */
+          printf ("mpfr_compound_near_one\n");
           inexact = mpfr_compound_near_one (y, MPFR_SIGN (u), rnd_mode);
           goto end;
         }
@@ -231,12 +234,15 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
 
       if (MPFR_LIKELY (!inex ||
                        MPFR_CAN_ROUND (t, prec - e, MPFR_PREC(y), rnd_mode)))
-        break;
+        {
+          printf ("can round line 238\n");
+          break;
+        }
 
       /* If t fits in the target precision (or with 1 more bit), then we can
          round, assuming the working precision is large enough, but the above
          MPFR_CAN_ROUND() will fail because we cannot determine the ternary
-         value. However since we round towards 1, we can determine it.
+         value. However since we rounded t towards 1, we can determine it.
       */
       mpfr_prec_t prec_t = mpfr_min_prec (t);
       /* since the error in the approximation t is at most 2^e ulp(t),
@@ -245,7 +251,7 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       printf ("prec_t=%lu\n", prec_t);
       if (prec_t <= MPFR_PREC(y) + 1 && prec - MPFR_PREC(y) >= e + 1)
         {
-          mpfr_printf ("can round t=%Ra\n", t);
+          mpfr_printf ("251 can round t=%Ra\n", t);
           /* we add/subtract one ulp to get the correct rounding */
           if (rnd2 == MPFR_RNDD) /* t was rounded downwards */
             mpfr_nextabove (t);
@@ -254,6 +260,59 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
           mpfr_printf ("t=%Ra\n", t);
           break;
         }
+
+      /* Check if x^n fits in the target precision (or 1 more bit for
+         rounding to nearest),
+         then if x is very large Ziv's strategy will take too long.
+         If x fits into k bits, then 2^(k-1) <= x < 2^k, thus
+         2^(n*(k-1)) <= x^n < 2^(k*n), thus x^n has between n*(k-1)+1 and
+         k*n bits. Since this does not depend on the working precision,
+         we only check this at the first iteration. */
+      if (nloop == 0 && n > 1 && mpfr_cmp_ui (x, 65535) > 0)
+        {
+          printf ("line 273\n");
+          mpfr_prec_t kx = mpfr_min_prec (x);
+          mpfr_prec_t p = MPFR_PREC(y) + (rnd_mode == MPFR_RNDN);
+          printf ("n * (kx - 1) + 1=%lu p=%lu\n", n * (kx - 1) + 1, p);
+          if (n * (kx - 1) + 1 <= p)
+            {
+              /* first check that x^n really fits into p bits */
+              mpfr_t v;
+              mpfr_init2 (v, p);
+              inexact = mpfr_pow_ui (v, x, n, MPFR_RNDZ);
+              mpfr_printf ("inexact=%d v=%Ra\n", inexact, v);
+              mpfr_clear (v);
+              if (inexact == 0)
+                {
+                  /* (x+1)^n = x^n * (1 + 1/x)^n
+                     For directed rounding, we can round when (1 + 1/x)^n
+                     < 1 + 2^-p, and then the result is the same as x^n,
+                     except for rounding up.
+                     For rounding to nearest, we can round when (1 + 1/x)^n
+                     < 1 + 2^-p, and then the result is the same as x^n. */
+                  mpfr_ui_div (t, 1, x, MPFR_RNDU);
+                  mpfr_add_ui (t, t, 1, MPFR_RNDU);
+                  mpfr_pow_ui (t, t, n, MPFR_RNDU);
+                  mpfr_sub_ui (t, t, 1, MPFR_RNDU);
+                  /* t cannot be zero */
+                  if (MPFR_GET_EXP(t) < -MPFR_PREC(y))
+                    {
+                      mpfr_pow_si (y, x, n, MPFR_RNDZ);
+                      if (rnd_mode != MPFR_RNDU && rnd_mode != MPFR_RNDA)
+                        inexact = -1;
+                      else /* round up */
+                        {
+                          mpfr_nextabove (y);
+                          inexact = 1;
+                        }
+                      printf ("can round line 298\n");
+                      goto end;
+                    }
+                }
+            }
+        }
+
+      printf ("line 314\n");
 
       /* Exact cases like compound(0.5,2) = 9/4 must be detected, since
          except for 1+x power of 2, the log2p1 above will be inexact,
@@ -267,6 +326,7 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       if (mpfr_add_ui (t, x, 1, MPFR_RNDZ) == 0)
         {
           inexact = mpfr_pow_si (y, t, n, rnd_mode);
+          printf ("can round line 323\n");
           goto end;
         }
 
