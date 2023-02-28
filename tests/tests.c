@@ -1291,7 +1291,7 @@ ofuf_thresholds (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
 
           if (dbg)
             {
-              printf ("ofuf_thresholds: xd = ");
+              printf ("ofuf_thresholds: inex = %d, xd = ", VSIGN (inex));
               mpfr_dump (x[0]);
             }
 
@@ -1334,6 +1334,10 @@ ofuf_thresholds (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
                 flags = __gmpfr_flags;
                 sign = MPFR_SIGN (y);
 
+                /* Note: In the underflow test, if fct(x[i]) is less than
+                   the threshold in absolute value, the result can be either
+                   an underflow (inex != 0) or an exact 0 (inex == 0). */
+
                 if ((inex != 0) ^ (flags != 0))
                   err = "inex inconsistency";
                 else if (MPFR_IS_LIKE_RNDD (rnd, sign) && inex > 0)
@@ -1345,6 +1349,7 @@ ofuf_thresholds (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
                   err = "expected no exceptions (except inexact)";
                 else if ((nxu ^ i) &&
                          (nxu ? inex <= 0 : inex >= 0) &&
+                         !(ufl && inex == 0) /* skip case "exact 0" */ &&
                          flags != eflags)
                   err = ufl ? "expected underflow" : "expected overflow";
                 else
