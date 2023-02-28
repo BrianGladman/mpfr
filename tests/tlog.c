@@ -176,6 +176,7 @@ special (void)
   mpfr_t x, y;
   int inex;
   mpfr_exp_t emin, emax;
+  int r;
 
   emin = mpfr_get_emin ();
   emax = mpfr_get_emax ();
@@ -237,6 +238,16 @@ special (void)
   MPFR_ASSERTN (inex == 0);
   MPFR_ASSERTN (mpfr_inf_p (y));
   MPFR_ASSERTN (mpfr_sgn (y) < 0);
+
+  /* check log(1) is +0 whatever the rounding mode */
+  RND_LOOP (r)
+    {
+      mpfr_set_ui (x, 1, MPFR_RNDN);
+      inex = test_log (y, x, (mpfr_rnd_t) r);
+      MPFR_ASSERTN (inex == 0);
+      MPFR_ASSERTN (mpfr_cmp_ui (y, 0) == 0);
+      MPFR_ASSERTN (mpfr_signbit (y) == 0);
+    }
 
   mpfr_clear (x);
   mpfr_clear (y);
