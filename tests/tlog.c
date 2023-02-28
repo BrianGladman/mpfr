@@ -240,13 +240,15 @@ special (void)
   MPFR_ASSERTN (mpfr_sgn (y) < 0);
 
   /* check log(1) is +0 whatever the rounding mode */
+  mpfr_set_ui (x, 1, MPFR_RNDN);
   RND_LOOP (r)
     {
-      mpfr_set_ui (x, 1, MPFR_RNDN);
+      mpfr_clear_flags ();
       inex = test_log (y, x, (mpfr_rnd_t) r);
+      MPFR_ASSERTN (__gmpfr_flags == 0);
       MPFR_ASSERTN (inex == 0);
-      MPFR_ASSERTN (mpfr_cmp_ui (y, 0) == 0);
-      MPFR_ASSERTN (mpfr_signbit (y) == 0);
+      MPFR_ASSERTN (MPFR_IS_ZERO (y));
+      MPFR_ASSERTN (MPFR_IS_POS (y));
     }
 
   mpfr_clear (x);
