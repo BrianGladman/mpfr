@@ -3379,6 +3379,15 @@ and in addition one can determine the correct ternary value, which would not
 be the case when @var{b} is near from a value exactly representable on
 @var{prec} bits.
 
+@c TODO: Explain how to use mpfr_can_round in cases where rnd1 is some
+@c fixed directed rounding (e.g. to simplify the error analysis or to
+@c handle overflow/underflow correctly), the result may be very close
+@c to a machine number in the target precision and one knows that it is
+@c inexact. The issue is that mpfr_can_round does not have this latest
+@c knowledge and one needs to make sure to avoid huge precisions. Call
+@c mpfr_can_round with rnd2 = rnd1 and adjust the result with some
+@c mpfr_next* function afterwards?
+
 A detailed example is available in the @file{examples} subdirectory,
 file @file{can_round.c}.
 @end deftypefun

@@ -108,7 +108,7 @@ main (int argc, char *argv[])
 {
   mpfr_t x, y;
   unsigned int n;
-  int inex;
+  int inex, r;
 
   tests_start_mpfr ();
 
@@ -117,50 +117,53 @@ main (int argc, char *argv[])
   mpfr_init2 (x, 53);
   mpfr_init2 (y, 53);
 
-  /* check NaN */
-  mpfr_set_nan (x);
-  inex = test_log10 (y, x, MPFR_RNDN);
-  MPFR_ASSERTN (mpfr_nan_p (y) && inex == 0);
-
-  /* check Inf */
-  mpfr_set_inf (x, -1);
-  inex = test_log10 (y, x, MPFR_RNDN);
-  MPFR_ASSERTN (mpfr_nan_p (y) && inex == 0);
-
-  mpfr_set_inf (x, 1);
-  inex = test_log10 (y, x, MPFR_RNDN);
-  MPFR_ASSERTN (mpfr_inf_p (y) && mpfr_sgn (y) > 0 && inex == 0);
-
-  mpfr_set_ui (x, 0, MPFR_RNDN);
-  inex = test_log10 (x, x, MPFR_RNDN);
-  MPFR_ASSERTN (mpfr_inf_p (x) && mpfr_sgn (x) < 0 && inex == 0);
-  mpfr_set_ui (x, 0, MPFR_RNDN);
-  mpfr_neg (x, x, MPFR_RNDN);
-  inex = test_log10 (x, x, MPFR_RNDN);
-  MPFR_ASSERTN (mpfr_inf_p (x) && mpfr_sgn (x) < 0 && inex == 0);
-
-  /* check negative argument */
-  mpfr_set_si (x, -1, MPFR_RNDN);
-  inex = test_log10 (y, x, MPFR_RNDN);
-  MPFR_ASSERTN (mpfr_nan_p (y) && inex == 0);
-
-  /* check log10(1) = 0 */
-  mpfr_set_ui (x, 1, MPFR_RNDN);
-  inex = test_log10 (y, x, MPFR_RNDN);
-  MPFR_ASSERTN (mpfr_cmp_ui (y, 0) == 0 && MPFR_IS_POS (y) && inex == 0);
-
-  /* check log10(10^n)=n */
-  mpfr_set_ui (x, 1, MPFR_RNDN);
-  for (n = 1; n <= 15; n++)
+  RND_LOOP (r)
     {
-      mpfr_mul_ui (x, x, 10, MPFR_RNDN); /* x = 10^n */
-      inex = test_log10 (y, x, MPFR_RNDN);
-      if (mpfr_cmp_ui (y, n))
+      /* check NaN */
+      mpfr_set_nan (x);
+      inex = test_log10 (y, x, (mpfr_rnd_t) r);
+      MPFR_ASSERTN (mpfr_nan_p (y) && inex == 0);
+
+      /* check Inf */
+      mpfr_set_inf (x, -1);
+      inex = test_log10 (y, x, (mpfr_rnd_t) r);
+      MPFR_ASSERTN (mpfr_nan_p (y) && inex == 0);
+
+      mpfr_set_inf (x, 1);
+      inex = test_log10 (y, x, (mpfr_rnd_t) r);
+      MPFR_ASSERTN (mpfr_inf_p (y) && mpfr_sgn (y) > 0 && inex == 0);
+
+      mpfr_set_ui (x, 0, MPFR_RNDN);
+      inex = test_log10 (x, x, (mpfr_rnd_t) r);
+      MPFR_ASSERTN (mpfr_inf_p (x) && mpfr_sgn (x) < 0 && inex == 0);
+      mpfr_set_ui (x, 0, MPFR_RNDN);
+      mpfr_neg (x, x, MPFR_RNDN);
+      inex = test_log10 (x, x, (mpfr_rnd_t) r);
+      MPFR_ASSERTN (mpfr_inf_p (x) && mpfr_sgn (x) < 0 && inex == 0);
+
+      /* check negative argument */
+      mpfr_set_si (x, -1, MPFR_RNDN);
+      inex = test_log10 (y, x, (mpfr_rnd_t) r);
+      MPFR_ASSERTN (mpfr_nan_p (y) && inex == 0);
+
+      /* check log10(1) = 0 */
+      mpfr_set_ui (x, 1, MPFR_RNDN);
+      inex = test_log10 (y, x, (mpfr_rnd_t) r);
+      MPFR_ASSERTN (MPFR_IS_ZERO (y) && MPFR_IS_POS (y) && inex == 0);
+
+      /* check log10(10^n)=n */
+      mpfr_set_ui (x, 1, MPFR_RNDN);
+      for (n = 1; n <= 15; n++)
         {
-          printf ("log10(10^n) <> n for n=%u\n", n);
-          exit (1);
+          mpfr_mul_ui (x, x, 10, MPFR_RNDN); /* x = 10^n */
+          inex = test_log10 (y, x, (mpfr_rnd_t) r);
+          if (mpfr_cmp_ui (y, n))
+            {
+              printf ("log10(10^n) <> n for n=%u\n", n);
+              exit (1);
+            }
+          MPFR_ASSERTN (inex == 0);
         }
-      MPFR_ASSERTN (inex == 0);
     }
 
   mpfr_clear (x);
