@@ -131,7 +131,6 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   /* Declaration of the size variable */
   mpfr_prec_t Nz = MPFR_PREC(z);               /* target precision */
   mpfr_prec_t Nt;                              /* working precision */
-  mpfr_exp_t err;                              /* error */
   MPFR_ZIV_DECL (ziv_loop);
 
   MPFR_LOG_FUNC
@@ -171,13 +170,14 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   MPFR_ZIV_INIT (ziv_loop, Nt);
   for (;;)
     {
+      mpfr_exp_t err, exp_t;
       MPFR_BLOCK_DECL (flags1);
 
       /* compute exp(y*ln|x|), using MPFR_RNDU to get an upper bound, so
          that we can detect underflows. */
       mpfr_log (t, absx, MPFR_IS_NEG (y) ? MPFR_RNDD : MPFR_RNDU); /* ln|x| */
       mpfr_mul (t, y, t, MPFR_RNDU);                              /* y*ln|x| */
-      mpfr_exp_t exp_t = MPFR_GET_EXP (t);
+      exp_t = MPFR_GET_EXP (t);
       if (k_non_zero)
         {
           MPFR_LOG_MSG (("subtract k * ln(2)\n", 0));
