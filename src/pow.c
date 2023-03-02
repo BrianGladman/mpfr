@@ -177,6 +177,7 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
          that we can detect underflows. */
       mpfr_log (t, absx, MPFR_IS_NEG (y) ? MPFR_RNDD : MPFR_RNDU); /* ln|x| */
       mpfr_mul (t, y, t, MPFR_RNDU);                              /* y*ln|x| */
+      mpfr_exp_t exp_t = MPFR_GET_EXP (t);
       if (k_non_zero)
         {
           MPFR_LOG_MSG (("subtract k * ln(2)\n", 0));
@@ -188,14 +189,16 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
           MPFR_LOG_VAR (t);
         }
       /* estimate of the error -- see pow function in algorithms.tex.
-         The error on t is at most 1/2 + 3*2^(EXP(t)+1) ulps, which is
-         <= 2^(EXP(t)+3) for EXP(t) >= -1, and <= 2 ulps for EXP(t) <= -2.
+         The error on t before the subtraction of k*log(2) is at most
+         1/2 + 3*2^(EXP(t)+1) ulps, which is <= 2^(EXP(t)+3) for EXP(t) >= -1,
+         and <= 2 ulps for EXP(t) <= -2.
          Additional error if k_no_zero: treal = t * errk, with
          1 - |k| * 2^(-Nt) <= exp(-|k| * 2^(-Nt)) <= errk <= 1,
          i.e., additional absolute error <= 2^(EXP(k)+EXP(t)-Nt).
-         Total error <= 2^err1 + 2^err2 <= 2^(max(err1,err2)+1). */
-      err = MPFR_NOTZERO (t) && MPFR_GET_EXP (t) >= -1 ?
-        MPFR_GET_EXP (t) + 3 : 1;
+         Total ulp error <= 2^err1 + 2^err2 <= 2^(max(err1,err2)+1),
+         where err1 = EXP(t)+3 for EXP(t) >= -1, and 1 otherwise,
+         and err2 = EXP(k). */
+      err = MPFR_NOTZERO (t) && exp_t >= -1 ? exp_t + 3 : 1;
       if (k_non_zero)
         {
           if (MPFR_GET_EXP (k) > err)
