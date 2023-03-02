@@ -22,6 +22,9 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+/* TODO: add bad_cases and ofuf_thresholds tests, but the inverse function
+   (log in base b) needs to be implemented. */
+
 static void
 test1 (void)
 {
@@ -236,14 +239,14 @@ test2 (void)
   mpfr_clears (x, y, z, t, (mpfr_ptr) 0);
 }
 
-/* reverse the arguments n and x for tgeneric_ui.c */
+/* swap the arguments n and x for tgeneric_ui.c */
 static int
-ui_pow_rev (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mpfr_rnd_t rnd)
+ui_pow_argswap (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mpfr_rnd_t rnd)
 {
   return mpfr_ui_pow (y, n, x, rnd);
 }
 
-#define TEST_FUNCTION ui_pow_rev
+#define TEST_FUNCTION ui_pow_argswap
 #define INTEGER_TYPE  unsigned long
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
 #define INT_RAND_FUNCTION() \
