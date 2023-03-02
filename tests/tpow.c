@@ -50,20 +50,132 @@ test_pow (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 #define test_pow mpfr_pow
 #endif
 
+static int
+pow_ui2 (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mpfr_rnd_t rnd)
+{
+  mpfr_t x2, y2, n2;
+  mpfr_flags_t old_flags, flags1, flags2;
+  int inexact1, inexact2;
+
+  if (rnd == MPFR_RNDF)
+    return mpfr_pow_ui (y, x, n, rnd);
+
+  old_flags = __gmpfr_flags;
+
+  if (y == x)
+    mpfr_init2 (x2, MPFR_GET_PREC (x));
+  mpfr_init2 (y2, MPFR_GET_PREC (y));
+
+  mpfr_init2 (n2, sizeof (unsigned long) * CHAR_BIT);
+  inexact2 = mpfr_set_ui (n2, n, MPFR_RNDN);
+  MPFR_ASSERTN (inexact2 == 0);
+
+  __gmpfr_flags = old_flags;
+  inexact2 = mpfr_pow (y2, x, n2, rnd);
+  flags2 = __gmpfr_flags;
+
+  __gmpfr_flags = old_flags;
+  inexact1 = mpfr_pow_ui (y, x, n, rnd);
+  flags1 = __gmpfr_flags;
+
+  /* Convert the ternary values to (-1,0,1). */
+  inexact2 = VSIGN (inexact2);
+  inexact1 = VSIGN (inexact1);
+
+  if (! ((MPFR_IS_NAN (y) && MPFR_IS_NAN (y2)) || mpfr_equal_p (y, y2)) ||
+      inexact1 != inexact2 || flags1 != flags2)
+    {
+      printf ("mpfr_pow and mpfr_pow_ui return different results.\n");
+      printf ("x = ");
+      mpfr_dump (y == x ? x2 : x);
+      printf ("y = ");
+      mpfr_dump (y);
+      printf ("with inexact1 = %d and flags1 =", inexact1);
+      flags_out (flags1);
+      printf ("y2 = ");
+      mpfr_dump (y2);
+      printf ("with inexact2 = %d and flags2 =", inexact2);
+      flags_out (flags2);
+      exit (1);
+    }
+
+  mpfr_clear (n2);
+  mpfr_clear (y2);
+  if (y == x)
+    mpfr_clear (x2);
+  return inexact1;
+}
+
+static int
+pow_si2 (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd)
+{
+  mpfr_t x2, y2, n2;
+  mpfr_flags_t old_flags, flags1, flags2;
+  int inexact1, inexact2;
+
+  if (rnd == MPFR_RNDF)
+    return mpfr_pow_si (y, x, n, rnd);
+
+  old_flags = __gmpfr_flags;
+
+  if (y == x)
+    mpfr_init2 (x2, MPFR_GET_PREC (x));
+  mpfr_init2 (y2, MPFR_GET_PREC (y));
+
+  mpfr_init2 (n2, sizeof (long) * CHAR_BIT);
+  inexact2 = mpfr_set_si (n2, n, MPFR_RNDN);
+  MPFR_ASSERTN (inexact2 == 0);
+
+  __gmpfr_flags = old_flags;
+  inexact2 = mpfr_pow (y2, x, n2, rnd);
+  flags2 = __gmpfr_flags;
+
+  __gmpfr_flags = old_flags;
+  inexact1 = mpfr_pow_si (y, x, n, rnd);
+  flags1 = __gmpfr_flags;
+
+  /* Convert the ternary values to (-1,0,1). */
+  inexact2 = VSIGN (inexact2);
+  inexact1 = VSIGN (inexact1);
+
+  if (! ((MPFR_IS_NAN (y) && MPFR_IS_NAN (y2)) || mpfr_equal_p (y, y2)) ||
+      inexact1 != inexact2 || flags1 != flags2)
+    {
+      printf ("mpfr_pow and mpfr_pow_si return different results.\n");
+      printf ("x = ");
+      mpfr_dump (y == x ? x2 : x);
+      printf ("y = ");
+      mpfr_dump (y);
+      printf ("with inexact1 = %d and flags1 =", inexact1);
+      flags_out (flags1);
+      printf ("y2 = ");
+      mpfr_dump (y2);
+      printf ("with inexact2 = %d and flags2 =", inexact2);
+      flags_out (flags2);
+      exit (1);
+    }
+
+  mpfr_clear (n2);
+  mpfr_clear (y2);
+  if (y == x)
+    mpfr_clear (x2);
+  return inexact1;
+}
+
 #define TEST_FUNCTION test_pow
 #define TWO_ARGS
 #define TEST_RANDOM_POS 16 /* the 2nd argument is negative with prob. 16/512 */
 #define TGENERIC_NOWARNING 1
 #include "tgeneric.c"
 
-#define TEST_FUNCTION mpfr_pow_ui
+#define TEST_FUNCTION pow_ui2
 #define INTEGER_TYPE  unsigned long
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
 #define INT_RAND_FUNCTION() \
   (randlimb () % 16 == 0 ? randulong () : (unsigned long) (randlimb () % 32))
 #include "tgeneric_ui.c"
 
-#define TEST_FUNCTION mpfr_pow_si
+#define TEST_FUNCTION pow_si2
 #define INTEGER_TYPE  long
 #define RAND_FUNCTION(x) mpfr_random2(x, MPFR_LIMB_SIZE (x), 1, RANDS)
 #define INT_RAND_FUNCTION() \
@@ -73,11 +185,11 @@ test_pow (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
 #define DEFN(N)                                                         \
   static int powu##N (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)        \
-  { return mpfr_pow_ui (y, x, N, rnd); }                                \
+  { return pow_ui2 (y, x, N, rnd); }                                    \
   static int pows##N (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)        \
-  { return mpfr_pow_si (y, x, N, rnd); }                                \
+  { return pow_si2 (y, x, N, rnd); }                                    \
   static int powm##N (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)        \
-  { return mpfr_pow_si (y, x, -(N), rnd); }                             \
+  { return pow_si2 (y, x, -(N), rnd); }                                 \
   static int root##N (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)        \
   { return RAND_BOOL () ?                                               \
       mpfr_root (y, x, N, rnd) : mpfr_rootn_ui (y, x, N, rnd); }        \
@@ -89,6 +201,7 @@ DEFN(2)
 DEFN(3)
 DEFN(4)
 DEFN(5)
+DEFN(10)
 DEFN(17)
 DEFN(120)
 
@@ -114,10 +227,10 @@ check_pow_ui (void)
 
   /* check large exponents */
   mpfr_set_ui (b, 1, MPFR_RNDN);
-  mpfr_pow_ui (a, b, 4294967295UL, MPFR_RNDN);
+  pow_ui2 (a, b, 4294967295UL, MPFR_RNDN);
 
   mpfr_set_inf (a, -1);
-  mpfr_pow_ui (a, a, 4049053855UL, MPFR_RNDN);
+  pow_ui2 (a, a, 4049053855UL, MPFR_RNDN);
   if (!mpfr_inf_p (a) || (mpfr_sgn (a) >= 0))
     {
       printf ("Error for (-Inf)^4049053855\n");
@@ -125,7 +238,7 @@ check_pow_ui (void)
     }
 
   mpfr_set_inf (a, -1);
-  mpfr_pow_ui (a, a, (unsigned long) 30002752, MPFR_RNDN);
+  pow_ui2 (a, a, 30002752UL, MPFR_RNDN);
   if (!mpfr_inf_p (a) || (mpfr_sgn (a) <= 0))
     {
       printf ("Error for (-Inf)^30002752\n");
@@ -134,7 +247,7 @@ check_pow_ui (void)
 
   /* Check underflow */
   mpfr_set_str_binary (a, "1E-1");
-  res = mpfr_pow_ui (a, a, -mpfr_get_emin (), MPFR_RNDN);
+  res = pow_ui2 (a, a, -mpfr_get_emin (), MPFR_RNDN);
   if (MPFR_GET_EXP (a) != mpfr_get_emin () + 1)
     {
       printf ("Error for (1e-1)^MPFR_EMAX_MAX\n");
@@ -143,7 +256,7 @@ check_pow_ui (void)
     }
 
   mpfr_set_str_binary (a, "1E-10");
-  res = mpfr_pow_ui (a, a, -mpfr_get_emin (), MPFR_RNDZ);
+  res = pow_ui2 (a, a, -mpfr_get_emin (), MPFR_RNDZ);
   if (MPFR_NOTZERO (a))
     {
       printf ("Error for (1e-10)^MPFR_EMAX_MAX\n");
@@ -153,7 +266,7 @@ check_pow_ui (void)
 
   /* Check overflow */
   mpfr_set_str_binary (a, "1E10");
-  res = mpfr_pow_ui (a, a, ULONG_MAX, MPFR_RNDN);
+  res = pow_ui2 (a, a, ULONG_MAX, MPFR_RNDN);
   if (!MPFR_IS_INF (a) || MPFR_IS_NEG (a))
     {
       printf ("Error for (1e10)^ULONG_MAX\n");
@@ -166,7 +279,7 @@ check_pow_ui (void)
      gets a wrong sign (positive instead of negative). */
   mpfr_set_str_binary (a, "-1E10");
   n = (ULONG_MAX ^ (ULONG_MAX >> 1)) + 1;
-  res = mpfr_pow_ui (a, a, n, MPFR_RNDN);
+  res = pow_ui2 (a, a, n, MPFR_RNDN);
   if (!MPFR_IS_INF (a) || MPFR_IS_POS (a))
     {
       printf ("Error for (-1e10)^%lu, expected -Inf,\ngot ", n);
@@ -178,7 +291,7 @@ check_pow_ui (void)
   MPFR_SET_ZERO (a);
   MPFR_SET_POS (a);
   mpfr_set_si (b, -1, MPFR_RNDN);
-  res = mpfr_pow_ui (b, a, 1, MPFR_RNDN);
+  res = pow_ui2 (b, a, 1, MPFR_RNDN);
   if (res != 0 || MPFR_IS_NEG (b))
     {
       printf ("Error for (0+)^1\n");
@@ -187,7 +300,7 @@ check_pow_ui (void)
   MPFR_SET_ZERO (a);
   MPFR_SET_NEG (a);
   mpfr_set_ui (b, 1, MPFR_RNDN);
-  res = mpfr_pow_ui (b, a, 5, MPFR_RNDN);
+  res = pow_ui2 (b, a, 5, MPFR_RNDN);
   if (res != 0 || MPFR_IS_POS (b))
     {
       printf ("Error for (0-)^5\n");
@@ -196,7 +309,7 @@ check_pow_ui (void)
   MPFR_SET_ZERO (a);
   MPFR_SET_NEG (a);
   mpfr_set_si (b, -1, MPFR_RNDN);
-  res = mpfr_pow_ui (b, a, 6, MPFR_RNDN);
+  res = pow_ui2 (b, a, 6, MPFR_RNDN);
   if (res != 0 || MPFR_IS_NEG (b))
     {
       printf ("Error for (0-)^6\n");
@@ -207,7 +320,7 @@ check_pow_ui (void)
   mpfr_set_prec (b, 122);
   mpfr_set_str_binary (a, "0.10000010010000111101001110100101101010011110011100001111000001001101000110011001001001001011001011010110110110101000111011E1");
   mpfr_set_str_binary (b, "0.11111111100101001001000001000001100011100000001110111111100011111000111011100111111111110100011000111011000100100011001011E51290375");
-  mpfr_pow_ui (a, a, 2026876995UL, MPFR_RNDU);
+  pow_ui2 (a, a, 2026876995UL, MPFR_RNDU);
   if (mpfr_cmp (a, b) != 0)
     {
       printf ("Error for x^2026876995\n");
@@ -218,7 +331,7 @@ check_pow_ui (void)
   mpfr_set_prec (b, 29);
   mpfr_set_str_binary (a, "1.0000000000000000000000001111");
   mpfr_set_str_binary (b, "1.1001101111001100111001010111e165");
-  mpfr_pow_ui (a, a, 2055225053, MPFR_RNDZ);
+  pow_ui2 (a, a, 2055225053, MPFR_RNDZ);
   if (mpfr_cmp (a, b) != 0)
     {
       printf ("Error for x^2055225053\n");
@@ -235,10 +348,10 @@ check_pow_ui (void)
   mpfr_set_prec (b, 53);
   mpfr_set_str_binary (a, "1.0000010110000100001000101101101001011101101011010111");
   mpfr_set_str_binary (b, "1.0000110111101111011010110100001100010000001010110100E1");
-  mpfr_pow_ui (a, a, 35, MPFR_RNDN);
+  pow_ui2 (a, a, 35, MPFR_RNDN);
   if (mpfr_cmp (a, b) != 0)
     {
-      printf ("Error in mpfr_pow_ui for worst case (1)\n");
+      printf ("Error in pow_ui2 for worst case (1)\n");
       printf ("Expected ");
       mpfr_out_str (stdout, 2, 0, b, MPFR_RNDN);
       printf ("\nGot      ");
@@ -249,10 +362,10 @@ check_pow_ui (void)
   /* worst cases found on 2006-11-26 */
   mpfr_set_str_binary (a, "1.0110100111010001101001010111001110010100111111000011");
   mpfr_set_str_binary (b, "1.1111010011101110001111010110000101110000110110101100E17");
-  mpfr_pow_ui (a, a, 36, MPFR_RNDD);
+  pow_ui2 (a, a, 36, MPFR_RNDD);
   if (mpfr_cmp (a, b) != 0)
     {
-      printf ("Error in mpfr_pow_ui for worst case (2)\n");
+      printf ("Error in pow_ui2 for worst case (2)\n");
       printf ("Expected ");
       mpfr_out_str (stdout, 2, 0, b, MPFR_RNDN);
       printf ("\nGot      ");
@@ -262,10 +375,10 @@ check_pow_ui (void)
     }
   mpfr_set_str_binary (a, "1.1001010100001110000110111111100011011101110011000100");
   mpfr_set_str_binary (b, "1.1100011101101101100010110001000001110001111110010001E23");
-  mpfr_pow_ui (a, a, 36, MPFR_RNDU);
+  pow_ui2 (a, a, 36, MPFR_RNDU);
   if (mpfr_cmp (a, b) != 0)
     {
-      printf ("Error in mpfr_pow_ui for worst case (3)\n");
+      printf ("Error in pow_ui2 for worst case (3)\n");
       printf ("Expected ");
       mpfr_out_str (stdout, 2, 0, b, MPFR_RNDN);
       printf ("\nGot      ");
@@ -286,37 +399,37 @@ check_pow_si (void)
   mpfr_init (x);
 
   mpfr_set_nan (x);
-  mpfr_pow_si (x, x, -1, MPFR_RNDN);
+  pow_si2 (x, x, -1, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_nan_p (x));
 
   mpfr_set_inf (x, 1);
-  mpfr_pow_si (x, x, -1, MPFR_RNDN);
+  pow_si2 (x, x, -1, MPFR_RNDN);
   MPFR_ASSERTN(MPFR_IS_ZERO (x) && MPFR_IS_POS (x));
 
   mpfr_set_inf (x, -1);
-  mpfr_pow_si (x, x, -1, MPFR_RNDN);
+  pow_si2 (x, x, -1, MPFR_RNDN);
   MPFR_ASSERTN(MPFR_IS_ZERO (x) && MPFR_IS_NEG (x));
 
   mpfr_set_inf (x, -1);
-  mpfr_pow_si (x, x, -2, MPFR_RNDN);
+  pow_si2 (x, x, -2, MPFR_RNDN);
   MPFR_ASSERTN(MPFR_IS_ZERO (x) && MPFR_IS_POS (x));
 
   mpfr_set_ui (x, 0, MPFR_RNDN);
-  mpfr_pow_si (x, x, -1, MPFR_RNDN);
+  pow_si2 (x, x, -1, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
 
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_neg (x, x, MPFR_RNDN);
-  mpfr_pow_si (x, x, -1, MPFR_RNDN);
+  pow_si2 (x, x, -1, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) < 0);
 
   mpfr_set_ui (x, 0, MPFR_RNDN);
   mpfr_neg (x, x, MPFR_RNDN);
-  mpfr_pow_si (x, x, -2, MPFR_RNDN);
+  pow_si2 (x, x, -2, MPFR_RNDN);
   MPFR_ASSERTN(mpfr_inf_p (x) && mpfr_sgn (x) > 0);
 
   mpfr_set_si (x, 2, MPFR_RNDN);
-  mpfr_pow_si (x, x, LONG_MAX, MPFR_RNDN);  /* 2^LONG_MAX */
+  pow_si2 (x, x, LONG_MAX, MPFR_RNDN);  /* 2^LONG_MAX */
   if (LONG_MAX > mpfr_get_emax () - 1)  /* LONG_MAX + 1 > emax */
     {
       MPFR_ASSERTN (mpfr_inf_p (x));
@@ -327,7 +440,7 @@ check_pow_si (void)
     }
 
   mpfr_set_si (x, 2, MPFR_RNDN);
-  mpfr_pow_si (x, x, LONG_MIN, MPFR_RNDN);  /* 2^LONG_MIN */
+  pow_si2 (x, x, LONG_MIN, MPFR_RNDN);  /* 2^LONG_MIN */
   if (LONG_MIN + 1 < mpfr_get_emin ())
     {
       MPFR_ASSERTN (mpfr_zero_p (x));
@@ -338,7 +451,7 @@ check_pow_si (void)
     }
 
   mpfr_set_si (x, 2, MPFR_RNDN);
-  mpfr_pow_si (x, x, LONG_MIN + 1, MPFR_RNDN);  /* 2^(LONG_MIN+1) */
+  pow_si2 (x, x, LONG_MIN + 1, MPFR_RNDN);  /* 2^(LONG_MIN+1) */
   if (mpfr_nan_p (x))
     {
       printf ("Error in pow_si(2, LONG_MIN+1): got NaN\n");
@@ -354,7 +467,7 @@ check_pow_si (void)
     }
 
   mpfr_set_si_2exp (x, 1, -1, MPFR_RNDN);  /* 0.5 */
-  mpfr_pow_si (x, x, LONG_MIN, MPFR_RNDN);  /* 2^(-LONG_MIN) */
+  pow_si2 (x, x, LONG_MIN, MPFR_RNDN);  /* 2^(-LONG_MIN) */
   if (LONG_MIN < 1 - mpfr_get_emax ())  /* 1 - LONG_MIN > emax */
     {
       MPFR_ASSERTN (mpfr_inf_p (x));
@@ -495,7 +608,7 @@ check_special_pow_si (void)
   emin = mpfr_get_emin ();
   set_emin (-10);
   mpfr_set_si (a, -2, MPFR_RNDN);
-  mpfr_pow_si (b, a, -10000, MPFR_RNDN);
+  pow_si2 (b, a, -10000, MPFR_RNDN);
   if (MPFR_NOTZERO (b))
     {
       printf ("Pow_so (1, -10000) doesn't underflow if emin=-10.\n");
@@ -527,7 +640,7 @@ pow_si_long_min (void)
   mpfr_nextabove (z);
   mpfr_pow (z, x, z, MPFR_RNDU);
 
-  mpfr_pow_si (x, x, LONG_MIN, MPFR_RNDN);  /* 1.5^LONG_MIN */
+  pow_si2 (x, x, LONG_MIN, MPFR_RNDN);  /* 1.5^LONG_MIN */
   if (mpfr_cmp (x, y) < 0 || mpfr_cmp (x, z) > 0)
     {
       printf ("Error in pow_si_long_min\n");
@@ -558,8 +671,8 @@ check_inexact (mpfr_prec_t p)
         mpfr_set_prec (y, q);
         mpfr_set_prec (z, q + 10);
         mpfr_set_prec (t, q);
-        inexact = mpfr_pow_ui (y, x, u, (mpfr_rnd_t) rnd);
-        cmp = mpfr_pow_ui (z, x, u, (mpfr_rnd_t) rnd);
+        inexact = pow_ui2 (y, x, u, (mpfr_rnd_t) rnd);
+        cmp = pow_ui2 (z, x, u, (mpfr_rnd_t) rnd);
         /* Note: that test makes no sense for RNDF, since according to the
            reference manual, if the mpfr_can_round() call succeeds, one would
            have to use RNDN in the mpfr_set() call below, which might give a
@@ -618,7 +731,7 @@ special (void)
   mpfr_init2 (t, 2);
 
   mpfr_set_ui (x, 2, MPFR_RNDN);
-  mpfr_pow_si (x, x, -2, MPFR_RNDN);
+  pow_si2 (x, x, -2, MPFR_RNDN);
   if (mpfr_cmp_ui_2exp (x, 1, -2))
     {
       printf ("Error in pow_si(x,x,-2) for x=2\n");
@@ -955,10 +1068,10 @@ particular_cases (void)
                 mpfr_dump (r);
                 error = 1;
               }
-            /* mpfr_pow_si */
+            /* pow_si2 */
             mpfr_clear_flags ();
             si = mpfr_get_si (t[j], MPFR_RNDN);
-            mpfr_pow_si (r, t[i], si, MPFR_RNDN);
+            pow_si2 (r, t[i], si, MPFR_RNDN);
             p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
               mpfr_zero_p (r) ? 2 :
               (d = mpfr_get_d (r, MPFR_RNDN), (int) (ABS(d) * 128.0));
@@ -966,7 +1079,7 @@ particular_cases (void)
               p = -p;
             if (p != q[i][j])
               {
-                printf ("Error in mpfr_pow_si for (%s)^(%s) (%d,%d):\n"
+                printf ("Error in pow_si2 for (%s)^(%s) (%d,%d):\n"
                         "got %d instead of %d\n",
                         name[i], name[j], i, j, p, q[i][j]);
                 mpfr_dump (r);
@@ -974,18 +1087,18 @@ particular_cases (void)
               }
             if (__gmpfr_flags != f[i][j])
               {
-                printf ("Error in mpfr_pow_si for (%s)^(%s) (%d,%d):\n"
+                printf ("Error in pow_si2 for (%s)^(%s) (%d,%d):\n"
                         "Flags = %u instead of expected %u\n",
                         name[i], name[j], i, j,
                         (unsigned int) __gmpfr_flags, f[i][j]);
                 mpfr_dump (r);
                 error = 1;
               }
-            /* if si >= 0, test mpfr_pow_ui */
+            /* if si >= 0, test pow_ui2 */
             if (si >= 0)
               {
                 mpfr_clear_flags ();
-                mpfr_pow_ui (r, t[i], si, MPFR_RNDN);
+                pow_ui2 (r, t[i], si, MPFR_RNDN);
                 p = mpfr_nan_p (r) ? 0 : mpfr_inf_p (r) ? 1 :
                   mpfr_zero_p (r) ? 2 :
                   (d = mpfr_get_d (r, MPFR_RNDN), (int) (ABS(d) * 128.0));
@@ -993,7 +1106,7 @@ particular_cases (void)
                   p = -p;
                 if (p != q[i][j])
                   {
-                    printf ("Error in mpfr_pow_ui for (%s)^(%s) (%d,%d):\n"
+                    printf ("Error in pow_ui2 for (%s)^(%s) (%d,%d):\n"
                             "got %d instead of %d\n",
                             name[i], name[j], i, j, p, q[i][j]);
                     mpfr_dump (r);
@@ -1001,7 +1114,7 @@ particular_cases (void)
                   }
                 if (__gmpfr_flags != f[i][j])
                   {
-                    printf ("Error in mpfr_pow_ui for (%s)^(%s) (%d,%d):\n"
+                    printf ("Error in pow_ui2 for (%s)^(%s) (%d,%d):\n"
                             "Flags = %u instead of expected %u\n",
                             name[i], name[j], i, j,
                             (unsigned int) __gmpfr_flags, f[i][j]);
@@ -1940,6 +2053,12 @@ main (int argc, char **argv)
              256, -256, 255, 4, 128, 800, 40);
   bad_cases (powm5, rootm5, "mpfr_pow_si[-5]",
              256, -256, 255, 4, 128, 800, 40);
+  bad_cases (powu10, root10, "mpfr_pow_ui[10]",
+             8, -256, 255, 4, 128, 800, 40);
+  bad_cases (pows10, root10, "mpfr_pow_si[10]",
+             8, -256, 255, 4, 128, 800, 40);
+  bad_cases (powm10, rootm10, "mpfr_pow_si[-10]",
+             8, -256, 255, 4, 128, 800, 40);
   bad_cases (powu17, root17, "mpfr_pow_ui[17]",
              256, -256, 255, 4, 128, 800, 40);
   bad_cases (pows17, root17, "mpfr_pow_si[17]",
@@ -1971,6 +2090,9 @@ main (int argc, char **argv)
   ofuf_thresholds (pows5, root5, "mpfr_pow_si[5]", 128, 128, 0, NEGOF);
   ofuf_thresholds (powm5, rootm5, "mpfr_pow_si[-5]", 128, 128, 1, POSOF);
   ofuf_thresholds (powm5, rootm5, "mpfr_pow_si[-5]", 128, 128, 1, NEGOF);
+  ofuf_thresholds (powu10, root10, "mpfr_pow_ui[10]", 128, 128, 0, POSOF);
+  ofuf_thresholds (pows10, root10, "mpfr_pow_si[10]", 128, 128, 0, POSOF);
+  ofuf_thresholds (powm10, rootm10, "mpfr_pow_si[-10]", 128, 128, 1, POSOF);
   ofuf_thresholds (powu17, root17, "mpfr_pow_ui[17]", 128, 128, 0, POSOF);
   ofuf_thresholds (powu17, root17, "mpfr_pow_ui[17]", 128, 128, 0, NEGOF);
   ofuf_thresholds (pows17, root17, "mpfr_pow_si[17]", 128, 128, 0, POSOF);
