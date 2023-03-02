@@ -66,7 +66,7 @@ pow_ui2 (mpfr_ptr y, mpfr_srcptr x, unsigned long n, mpfr_rnd_t rnd)
     mpfr_init2 (x2, MPFR_GET_PREC (x));
   mpfr_init2 (y2, MPFR_GET_PREC (y));
 
-  mpfr_init2 (n2, sizeof (unsigned long) * CHAR_BIT);
+  mpfr_init2 (n2, sizeof (n) * CHAR_BIT);
   inexact2 = mpfr_set_ui (n2, n, MPFR_RNDN);
   MPFR_ASSERTN (inexact2 == 0);
 
@@ -122,7 +122,7 @@ pow_si2 (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd)
     mpfr_init2 (x2, MPFR_GET_PREC (x));
   mpfr_init2 (y2, MPFR_GET_PREC (y));
 
-  mpfr_init2 (n2, sizeof (long) * CHAR_BIT);
+  mpfr_init2 (n2, sizeof (n) * CHAR_BIT);
   inexact2 = mpfr_set_si (n2, n, MPFR_RNDN);
   MPFR_ASSERTN (inexact2 == 0);
 
