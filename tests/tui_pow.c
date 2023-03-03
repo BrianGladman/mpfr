@@ -23,7 +23,10 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 /* TODO: add bad_cases and ofuf_thresholds tests, but the inverse function
-   (log in base b) needs to be implemented. */
+   (log in base b) needs to be implemented.
+   But some tests of mpfr_ui_pow are already done with texp10 due to the
+   implementation of mpfr_exp10 via mpfr_ui_pow and the availability of
+   the mpfr_log10 function. */
 
 static void
 test1 (void)
