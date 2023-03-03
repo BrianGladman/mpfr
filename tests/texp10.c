@@ -22,6 +22,11 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-test.h"
 
+/* Note: The implementation of mpfr_exp10 via mpfr_ui_pow allows one
+   to test mpfr_ui_pow with these texp10 tests. If the implementation
+   of mpfr_exp10 changes, a comparison with mpfr_ui_pow results will
+   need to be done in these tests. */
+
 #define TEST_FUNCTION mpfr_exp10
 #define TEST_RANDOM_EMIN -36
 #define TEST_RANDOM_EMAX 36
