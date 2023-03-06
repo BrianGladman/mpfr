@@ -1058,8 +1058,8 @@ main (int argc, char *argv[])
 
   data_check ("data/exp", mpfr_exp, "mpfr_exp");
   bad_cases (mpfr_exp, mpfr_log, "mpfr_exp", 0, -256, 255, 4, 128, 800, 50);
-  ofuf_thresholds (mpfr_exp, mpfr_log, "mpfr_exp", 128, 128, 0, POSOF);
-  ofuf_thresholds (mpfr_exp, mpfr_log, "mpfr_exp", 128, 128, 0, POSUF);
+  ofuf_thresholds (mpfr_exp, mpfr_log, "mpfr_exp", 999, 999, 0, POSOF);
+  ofuf_thresholds (mpfr_exp, mpfr_log, "mpfr_exp", 999, 999, 0, POSUF);
 
   tests_end_mpfr ();
   return 0;
