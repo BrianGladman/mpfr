@@ -1195,9 +1195,17 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
 }
 
 /* Check the behavior around the overflow/underflow thresholds by using
-   the inverse function.
+   the inverse function (argument inv).
+   Argument name is the name of the tested function (for messages).
+   Arguments pxmax and pymax are the maximum precisions for x and y
+   when considering y = fct(x) or x = inv(y); see the loops. They are
+   overridden by the MPFR_TESTS_OFUF_PMAX environment variable, when
+   it is defined.
    If the function is locally increasing, use decr = 0.
    If the function is locally decreasing, use decr = 1.
+   Argument threshold is the threshold type: positive or negative,
+   overflow or underflow (see the beginning of the code). Macros are
+   defined in mpfr-test.h: POSOF, POSUF, NEGOF, NEGUF.
    Note: Unfortunately, there are some interesting arguments for the
    inverse function that are outside the extended exponent range,
    e.g. 2^(emax+1) and 2^(emin-1). Thus the current test is limited
@@ -1221,7 +1229,7 @@ ofuf_thresholds (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
                  mpfr_prec_t pxmax, mpfr_prec_t pymax,
                  int decr, unsigned int threshold)
 {
-  char *dbgenv;
+  char *dbgenv, *pmaxenv;
   mpfr_exp_t old_emin, old_emax;
   mpfr_prec_t px, py;
   mpfr_t t;
@@ -1243,6 +1251,10 @@ ofuf_thresholds (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
   if (dbg)
     printf ("ofuf_thresholds: %s with %s %s\n", name,
             neg ? "negative" : "positive", ufl ? "underflow" : "overflow");
+
+  pmaxenv = getenv ("MPFR_TESTS_OFUF_PMAX");
+  if (pmaxenv != 0)
+    pxmax = pymax = atoi (pmaxenv);
 
   /* Extend the exponent range to the maximum since this is what is
      generally done in the implementation.

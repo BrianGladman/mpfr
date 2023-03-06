@@ -672,6 +672,9 @@ Environment variables that affect the tests:
 + MPFR_TESTS_TIMEOUT:   When timeout in the tests is enabled, this
                         overrides the value of the macro.
 
++ MPFR_TESTS_OFUF_PMAX: Maximum precision for both x and y in the
+                        ofuf_thresholds tests (see tests.c).
+
 + MPFR_TGENERIC_STAT:   For the generic tests, output the number of normal
                         cases and the total.
 

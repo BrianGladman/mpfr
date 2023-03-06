@@ -184,6 +184,7 @@ extern "C" {
 
 #define FLIST mpfr_ptr, mpfr_srcptr, mpfr_rnd_t
 
+/* For ofuf_thresholds in tests.c (argument threshold) */
 #define POSOF (0+0)
 #define POSUF (0+1)
 #define NEGOF (2+0)
