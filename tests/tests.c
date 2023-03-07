@@ -1223,6 +1223,21 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
         in the testsuite (they will be significant only on 32-bit hosts,
         but bug fixes could benefit all hosts).
      3. Determine the expected results manually, with maths.
+   TODO: It could be a good idea to introduce some randomness in the tested
+   precisions, since in case of a small mistake in the error analysis of
+   the functions, it is possible that the test succeeds most of the time
+   and fails in some cases. But first, a study needs to be done on the pow
+   bug fixed on 2023-03-02, in order to make sure to do the right thing;
+   this is a good example, as with *all* precisions from 1 to 128, a
+   failure occurs only for (xprec,yprec) = (127,50), (128,47), (128,50)
+   [positive overflow] and (63,1) [positive underflow], i.e. about 0.01%
+   of the cases.
+   Well, (63,1) [positive underflow] is still failing with the current
+   MPFR code (to be checked where the issue comes from, as adding 256 to
+   the initial precision in mpfr_pow_general does not make the failure
+   disappear). Hardcoded tests for the old bug and this one would still
+   be useful as non-regression tests, but randomness will be needed
+   anyway.
 */
 void
 ofuf_thresholds (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
