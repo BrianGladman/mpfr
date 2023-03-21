@@ -1000,6 +1000,11 @@ floor_log10 (mpfr_srcptr x)
 
 #define NDIGITS 8
 
+/* If output is needed (spec.size != 0), this is mpfr_get_str.
+   Otherwise...
+   TODO: Explain the meaning of the returned string. What is it used for?
+   How will the trailing zeros be detected/handled for %Rg?
+*/
 MPFR_RETURNS_NONNULL static char *
 mpfr_get_str_wrapper (mpfr_exp_t *exp, int base, size_t n, mpfr_srcptr op,
                       const struct printf_spec spec)
@@ -1016,7 +1021,8 @@ mpfr_get_str_wrapper (mpfr_exp_t *exp, int base, size_t n, mpfr_srcptr op,
 
   /* Special case size = 0, i.e., xxx_snprintf with size = 0: we only want
      to compute the number of printed characters. Try to deduce it from
-     a small number of significant digits. */
+     a small number of significant digits, and increase the number of
+     digits until this is possible. */
   nine = base == 2 ? '1' : base == 10 ? '9' : 'f';
   for (ndigits = NDIGITS; ; ndigits *= 2)
     {
