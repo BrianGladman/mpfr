@@ -216,7 +216,8 @@ struct printf_spec
 
   mpfr_intmax_t width;          /* Width */
   mpfr_intmax_t prec;           /* Precision, or negative if omitted */
-  size_t size;                  /* Wanted size (0 iff snprintf with size=0) */
+  size_t size;                  /* If 0 (i.e. snprintf with size = 0),
+                                   no output. */
 
   enum arg_t arg_type;          /* Type of argument */
   mpfr_rnd_t rnd_mode;          /* Rounding mode */
@@ -235,7 +236,7 @@ specinfo_init (struct printf_spec *specinfo)
   specinfo->group = 0;
   specinfo->width = 0;
   specinfo->prec = 0;
-  specinfo->size = 1;
+  specinfo->size = 1;  /* by default, assume that there is output */
   specinfo->arg_type = NONE;
   specinfo->rnd_mode = MPFR_RNDN;
   specinfo->spec = '\0';
@@ -2014,7 +2015,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
    Return -1 if the built string is too long (i.e. has more than
    INT_MAX or MPFR_INTMAX_MAX characters).
 
-   If spec.size is 0, we only want the size of the string.
+   If spec.size is 0, we only want the number of characters (no output).
 */
 static int
 sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
@@ -2137,9 +2138,9 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
   MPFR_SAVE_EXPO_DECL (expo);
   MPFR_SAVE_EXPO_MARK (expo);
 
-  /* FIXME: Once buf.len >= size, switch to size = 0 for efficiency and
-     avoid potential DoS? i.e. we no longer need to generate the strings
-     (potentially huge), just compute the lengths. */
+  /* FIXME: For ptr = NULL, once buf.len >= size, switch to size = 0 for
+     efficiency and avoid potential DoS? i.e. we no longer need to generate
+     the strings (potentially huge), just compute the lengths. */
 
   buffer_init (&buf, ptr != NULL || size != 0 ? 4096 : 0);
   xgmp_fmt_flag = 0;
@@ -2441,7 +2442,7 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
             }
 
           if (ptr == NULL)
-            spec.size = size;
+            spec.size = size;  /* note: will be seen as a boolean */
           sprnt_fp (&buf, p, spec);
         }
       else
