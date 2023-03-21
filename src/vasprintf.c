@@ -210,9 +210,9 @@ enum arg_t
     UNSUPPORTED
   };
 
-/* Each conversion specification of the format string will be translated in a
-   printf_spec structure by the parser.
-   This structure is adapted from the GNU libc one. */
+/* Each conversion specification of the format string will be translated
+   into a printf_spec structure by the parser.
+   This structure is adapted from the GNU libc one (and augmented). */
 struct printf_spec
 {
   unsigned int alt:1;           /* # flag */
@@ -223,7 +223,7 @@ struct printf_spec
 
   mpfr_intmax_t width;          /* Width */
   mpfr_intmax_t prec;           /* Precision, or negative if omitted */
-  size_t size;                  /* If 0 (i.e. snprintf with size = 0),
+  int size;                     /* If 0 (i.e. snprintf with size = 0),
                                    no output. */
 
   enum arg_t arg_type;          /* Type of argument */
@@ -232,23 +232,6 @@ struct printf_spec
 
   char pad;                     /* Padding character */
 };
-
-static void
-specinfo_init (struct printf_spec *specinfo)
-{
-  specinfo->alt = 0;
-  specinfo->space = 0;
-  specinfo->left = 0;
-  specinfo->showsign = 0;
-  specinfo->group = 0;
-  specinfo->width = 0;
-  specinfo->prec = 0;
-  specinfo->size = 1;  /* by default, assume that there is output */
-  specinfo->arg_type = NONE;
-  specinfo->rnd_mode = MPFR_RNDN;
-  specinfo->spec = '\0';
-  specinfo->pad = ' ';
-}
 
 /* Note: LONG_ARG is unusual, but is accepted (ISO C99 says "as no effect
    on a following a, A, e, E, f, F, g, or G conversion specifier"). */
@@ -2155,7 +2138,8 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
      efficiency and avoid potential DoS? i.e. we no longer need to generate
      the strings (potentially huge), just compute the lengths. */
 
-  buffer_init (&buf, ptr != NULL || size != 0 ? 4096 : 0);
+  spec.size = ptr != NULL || size != 0;  /* true iff do output */
+  buffer_init (&buf, spec.size ? 4096 : 0);
   xgmp_fmt_flag = 0;
   va_copy (ap2, ap);
   start = fmt;
@@ -2182,8 +2166,20 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
 
       end = fmt - 1;
 
+      /* Initialize spec (of type struct printf_spec). */
+      spec.alt = 0;
+      spec.space = 0;
+      spec.left = 0;
+      spec.showsign = 0;
+      spec.group = 0;
+      spec.width = 0;
+      spec.prec = 0;
+      spec.arg_type = NONE;
+      spec.rnd_mode = MPFR_RNDN;
+      spec.spec = '\0';
+      spec.pad = ' ';
+
       /* format string analysis */
-      specinfo_init (&spec);
       fmt = parse_flags (fmt, &spec);
 
       READ_INT (ap, fmt, spec.width);
@@ -2454,8 +2450,6 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
               goto error;
             }
 
-          if (ptr == NULL)
-            spec.size = size;  /* note: will be seen as a boolean */
           sprnt_fp (&buf, p, spec);
         }
       else
