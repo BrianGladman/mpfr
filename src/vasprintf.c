@@ -49,11 +49,12 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    but the requirement is the same). Here, MPFR just follows ISO C.
 */
 
-/* FIXME: The gmp_asprintf and gmp_vasprintf functions are currently
-   used, thus a full output is generated before being truncated in
-   case of mpfr_snprintf(). This is potentially very inefficient and
-   could unnecessarily exhaust the memory and/or crash.
+/* FIXME: For the native types, the gmp_asprintf and gmp_vasprintf functions
+   are currently used, thus a full output is generated before being truncated
+   in case of mpfr_snprintf(). This is potentially very inefficient and could
+   unnecessarily exhaust the memory and/or crash.
    (Not tested yet.)
+
    A solution could be the use of gmp_snprintf / gmp_vsnprintf, but
    note that as a consequence, the case n > buffer size might not be
    supported everywhere. This would affect the snprintf_size() test
@@ -61,6 +62,12 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
      https://sourceware.org/pipermail/libc-alpha/2023-March/146343.html
    and about MPFR:
      https://sourceware.org/pipermail/libc-alpha/2023-March/146515.html
+
+   This should be better, though the implementation of the standard
+   formatted output functions may be inefficient, but this would be
+   the best we can do. For instance, for the GNU C Library (glibc):
+     https://sourceware.org/bugzilla/show_bug.cgi?id=17829
+     https://sourceware.org/bugzilla/show_bug.cgi?id=21127
 */
 
 /* Needed due to the tests on HAVE_STDARG and MPFR_USE_MINI_GMP */
