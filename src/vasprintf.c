@@ -686,38 +686,38 @@ buffer_cat (struct string_buffer *b, const char *s, size_t len)
   return 0;
 }
 
-/* Add n characters c to the end of buffer b. Return non-zero if overflow. */
+/* Add n characters c to the end of buffer b. Return non-zero if overflow.
+   Note: this function is called only when there is output (b->size != 0),
+   since it is needed only by sprnt_fp(). */
 static int
 buffer_pad (struct string_buffer *b, const char c, const mpfr_intmax_t n)
 {
+  MPFR_ASSERTD (b->size != 0);
   MPFR_ASSERTD (n > 0);
 
   if (buffer_incr_len (b, n))
     return 1;
 
-  if (b->size != 0)
+  MPFR_ASSERTD (*b->curr == '\0');
+
+  if (n > (size_t) -1 || b->size > ((size_t) -1) - n)
     {
-      MPFR_ASSERTD (*b->curr == '\0');
-
-      if (n > (size_t) -1 || b->size > ((size_t) -1) - n)
-        {
-          /* Reallocation will not be possible. Regard this as an overflow. */
-          b->len = -1;
-          return 1;
-        }
-
-      if (MPFR_UNLIKELY (b->curr + n >= b->start + b->size))
-        buffer_widen (b, n);
-
-      if (n == 1)
-        *b->curr = c;
-      else
-        memset (b->curr, c, n);
-      b->curr += n;
-      *b->curr = '\0';
-
-      MPFR_ASSERTD (b->curr < b->start + b->size);
+      /* Reallocation will not be possible. Regard this as an overflow. */
+      b->len = -1;
+      return 1;
     }
+
+  if (MPFR_UNLIKELY (b->curr + n >= b->start + b->size))
+    buffer_widen (b, n);
+
+  if (n == 1)
+    *b->curr = c;
+  else
+    memset (b->curr, c, n);
+  b->curr += n;
+  *b->curr = '\0';
+
+  MPFR_ASSERTD (b->curr < b->start + b->size);
 
   return 0;
 }
@@ -725,7 +725,9 @@ buffer_pad (struct string_buffer *b, const char c, const mpfr_intmax_t n)
 /* Form a string by concatenating the first len characters of str to tz
    zero(s), insert into one character c each 3 characters starting from end
    to beginning and concatenate the result to the buffer b.
-   Assume c is not null (\0). Return non-zero if overflow. */
+   Assume c is not null (\0). Return non-zero if overflow.
+   Note: this function is called only when there is output (b->size != 0),
+   since it is needed only by sprnt_fp(). */
 static int
 buffer_sandwich (struct string_buffer *b, char *str, size_t len,
                  const size_t tz, const char c)
@@ -2044,10 +2046,10 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
       return -1;
     }
 
-  if (spec.size == 0)
+  if (spec.size == 0)  /* no output */
     {
-      /* This is equivalent to the following code (no need to fill the buffer
-         and length is known). */
+      /* This is equivalent to the code below this "if" (since there is
+         no need to fill the buffer and length is already  known). */
       buffer_incr_len (buf, length);
       goto clear_and_exit;
     }
