@@ -1626,6 +1626,27 @@ check_length_overflow (void)
   mpfr_clear (x);
 }
 
+/* On 2023-03-22, on a 64-bit Linux machine (thus with 32-bit int),
+   the case %.2147483648Rg yields an incorrect size computation and
+   MPFR wants to allocate 18446744071562070545 bytes. This case should
+   either succeed or fail as reaching an environmental limit like with
+   glibc (note that the precision does not fit in an int).
+*/
+static void
+large_prec_for_g (void)
+{
+  mpfr_t x;
+  int r;
+
+  mpfr_init2 (x, 128);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  r = mpfr_snprintf (NULL, 0, "%.2147483647Rg\n", x);
+  MPFR_ASSERTN (r == 2);
+  r = mpfr_snprintf (NULL, 0, "%.2147483648Rg\n", x);
+  MPFR_ASSERTN (r == 2 || r < 0);
+  mpfr_clear (x);
+}
+
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
 
 /* The following tests should be equivalent to those from test_locale()
@@ -1797,6 +1818,7 @@ main (int argc, char **argv)
   percent_n ();
   mixed ();
   check_length_overflow ();
+  large_prec_for_g ();
   test_locale ();
 
   if (getenv ("MPFR_CHECK_LIBC_PRINTF"))
