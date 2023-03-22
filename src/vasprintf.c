@@ -992,8 +992,9 @@ floor_log10 (mpfr_srcptr x)
 
 /* If output is needed (spec.size != 0), this is mpfr_get_str.
    Otherwise...
-   TODO: Explain the meaning of the returned string. What is it used for?
-   How will the trailing zeros be detected/handled for %Rg?
+   TODO: Explain the meaning of the returned string. Is it really used?
+   Note that this wrapper is not used for %Rg, since trailing zeros may
+   need to be removed.
 */
 MPFR_RETURNS_NONNULL static char *
 mpfr_get_str_wrapper (mpfr_exp_t *exp, int base, size_t n, mpfr_srcptr op,
@@ -1925,7 +1926,17 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
              weight 2^(-k). If k <= 0, then p is an integer, otherwise
              the fractional part in base 10 may have up to k digits
              (this bound is reached if the last bit is 1).
-             Note: The bound could be improved, but this is not critical. */
+             Note: The bound could be improved, but this is not critical.
+             Note also that even when there is no output, this may take much
+             memory when both the exponent magnitude and the format precision
+             are huge. The exponent of the most significant decimal digit
+             can be obtained with mpfr_get_str_wrapper, and the exponent of
+             the least significant decimal digit can easily be computed in
+             at most linear space, but this allows one to deduce the number
+             of decimal digits of the rounded value only if the requested
+             format precision is at least as large as the number of decimal
+             digits of the exact value. The code could be improved in this
+             case, though. */
           e = MPFR_GET_EXP (p);
           k = MPFR_PREC (p) - e;
           e = e <= 0 ? k : (e + 2) / 3 + (k <= 0 ? 0 : k);
