@@ -1020,9 +1020,14 @@ mpfr_get_str_wrapper (mpfr_exp_t *exp, int base, size_t n, mpfr_srcptr op,
   for (ndigits = NDIGITS; ; ndigits *= 2)
     {
       mpfr_rnd_t rnd = MPFR_RNDZ;
-      /* when ndigits > n, we reduce it to the target size n, and then we use
+      /* When ndigits > n, we reduce it to the target size n, and then we use
          the wanted rounding mode, to avoid errors for example when n=1 and
-         x = 9.5 with spec.rnd_mode = RNDU */
+         x = 9.5 with spec.rnd_mode = RNDU.
+         WARNING! If n == 0, then it is important that ndigits is set to 0
+         too, so that the correct number of characters is generated. Indeed,
+         if n == 0, the number of characters is determined by this function;
+         and it is important that it is correct, since the value returned by
+         mpfr_*snprintf (NULL, 0, "%Re", ...) will be based on it. */
       if (ndigits >= n)
         {
           ndigits = n;
@@ -1290,8 +1295,9 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
 
 /* Determine the different parts of the string representation of the regular
    number P when spec.spec is 'e', 'E', 'g', or 'G'.
-   dec_info contains the previously computed exponent and string or is
-   a null pointer.
+   For 'e' / 'E', dec_info is a null pointer and trailing zeros will be kept.
+   For 'g' / 'G', dec_info contains the previously computed exponent and
+   string. Note that if trailing zeros are not kept, we need the full string.
 
    Return -1 in case of overflow on the sizes. */
 static int
@@ -1315,6 +1321,10 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
   if (dec_info == NULL)
     {
       size_t nsd;
+
+      /* We will keep the trailing zeros. Thus we can use
+         mpfr_get_str_wrapper below. */
+      MPFR_ASSERTD (keep_trailing_zeros);
 
       /* Number of significant digits:
          - if no given precision, then let mpfr_get_str determine it,
@@ -1365,8 +1375,22 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
       if (str_len != 0)
         /* there are some non-zero digits in fractional part */
         {
+          /* WARNING! Due to mpfr_get_str_wrapper, str_len may be smaller
+             than the expected value. However, the code is correct because:
+             * If keep_trailing_zeros is false, then mpfr_get_str_wrapper
+               is not used.
+             * If spec.prec <= 0, then spec.prec < 0 (see "if" above), and
+               in this case, mpfr_get_str_wrapper was called with n == 0
+               and str_len has the expected value.
+             * If str_len >= spec.prec, then str_len == spec.prec, which is
+               the expected value.
+             * Otherwise the "if" condition below is true and one will have
+               np->fp_size + np->fp_trailing_zeros == spec.prec, which is
+               the expected value (both terms of the sum may be incorrect,
+               but only the sum will matter). */
           np->fp_ptr = str;
           np->fp_size = str_len;
+          MPFR_ASSERTD (str_len <= spec.prec);
           /* Warning! str_len has type size_t, which is unsigned. */
           if (keep_trailing_zeros && spec.prec > 0 && str_len < spec.prec)
             {
