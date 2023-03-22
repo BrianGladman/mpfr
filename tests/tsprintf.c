@@ -1499,7 +1499,9 @@ bug21056 (void)
      https://austingroupbugs.net/view.php?id=761
      https://austingroupbugs.net/view.php?id=1219
      https://gcc.gnu.org/bugzilla/show_bug.cgi?id=87096
-   Fixed in r11429.
+   The issue was due to a 64-bit size_t converted to a 32-bit int.
+   Fixed in r11429 (6b8cf3e2bdc285027627281cac230ed932c1b73f) on 2017-04-07.
+   Code reworked in 080f6828d785801aba8b8c1e139752d1c5a3cd54 on 2023-03-21.
 */
 static void
 snprintf_size (void)
