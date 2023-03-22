@@ -1628,9 +1628,12 @@ check_length_overflow (void)
 
 /* On 2023-03-22, on a 64-bit Linux machine (thus with 32-bit int),
    the case %.2147483648Rg yields an incorrect size computation and
-   MPFR wants to allocate 18446744071562070545 bytes. This case should
-   either succeed or fail as reaching an environmental limit like with
-   glibc (note that the precision does not fit in an int).
+   MPFR wants to allocate 18446744071562070545 bytes. With assertion
+   checking (--enable-assert), one gets:
+     vasprintf.c:1908: MPFR assertion failed: threshold >= 1
+
+   This case should either succeed or fail as reaching an environmental limit
+   like with glibc (note that the precision does not fit in an int).
 */
 static void
 large_prec_for_g (void)
