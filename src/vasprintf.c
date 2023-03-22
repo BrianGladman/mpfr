@@ -1899,7 +1899,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
              precision T-1.
              where T is the threshold computed below and X is the exponent
              that would be displayed with style 'e' and precision T-1. */
-          int threshold;
+          mpfr_intmax_t threshold;
           mpfr_exp_t x, e, k;
           struct decimal_info dec_info;
 
@@ -1931,9 +1931,15 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
           e = e <= 0 ? k : (e + 2) / 3 + (k <= 0 ? 0 : k);
           MPFR_ASSERTD (e >= 1);
 
+          if (e > threshold)
+            e = threshold;
+
+          /* error if e does not fit in size_t (for mpfr_get_str) */
+          if (e > (size_t) -1)
+            goto error;
+
           dec_info.str = mpfr_get_str (NULL, &dec_info.exp, 10,
-                                       e < threshold ? e : threshold,
-                                       p, spec.rnd_mode);
+                                       e, p, spec.rnd_mode);
           register_string (np->sl, dec_info.str);
           /* mpfr_get_str corresponds to a significand between 0.1 and 1,
              whereas here we want a significand between 1 and 10. */
