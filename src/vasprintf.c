@@ -1764,7 +1764,7 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
   np->pad_type = spec.left ? RIGHT : spec.pad == '0' ? LEADING_ZEROS : LEFT;
   np->pad_size = 0;
   np->sign = '\0';
-  np->prefix_ptr =NULL;
+  np->prefix_ptr = NULL;
   np->prefix_size = 0;
   np->thousands_sep = '\0';
   np->ip_ptr = NULL;
