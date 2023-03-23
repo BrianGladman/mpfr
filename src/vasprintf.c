@@ -1390,7 +1390,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
                but only the sum will matter). */
           np->fp_ptr = str;
           np->fp_size = str_len;
-          MPFR_ASSERTD (str_len <= spec.prec);
+          MPFR_ASSERTD (spec.prec < 0 || str_len <= spec.prec);
           /* Warning! str_len has type size_t, which is unsigned. */
           if (keep_trailing_zeros && spec.prec > 0 && str_len < spec.prec)
             {
