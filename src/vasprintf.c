@@ -1039,7 +1039,11 @@ mpfr_get_str_wrapper (mpfr_exp_t *exp, int base, size_t n, mpfr_srcptr op,
       neg = str[0] == '-';
       s = str + neg;
       while (*s == nine)
-        s ++;
+        s++;
+      /* Due to the above code, ndigits < n, and in this case, it is
+         important that ndigits is at least 2 in order to have a non-empty
+         fractional part (see the warning comments later). */
+      MPFR_ASSERTD (ndigits < n && ndigits >= 2);
       if (s < str + neg + ndigits) /* we don't have ndigits 'nines' */
         break;
       mpfr_free_str (str);
@@ -1243,8 +1247,26 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
             }
         }
 
+      /* WARNING! Due to mpfr_get_str_wrapper, str_len may be smaller
+         than the correct value when there is no output. However, the
+         code is correct because:
+         * If str_len == 0, i.e. the fractional part is empty, then
+           if mpfr_get_str_wrapper was called, the number of digits
+           has not been reduced; in summary, if str_len == 0, then
+           it has the correct value. Otherwise, the first "if" below
+           is entered and...
+         * If spec.prec <= 0, then mpfr_get_str_wrapper could have been
+           called only with spec.prec < 0 (see "if" above), and in this
+           case, it was called with n == 0, so that str_len has the
+           correct value.
+         * If str_len >= spec.prec, then str_len == spec.prec, which is
+           the correct value.
+         * Otherwise the "if" condition below is true and one will have
+           np->fp_size + np->fp_trailing_zeros == spec.prec, which is
+           the correct value (both terms of the sum may be incorrect,
+           but only the sum will matter). */
       if (str_len != 0)
-        /* there are some non-zero digits in fractional part */
+        /* there are some digits in fractional part */
         {
           np->fp_ptr = str;
           np->fp_size = str_len;
@@ -1372,29 +1394,39 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
             }
         }
 
+      /* WARNING! Due to mpfr_get_str_wrapper, str_len may be smaller
+         than the correct value when there is no output. However, the
+         code is correct because:
+         * If keep_trailing_zeros is false, then mpfr_get_str_wrapper
+           is not used. In the following items, we consider the case
+           where keep_trailing_zeros is true, so that str_len has not
+           been modified above.
+         * If str_len == 0, i.e. the fractional part is empty, then
+           if mpfr_get_str_wrapper was called, the number of digits
+           has not been reduced; in summary, if str_len == 0, then
+           it has the correct value. Otherwise, the first "if" below
+           is entered and...
+         * If spec.prec <= 0, then spec.prec < 0 (see "if" above), and
+           in this case, mpfr_get_str_wrapper was called with n == 0,
+           so that str_len has the correct value.
+         * If str_len >= spec.prec, then str_len == spec.prec, which is
+           the correct value.
+         * Otherwise the "if" condition below is true and one will have
+           np->fp_size + np->fp_trailing_zeros == spec.prec, which is
+           the correct value (both terms of the sum may be incorrect,
+           but only the sum will matter). */
       if (str_len != 0)
-        /* there are some non-zero digits in fractional part */
+        /* there are some digits in fractional part */
         {
-          /* WARNING! Due to mpfr_get_str_wrapper, str_len may be smaller
-             than the expected value. However, the code is correct because:
-             * If keep_trailing_zeros is false, then mpfr_get_str_wrapper
-               is not used.
-             * If spec.prec <= 0, then spec.prec < 0 (see "if" above), and
-               in this case, mpfr_get_str_wrapper was called with n == 0
-               and str_len has the expected value.
-             * If str_len >= spec.prec, then str_len == spec.prec, which is
-               the expected value.
-             * Otherwise the "if" condition below is true and one will have
-               np->fp_size + np->fp_trailing_zeros == spec.prec, which is
-               the expected value (both terms of the sum may be incorrect,
-               but only the sum will matter). */
           np->fp_ptr = str;
           np->fp_size = str_len;
           MPFR_ASSERTD (spec.prec < 0 || str_len <= spec.prec);
           /* Warning! str_len has type size_t, which is unsigned. */
           if (keep_trailing_zeros && spec.prec > 0 && str_len < spec.prec)
             {
-              /* add missing trailing zeros */
+              /* add missing trailing zeros or missing digits
+                 (in case mpfr_get_str_wrapper has been used
+                 and there is no output) */
               np->fp_trailing_zeros = spec.prec - str_len;
               MPFR_ASSERTD (np->fp_trailing_zeros >= 0);
             }
