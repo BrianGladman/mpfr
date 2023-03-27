@@ -1195,8 +1195,8 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
       exp = MPFR_GET_EXP (p) - 4;
     }
 
-  if (uppercase)
-    /* All digits in upper case */
+  if (uppercase && spec.size != 0)
+    /* All digits in upper case (not needed if spec.size == 0) */
     {
       char *s1 = str;
       while (*s1)
