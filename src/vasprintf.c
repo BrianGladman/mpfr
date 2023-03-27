@@ -902,11 +902,11 @@ struct number_parts
   char point;             /* Decimal point character */
 
   mpfr_intmax_t fp_leading_zeros;  /* Number of additional leading zeros in
-                                      fractional part */
+                                      the fractional part */
   char *fp_ptr;           /* Pointer to fractional part characters */
   size_t fp_size;         /* Number of digits in *fp_ptr */
   mpfr_intmax_t fp_trailing_zeros;  /* Number of additional trailing zeros in
-                                       fractional part */
+                                       the fractional part */
 
   char *exp_ptr;          /* Pointer to exponent part */
   size_t exp_size;        /* Number of characters in *exp_ptr */
@@ -1227,7 +1227,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
     }
 
   if (spec.spec == 'b' || spec.prec != 0)
-    /* compute the number of digits in fractional part */
+    /* compute the number of digits in the fractional part */
     {
       char *ptr;
       size_t str_len;
@@ -1266,7 +1266,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
            the correct value (both terms of the sum may be incorrect,
            but only the sum will matter). */
       if (str_len != 0)
-        /* there are some digits in fractional part */
+        /* there are some digits in the fractional part */
         {
           np->fp_ptr = str;
           np->fp_size = str_len;
@@ -1374,7 +1374,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
   np->ip_ptr = MPFR_IS_NEG (p) ? ++str : str;  /* skip sign if any */
 
   if (spec.prec != 0)
-    /* compute the number of digits in fractional part */
+    /* compute the number of digits in the fractional part */
     {
       char *ptr;
       size_t str_len;
@@ -1416,7 +1416,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
            the correct value (both terms of the sum may be incorrect,
            but only the sum will matter). */
       if (str_len != 0)
-        /* there are some digits in fractional part */
+        /* there are some digits in the fractional part */
         {
           np->fp_ptr = str;
           np->fp_size = str_len;
@@ -1597,7 +1597,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                   np->fp_ptr = register_string (np->sl, str);
                 }
               else
-                /* only zeros in fractional part */
+                /* only zeros in the fractional part */
                 {
                   MPFR_ASSERTD (spec.spec == 'f' || spec.spec == 'F');
                   np->fp_leading_zeros = spec.prec;
@@ -1605,7 +1605,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
             }
           else  /* exp >= -spec.prec */
             /* the most significant digits are the last
-               spec.prec + exp + 1 digits in fractional part */
+               spec.prec + exp + 1 digits in the fractional part */
             {
               char *ptr;
               size_t str_len;
@@ -1668,7 +1668,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
 
                   /* The np->fp_size <= MPFR_INTMAX_MAX test and the
                      cast to mpfr_uintmax_t below allow one to avoid
-                     integer overflow. */
+                     a potential integer overflow. */
                   if (keep_trailing_zeros
                       && spec.prec > 0
                       && np->fp_size <= MPFR_INTMAX_MAX
@@ -1751,7 +1751,7 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
         }
 
       if (str_len > 0)
-        /* some non-zero digits in fractional part */
+        /* some digits in the fractional part */
         {
           np->point = MPFR_DECIMAL_POINT;
           np->fp_ptr = str;
@@ -2153,15 +2153,15 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
   if (np.point)
     buffer_pad (buf, np.point, 1);
 
-  /* leading zeros in fractional part */
+  /* leading zeros in the fractional part */
   if (np.fp_leading_zeros != 0)
     buffer_pad (buf, '0', np.fp_leading_zeros);
 
-  /* significant digits in fractional part */
+  /* significant digits in the fractional part */
   if (np.fp_ptr)
     buffer_cat (buf, np.fp_ptr, np.fp_size);
 
-  /* trailing zeros in fractional part */
+  /* trailing zeros in the fractional part */
   if (np.fp_trailing_zeros != 0)
     buffer_pad (buf, '0', np.fp_trailing_zeros);
 
