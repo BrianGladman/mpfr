@@ -290,7 +290,7 @@ done
 # Even on platforms where it is available, the prototype
 # may not be included (e.g. with gcc -ansi), so that the
 # code may be compiled incorrectly.
-grep '[^a-z_]snprintf *([^)]' $srctests | \
+grep '[^a-z_*]snprintf *([^)]' $srctests | \
   err-if-output -t "snprintf" grep -v '/\*.*[^a-z_]snprintf *([^)]'
 
 # Constant checking should use either MPFR_STAT_STATIC_ASSERT
