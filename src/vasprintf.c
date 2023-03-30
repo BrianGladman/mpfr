@@ -1615,6 +1615,10 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                 {
                   size_t nsd;
 
+                  /* We will keep the trailing zeros. Thus we can use
+                     mpfr_get_str_wrapper below. */
+                  MPFR_ASSERTD (keep_trailing_zeros);
+
                   MPFR_ASSERTD (exp <= -1);
                   MPFR_ASSERTD (spec.prec + (exp + 1) >= 0);
                   if (MPFR_UNLIKELY (spec.prec + (exp + 1) > (size_t) -1))
@@ -1663,21 +1667,25 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                         }
                     }
 
+                  /* Before it is potentially reduced, str_len comes from the
+                     size argument of mpfr_get_str or mpfr_get_str_wrapper,
+                     and this argument is bounded by a mpfr_intmax_t value
+                     in both cases. */
+                  MPFR_ASSERTD (str_len <= MPFR_INTMAX_MAX);
+
                   MPFR_ASSERTD (str_len > 0);
                   np->fp_size = str_len;
 
-                  /* The np->fp_size <= MPFR_INTMAX_MAX test and the
-                     cast to mpfr_uintmax_t below allow one to avoid
-                     a potential integer overflow. */
-                  if (keep_trailing_zeros
-                      && spec.prec > 0
-                      && np->fp_size <= MPFR_INTMAX_MAX
-                      && ((mpfr_uintmax_t)
-                          np->fp_leading_zeros + np->fp_size) < spec.prec)
+                  if (keep_trailing_zeros)
                     {
                       /* add missing trailing zeros */
-                      np->fp_trailing_zeros = spec.prec
-                        - np->fp_leading_zeros - np->fp_size;
+                      /* Since spec.prec >= 0 and exp <= 0
+                         and since spec.prec + exp >= 0 and
+                         0 <= str_len <= MPFR_INTMAX_MAX, there is
+                         no integer overflow in the operations below
+                         (done in the mpfr_intmax_t type). */
+                      np->fp_trailing_zeros =
+                        (spec.prec + exp) - (mpfr_intmax_t) str_len;
                       MPFR_ASSERTD (np->fp_trailing_zeros >= 0);
                     }
                 }
