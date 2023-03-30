@@ -1676,6 +1676,14 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
                   MPFR_ASSERTD (str_len > 0);
                   np->fp_size = str_len;
 
+                  /* WARNING! Due to mpfr_get_str_wrapper, str_len may be
+                     smaller than the correct value when there is no output.
+                     However, the code is correct because this function is
+                     used only when keep_trailing_zeros is true, and in this
+                     case, the "np->fp_size = str_len;" above and the code
+                     below ensure that
+                     np->fp_size + np->fp_trailing_zeros == spec.prec + exp,
+                     which is the correct value. */
                   if (keep_trailing_zeros)
                     {
                       /* add missing trailing zeros */
