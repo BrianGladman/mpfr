@@ -890,12 +890,14 @@ struct number_parts
   char sign;              /* Sign character */
 
   char *prefix_ptr;       /* Pointer to prefix part */
-  size_t prefix_size;     /* Number of characters in *prefix_ptr */
+  size_t prefix_size;     /* Number of characters in prefix_ptr */
 
   char thousands_sep;     /* Thousands separator (only with style 'f') */
 
+  /* The integral part is given by the following 3 members
+     (excluding the possible padding with zeros). */
   char *ip_ptr;           /* Pointer to integral part characters */
-  size_t ip_size;         /* Number of digits in *ip_ptr */
+  size_t ip_size;         /* Number of digits of the integral part */
   int ip_trailing_digits; /* Number of additional digits in integral part
                              (if spec.size != 0, this can only be a zero) */
 
@@ -904,12 +906,13 @@ struct number_parts
   mpfr_intmax_t fp_leading_zeros;  /* Number of additional leading zeros in
                                       the fractional part */
   char *fp_ptr;           /* Pointer to fractional part characters */
-  size_t fp_size;         /* Number of digits in *fp_ptr */
+  size_t fp_size;         /* Number of digits of the fractional part,
+                             without leading and trailing zeros */
   mpfr_intmax_t fp_trailing_zeros;  /* Number of additional trailing zeros in
                                        the fractional part */
 
   char *exp_ptr;          /* Pointer to exponent part */
-  size_t exp_size;        /* Number of characters in *exp_ptr */
+  size_t exp_size;        /* Number of characters in exp_ptr */
 
   struct string_list *sl; /* List of string buffers in use: we need such a
                              mechanism because fp_ptr may point into the same
@@ -2140,7 +2143,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
   if (np.prefix_ptr)
     buffer_cat (buf, np.prefix_ptr, np.prefix_size);
 
-  /* right justification  padding with leading zeros */
+  /* right justification padding with leading zeros */
   if (np.pad_type == LEADING_ZEROS && np.pad_size != 0)
     buffer_pad (buf, '0', np.pad_size);
 
