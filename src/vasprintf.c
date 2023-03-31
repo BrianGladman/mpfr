@@ -1127,7 +1127,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
           if (MPFR_UNLIKELY (spec.prec > (size_t) -2))  /* overflow */
             return -1;
           nsd = (size_t) spec.prec + 1;
-          MPFR_ASSERTD (nsd != 1);
+          MPFR_ASSERTD (nsd > 1);
         }
       str = mpfr_get_str_wrapper (&exp, base, nsd, p, spec);
       register_string (np->sl, str);
