@@ -1134,7 +1134,8 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
         }
       str = mpfr_get_str_wrapper (&exp, base, nsd, p, spec);
       register_string (np->sl, str);
-      np->ip_ptr = MPFR_IS_NEG (p) ? ++str : str;  /* skip sign if any */
+      if (MPFR_IS_NEG (p))
+        str++;  /* skip sign */
 
       if (base == 16)
         /* exp is the exponent for radix sixteen with decimal point BEFORE the
@@ -1156,47 +1157,40 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
           --exp;
         }
     }
-  else if (next_base_power_p (p, base, spec.rnd_mode))
-    {
-      str = (char *) mpfr_allocate_func (2);
-      str[0] = '1';
-      str[1] = '\0';
-      np->ip_ptr = register_string (np->sl, str);
-
-      exp = MPFR_GET_EXP (p);
-    }
-  else if (base == 2)
-    {
-      str = (char *) mpfr_allocate_func (2);
-      str[0] = '1';
-      str[1] = '\0';
-      np->ip_ptr = register_string (np->sl, str);
-
-      exp = MPFR_GET_EXP (p) - 1;
-    }
   else
     {
-      int digit;
-      mp_limb_t msl = MPFR_MANT (p)[MPFR_LIMB_SIZE (p) - 1];
-      int rnd_bit = GMP_NUMB_BITS - 5;
+      exp = MPFR_GET_EXP (p);
+      str = (char *) mpfr_allocate_func (2);
+      register_string (np->sl, str);
+      if (next_base_power_p (p, base, spec.rnd_mode))
+        {
+          str[0] = '1';
+        }
+      else if (base == 2)
+        {
+          str[0] = '1';
+          exp--;
+        }
+      else
+        {
+          int digit;
+          mp_limb_t msl = (MPFR_MANT (p))[MPFR_LAST_LIMB (p)];
+          int rnd_bit = GMP_NUMB_BITS - 5;
 
-      /* pick up the 4 first bits */
-      digit = msl >> (rnd_bit + 1);
-      if (spec.rnd_mode == MPFR_RNDA
-          || (spec.rnd_mode == MPFR_RNDU && MPFR_IS_POS (p))
-          || (spec.rnd_mode == MPFR_RNDD && MPFR_IS_NEG (p))
-          || (spec.rnd_mode == MPFR_RNDN
-              && (msl & (MPFR_LIMB_ONE << rnd_bit))))
-        digit++;
-      MPFR_ASSERTD (0 <= digit && digit <= 15);
+          /* pick up the 4 first bits */
+          digit = msl >> (rnd_bit + 1);
+          if (MPFR_IS_LIKE_RNDA (spec.rnd_mode, MPFR_IS_NEG (p)) ||
+              (spec.rnd_mode == MPFR_RNDN &&
+               (msl & (MPFR_LIMB_ONE << rnd_bit))))
+            digit++;
+          MPFR_ASSERTD (0 <= digit && digit <= 15);
 
-      str = (char *) mpfr_allocate_func (1 + np->ip_size);
-      str[0] = num_to_text [digit];
+          str[0] = num_to_text [digit];
+          exp -= 4;
+        }
       str[1] = '\0';
-      np->ip_ptr = register_string (np->sl, str);
-
-      exp = MPFR_GET_EXP (p) - 4;
     }
+  np->ip_ptr = str;
 
   if (uppercase && spec.size != 0)
     /* All digits in upper case (not needed if spec.size == 0) */
