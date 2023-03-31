@@ -413,7 +413,7 @@ parse_arg_type (const char *format, struct printf_spec *specinfo)
 
 /* some macros and functions filling the buffer */
 
-/* CONSUME_VA_ARG removes from va_list AP the type expected by SPECINFO */
+/* CONSUME_VA_ARG removes from va_list ap the type expected by specinfo */
 
 /* With a C++ compiler wchar_t and enumeration in va_list are converted to
    integer type : int, unsigned int, long or unsigned long (unfortunately,
@@ -894,7 +894,7 @@ struct number_parts
 
   char thousands_sep;     /* Thousands separator (only with style 'f') */
 
-  char *ip_ptr;           /* Pointer to integral part characters*/
+  char *ip_ptr;           /* Pointer to integral part characters */
   size_t ip_size;         /* Number of digits in *ip_ptr */
   int ip_trailing_digits; /* Number of additional digits in integral part
                              (if spec.size != 0, this can only be a zero) */
@@ -1109,7 +1109,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
 
   /* integral part */
   np->ip_size = 1;
-  base = (spec.spec == 'b') ? 2 : 16;
+  base = spec.spec == 'b' ? 2 : 16;
 
   if (spec.prec != 0)
     {
@@ -1118,7 +1118,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
       /* Number of significant digits:
          - if no given precision, let mpfr_get_str determine it;
          - if a non-zero precision is specified, then one digit before decimal
-         point plus SPEC.PREC after it (which will give nsd > 1 below). */
+         point plus spec.prec after it (which will give nsd > 1 below). */
       MPFR_ASSERTD (np->ip_size == 1);  /* thus the + 1 below */
       if (spec.prec < 0)
         nsd = 0;
@@ -1134,7 +1134,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
       np->ip_ptr = MPFR_IS_NEG (p) ? ++str : str;  /* skip sign if any */
 
       if (base == 16)
-        /* EXP is the exponent for radix sixteen with decimal point BEFORE the
+        /* exp is the exponent for radix sixteen with decimal point BEFORE the
            first digit, we want the exponent for radix two and the decimal
            point AFTER the first digit. */
         {
@@ -1144,7 +1144,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
           exp = (exp - 1) * 4;
         }
       else
-        /* EXP is the exponent for decimal point BEFORE the first digit, we
+        /* exp is the exponent for decimal point BEFORE the first digit, we
            want the exponent for decimal point AFTER the first digit. */
         {
           /* An integer overflow is normally not possible since MPFR_EXP_MIN
@@ -1286,7 +1286,7 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
   /* the exponent part contains the character 'p', or 'P' plus the sign
      character plus at least one digit and only as many more digits as
      necessary to represent the exponent.
-     We assume that |EXP| < 10^INT_MAX. */
+     We assume that |exp| < 10^INT_MAX. */
   np->exp_size = 3;
   {
     mpfr_uexp_t x;
@@ -1351,7 +1351,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
       /* Number of significant digits:
          - if no given precision, then let mpfr_get_str determine it,
          - if a precision is specified, then one digit before decimal point
-         plus SPEC.PREC after it.
+         plus spec.prec after it.
          We use the fact here that mpfr_get_str allows us to ask for only one
          significant digit when the base is not a power of 2. */
       MPFR_ASSERTD (np->ip_size == 1);  /* thus the + 1 below */
@@ -1437,7 +1437,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
   if (np->fp_size != 0 || spec.alt)
     np->point = MPFR_DECIMAL_POINT;
 
-  /* EXP is the exponent for decimal point BEFORE the first digit, we want
+  /* exp is the exponent for decimal point BEFORE the first digit, we want
      the exponent for decimal point AFTER the first digit.
      Here, no possible overflow because exp < MPFR_EXP (p) / 3 */
   exp--;
@@ -1445,7 +1445,7 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
   /* the exponent part contains the character 'e', or 'E' plus the sign
      character plus at least two digits and only as many more digits as
      necessary to represent the exponent.
-     We assume that |EXP| < 10^INT_MAX. */
+     We assume that |exp| < 10^INT_MAX. */
   np->exp_size = 3;
   {
     mpfr_uexp_t x;
