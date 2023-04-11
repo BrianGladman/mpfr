@@ -1893,6 +1893,15 @@ $ ./configure --host=i686-w64-mingw32 --disable-shared --with-gmp=...
 $ make
 $ make check LOG_COMPILER=wine
 
+In case of "module:import_dll Library ....dll ... not found" error, locate
+the dll file and set the WINEPATH environment variable to its directory.
+
+For instance, to use POSIX threads instead of win32 threads:
+$ ./configure --host=i686-w64-mingw32 --disable-shared --with-gmp=... \
+    CC=i686-w64-mingw32-gcc-posix
+$ make
+$ make check LOG_COMPILER="env WINEPATH=/usr/i686-w64-mingw32/lib wine"
+
 Note: Due to bugs in autoconf[1] and dash[2], the configure script
 may create files with a binary filename or have any other arbitrary
 behavior if /bin/sh is dash. The cause is that it tries to execute
