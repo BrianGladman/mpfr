@@ -45,23 +45,47 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 # endif
 #endif
 
-/* If MPFR needs a lock mechanism for thread synchro */
-#ifdef MPFR_NEED_THREAD_LOCK
+/* Note: Several versions of some macros are defined below. In order to
+   avoid compilation failure that would appear only with some version,
+   for macros that are not related to declarations or initializations,
+   such a macro must either be an expression with always the same type
+   or always be of the "do ... while(0)" form. */
 
 /**************************************************************************/
 /**************************************************************************/
-/*                           ISO C11 version                              */
+/*                    Start of code for thread locking                    */
 /**************************************************************************/
+
+/* If MPFR needs a lock mechanism for thread synchro...
+   On 2023-04-12, this is currently used only by the shared cache,
+   when it is enabled (see mpfr-impl.h). It is better to allow several
+   concurrent readers (as this is likely to occur), but the MPFR code
+   does not require that, so that a simple mutex is sufficient. Note
+   that much time may be required in a write lock (always exclusive),
+   as it involves recomputing a value in a higher precision, but the
+   time spent in a read lock will just correspond to the copy of a
+   rounded value to the destination. So even if a simple mutex is used,
+   the wasted time should not be critical. Moreover, since a mutex is
+   simpler to implement, this may also be slightly faster in some cases
+   (but no tests have been done yet). */
+#ifdef MPFR_NEED_THREAD_LOCK
+
+/* TODO: Prefer the POSIX rwlock method as it allows several readers?
+   Alternatively, implement a R/W lock in the C11 mutex version.
+   See <https://en.wikipedia.org/wiki/Readers%E2%80%93writer_lock>. */
+
+/**************************************************************************/
+/*                 ISO C11 thread-locking version (mutex)                 */
 /**************************************************************************/
 
 #if defined (MPFR_HAVE_C11_LOCK)
-/* NOTE: This version has not been completely tested */
+/* NOTE: This version has not been tested. */
 
 #define MPFR_THREAD_LOCK_METHOD "C11"
 
 #include <threads.h>
 
-#define MPFR_LOCK_DECL(_lock)                   \
+#define MPFR_LOCK_DECL(_lock)                           \
   mtx_t _lock;
 
 #define MPFR_LOCK_C(E)                                  \
@@ -83,7 +107,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_LOCK_READ2WRITE(_lock) do {} while (0)
 #define MPFR_LOCK_WRITE2READ(_lock) do {} while (0)
 
-#define MPFR_ONCE_DECL(_once)                   \
+#define MPFR_ONCE_DECL(_once)                           \
   once_flag _once;
 
 #define MPFR_ONCE_INIT_VALUE ONCE_FLAG_INIT
@@ -94,12 +118,13 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #define MPFR_NEED_DEFERRED_INIT 1
 
+/**************************************************************************/
+/*             POSIX thread-locking version (pthread rwlock)              */
+/**************************************************************************/
 
-/**************************************************************************/
-/**************************************************************************/
-/*                           POSIX   version                              */
-/**************************************************************************/
-/**************************************************************************/
+/* Note: This uses pthread_rwlock_* functions, which is better than
+   pthread_mutex_* as it allows one to have several readers, which
+   is likely to occur with the MPFR shared cache. */
 
 #elif defined (HAVE_PTHREAD)
 
@@ -107,7 +132,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include <pthread.h>
 
-#define MPFR_LOCK_DECL(_lock)                   \
+#define MPFR_LOCK_DECL(_lock)                           \
   pthread_rwlock_t _lock;
 
 #define MPFR_LOCK_C(E)                                  \
@@ -130,25 +155,30 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_LOCK_WRITE(_lock)   MPFR_LOCK_C(pthread_rwlock_wrlock(&(_lock)))
 #define MPFR_UNLOCK_WRITE(_lock) MPFR_LOCK_C(pthread_rwlock_unlock(&(_lock)))
 
-#define MPFR_LOCK_READ2WRITE(_lock) do {                        \
-    MPFR_UNLOCK_READ(_lock);                                    \
-    MPFR_LOCK_WRITE(_lock);                                     \
+#define MPFR_LOCK_READ2WRITE(_lock) do {                \
+    MPFR_UNLOCK_READ(_lock);                            \
+    MPFR_LOCK_WRITE(_lock);                             \
   } while (0)
 
-#define MPFR_LOCK_WRITE2READ(_lock) do {                         \
-  MPFR_UNLOCK_WRITE(_lock);                                      \
-  MPFR_LOCK_READ(_lock);                                         \
+#define MPFR_LOCK_WRITE2READ(_lock) do {                \
+    MPFR_UNLOCK_WRITE(_lock);                           \
+    MPFR_LOCK_READ(_lock);                              \
   } while (0)
 
-#define MPFR_ONCE_DECL(_once)                   \
-  pthread_once_t _once ;
+#define MPFR_ONCE_DECL(_once)                           \
+  pthread_once_t _once;
 
 #define MPFR_ONCE_INIT_VALUE PTHREAD_ONCE_INIT
 
-#define MPFR_ONCE_CALL(_once, _func) \
-  MPFR_LOCK_C(pthread_once (&(_once), (_func)))
+#define MPFR_ONCE_CALL(_once, _func) do {               \
+    MPFR_LOCK_C(pthread_once (&(_once), (_func)));      \
+  } while (0)
 
 #define MPFR_NEED_DEFERRED_INIT 1
+
+/**************************************************************************/
+/*       Thread locking needed, but no available/supported methods        */
+/**************************************************************************/
 
 #else
 
@@ -157,13 +187,11 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #endif
 
-#else
+/**************************************************************************/
+/*                       Thread locking not needed                        */
+/**************************************************************************/
 
-/**************************************************************************/
-/**************************************************************************/
-/*                       No lock thread version                           */
-/**************************************************************************/
-/**************************************************************************/
+#else  /* MPFR_NEED_THREAD_LOCK */
 
 #define MPFR_LOCK_DECL(_lock)
 #define MPFR_LOCK_INIT(_lock)       do {} while (0)
@@ -178,49 +206,54 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_ONCE_DECL(_once)
 #define MPFR_ONCE_CALL(_once,_func) do {} while (0)
 
-#endif
+#endif  /* MPFR_NEED_THREAD_LOCK */
 
-
-
+/**************************************************************************/
+/*                     End of code for thread locking                     */
 /**************************************************************************/
 /**************************************************************************/
 
 /**************************************************************************/
 /**************************************************************************/
+/*                    Start of code for deferred init                     */
+/**************************************************************************/
 
-/* If MPFR Needs a way to init data before using them */
-#if defined(MPFR_NEED_DEFERRED_INIT)
+/* If MPFR needs a way to init data before using them
+   (MPFR_NEED_DEFERRED_INIT may be set by the above code
+   for thread locking)... */
+#ifdef MPFR_NEED_DEFERRED_INIT
 
-#if defined(MPFR_HAVE_CONSTRUCTOR_ATTR)
+#ifdef MPFR_HAVE_CONSTRUCTOR_ATTR
 
 /*********************** Use constructor extension ************************/
-#define MPFR_DEFERRED_INIT_MASTER_DECL(_id, _init, _clear)              \
-  __attribute__ ((constructor)) static void                             \
-  mpfr_init_cache_ ## _id (void)        {                               \
-    _init ;                                                             \
-  }                                                                     \
-  __attribute__ ((destructor)) static void                              \
-  mpfr_clean_cache_ ## _id (void)       {                               \
-    _clear;                                                             \
+#define MPFR_DEFERRED_INIT_MASTER_DECL(_id, _init, _clear)      \
+  __attribute__ ((constructor)) static void                     \
+  mpfr_init_cache_ ## _id (void) {                              \
+    _init ;                                                     \
+  }                                                             \
+  __attribute__ ((destructor)) static void                      \
+  mpfr_clean_cache_ ## _id (void) {                             \
+    _clear;                                                     \
   }
 
 #define MPFR_DEFERRED_INIT_CALL(_master) do {} while (0)
 #define MPFR_DEFERRED_INIT_SLAVE_DECL()
 #define MPFR_DEFERRED_INIT_SLAVE_VALUE(_id)
 
-#else
+#else /* MPFR_HAVE_CONSTRUCTOR_ATTR */
 
 /**************************** Use once semantic ***************************/
-#define MPFR_DEFERRED_INIT_MASTER_DECL(_id, _init, _clear)       \
-  static void mpfr_once_ ## _id ## _clear_func (void) {          \
-    _clear ;                                                     \
-  }                                                              \
-  static void mpfr_once_ ## _id ## _init_func (void) {           \
-    _init;                                                       \
-    atexit(mpfr_once_ ## _id ## _clear_func);                    \
+#define MPFR_DEFERRED_INIT_MASTER_DECL(_id, _init, _clear)      \
+  static void mpfr_once_ ## _id ## _clear_func (void) {         \
+    _clear ;                                                    \
+  }                                                             \
+  static void mpfr_once_ ## _id ## _init_func (void) {          \
+    _init;                                                      \
+    atexit(mpfr_once_ ## _id ## _clear_func);                   \
   }
 
-#define MPFR_DEFERRED_INIT_CALL(_master)                \
+/* MPFR_ONCE_CALL() already uses the "do ... while(0)" form. */
+#define MPFR_DEFERRED_INIT_CALL(_master)                        \
   MPFR_ONCE_CALL((_master)->once, (_master)->init_once)
 
 #define MPFR_DEFERRED_INIT_SLAVE_DECL()                         \
@@ -230,9 +263,9 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_DEFERRED_INIT_SLAVE_VALUE(_id)                     \
   , MPFR_ONCE_INIT_VALUE, mpfr_once_ ## _id ## _init_func
 
-#endif
+#endif /* MPFR_HAVE_CONSTRUCTOR_ATTR */
 
-#else
+#else /* MPFR_NEED_DEFERRED_INIT */
 
 /* No need */
 #define MPFR_DEFERRED_INIT_MASTER_DECL(_id_lock, _init, _clear)
@@ -240,8 +273,11 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define MPFR_DEFERRED_INIT_SLAVE_DECL()
 #define MPFR_DEFERRED_INIT_SLAVE_VALUE(_id)
 
-#endif
+#endif /* MPFR_NEED_DEFERRED_INIT */
 
+/**************************************************************************/
+/*                     End of code for deferred init                      */
+/**************************************************************************/
 /**************************************************************************/
 
 #endif
