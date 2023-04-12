@@ -23,8 +23,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #ifndef __MPFR_THREAD_H__
 #define __MPFR_THREAD_H__
 
-/* Note: MPFR_NEED_THREAD_LOCK shall be defined before including this
-   header */
+/* Note: If needed, MPFR_NEED_THREAD_LOCK shall be defined before including
+   this header. */
 
 /* Note: Let's define MPFR_THREAD_ATTR even after a #error to make the
    error message more visible (e.g. gcc doesn't immediately stop after

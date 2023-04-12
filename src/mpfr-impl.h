@@ -86,7 +86,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* For the definition of MPFR_THREAD_ATTR. GCC/ICC detection macros are
    no longer used, as they sometimes gave incorrect information about
-   the support of thread-local variables. A configure check is now done. */
+   the support of thread-local variables. A configure check is now done.
+   Also defines macros related to thread locking. */
 #if defined(MPFR_WANT_SHARED_CACHE)
 # define MPFR_NEED_THREAD_LOCK 1
 #endif
