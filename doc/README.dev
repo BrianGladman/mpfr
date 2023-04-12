@@ -1902,6 +1902,10 @@ $ ./configure --host=i686-w64-mingw32 --disable-shared --with-gmp=... \
 $ make
 $ make check LOG_COMPILER="env WINEPATH=/usr/i686-w64-mingw32/lib wine"
 
+When abort() is called, wine returns with exit status 3. Since this value
+is not used by the MPFR tests, such an exit status probably means that an
+abort() was called somewhere.
+
 Note: Due to bugs in autoconf[1] and dash[2], the configure script
 may create files with a binary filename or have any other arbitrary
 behavior if /bin/sh is dash. The cause is that it tries to execute
