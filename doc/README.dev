@@ -1048,13 +1048,13 @@ after the format string.
 Example:
  int dodo (mpfr_t x, mpfr_t op, int cnt, mpfr_rnd_t rnd) {
   [decl]
-  MPFR_LOG_BEGIN (("op[%Pu]=%.*Rg rnd=%s",
+  MPFR_LOG_BEGIN (("op[%Pd]=%.*Rg rnd=%s",
                     mpfr_get_prec(op), mpfr_log_prec, op, RND2STR(rnd)));
 
 +++ MPFR_LOG_END(x)
  Add this macro at the end of a function.
 Example:
- MPFR_LOG_END (("x[%Pu]=%.*Rg i=%d", mpfr_get_prec (x), mpfr_log_prec, x, i));
+ MPFR_LOG_END (("x[%Pd]=%.*Rg i=%d", mpfr_get_prec (x), mpfr_log_prec, x, i));
  return i;
 }
 
@@ -1064,8 +1064,8 @@ the same job as MPFR_LOG_BEGIN and MPFR_LOG_END but it is smatter
 since it intercepts the return itself to put the end statement.
 Example
  MPFR_LOG_FUNC (
-    ("op[%Pu]=%.*Rg rnd=%d", op, mpfr_get_prec (op), mpfr_log_prec, op),
-    ("x[%Pu]=%.*Rg inexact=%d", mpfr_get_prec (x), mpfr_log_prec, x, i));
+    ("op[%Pd]=%.*Rg rnd=%d", op, mpfr_get_prec (op), mpfr_log_prec, op),
+    ("x[%Pd]=%.*Rg inexact=%d", mpfr_get_prec (x), mpfr_log_prec, x, i));
 
 
 The double brackets "((" and "))" are needed since MPFR must still
@@ -1111,8 +1111,8 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mpfr_rnd_t rnd)
 
   /* Log it if requested */
   MPFR_LOG_BEGIN
-    (("op[%Pu]=%.*Rg rnd=%d", mpfr_get_prec (op), mpfr_log_prec, op, rnd),
-     ("rop[%Pu]=%.*Rg inexact=%d",
+    (("op[%Pd]=%.*Rg rnd=%d", mpfr_get_prec (op), mpfr_log_prec, op, rnd),
+     ("rop[%Pd]=%.*Rg inexact=%d",
        mpfr_get_prec (rop), mpfr_log_prec, rop, inexact));
 
   /* First deal with particular cases */
