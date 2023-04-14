@@ -532,6 +532,7 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
     wp = rn * GMP_NUMB_BITS;
   for (;;)
     {
+      MPFR_LOG_MSG (("working precision = %Pd\n", wp));
       MPFR_TMP_MARK (marker);
       wn = LIMB_SIZE(wp);
       if (r == u || wn > rn) /* out of place, i.e., we cannot write to r */
