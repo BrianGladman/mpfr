@@ -524,6 +524,17 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
   rn = LIMB_SIZE(rp);
 
+  /* FIXME: In case of alloca() used by MPFR_TMP_LIMBS_ALLOC,
+     MPFR_TMP_FREE(marker) will not free anything in the stack,
+     so that in case of a loop with many iterations from a not
+     too large precision, much memory will be taken in the stack
+     with the default value of MPFR_ALLOCA_MAX (16384), yielding
+     a stack overflow (testcase given by Fredrik Johansson). To
+     avoid many iterations (and probably make code much faster
+     on cases that are very hard to round), why not use a
+     standard Ziv loop???
+  */
+
   /* for the first iteration, if rp + 11 fits into rn limbs, we round up
      up to a full limb to maximize the chance of rounding, while avoiding
      to allocate extra space */
