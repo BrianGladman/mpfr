@@ -71,7 +71,7 @@ mpfr_log_begin (void)
   if (getenv ("MPFR_LOG_MSG") != NULL)
     mpfr_log_type |= MPFR_LOG_MSG_F;
   if (getenv ("MPFR_LOG_ZIV") != NULL)
-    mpfr_log_type |= MPFR_LOG_BADCASE_F;
+    mpfr_log_type |= MPFR_LOG_ZIV_F;
   if (getenv ("MPFR_LOG_STAT") != NULL)
     mpfr_log_type |= MPFR_LOG_STAT_F;
   if (getenv ("MPFR_LOG_ALL") != NULL)

@@ -2110,7 +2110,7 @@ typedef struct {
       (_x) = GMP_NUMB_BITS;                                             \
       if (mpfr_log_level >= 0)                                          \
         _x ## _loop ++;                                                 \
-      LOG_PRINT (MPFR_LOG_BADCASE_F, "%s:ZIV 1st prec=%Pd\n",           \
+      LOG_PRINT (MPFR_LOG_ZIV_F, "%s:ZIV 1st prec=%Pd\n",               \
                  __func__, (mpfr_prec_t) (_p));                         \
     }                                                                   \
   while (0)
@@ -2123,7 +2123,7 @@ typedef struct {
       if (mpfr_log_level >= 0)                                          \
         _x ## _bad += (_x ## _cpt == 1);                                \
       _x ## _cpt ++;                                                    \
-      LOG_PRINT (MPFR_LOG_BADCASE_F, "%s:ZIV new prec=%Pd\n",           \
+      LOG_PRINT (MPFR_LOG_ZIV_F, "%s:ZIV new prec=%Pd\n",               \
                  __func__, (mpfr_prec_t) (_p));                         \
     }                                                                   \
   while (0)
@@ -2131,7 +2131,7 @@ typedef struct {
 #define MPFR_ZIV_FREE(_x)                                               \
   do                                                                    \
     if (_x ## _cpt > 1)                                                 \
-      LOG_PRINT (MPFR_LOG_BADCASE_F, "%s:ZIV %d loops\n",               \
+      LOG_PRINT (MPFR_LOG_ZIV_F, "%s:ZIV %d loops\n",                   \
                  __func__, _x ## _cpt);                                 \
   while (0)
 
@@ -2147,7 +2147,7 @@ typedef struct {
 #define MPFR_LOG_OUTPUT_F   2
 #define MPFR_LOG_INTERNAL_F 4
 #define MPFR_LOG_TIME_F     8
-#define MPFR_LOG_BADCASE_F  16
+#define MPFR_LOG_ZIV_F      16
 #define MPFR_LOG_MSG_F      32
 #define MPFR_LOG_STAT_F     64
 
