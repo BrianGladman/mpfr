@@ -2949,7 +2949,7 @@ mpfr_prec_t p;
 mpfr_init (x);
 @dots{}
 p = mpfr_get_prec (x);
-mpfr_printf ("variable x with %Pu bits", p);
+mpfr_printf ("variable x with %Pd bits", p);
 @end example
 
 The @samp{R} type specifies that a following @samp{a}, @samp{A}, @samp{b},
