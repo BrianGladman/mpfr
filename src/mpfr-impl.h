@@ -2167,10 +2167,10 @@ extern "C" {
 
 __MPFR_DECLSPEC extern FILE *mpfr_log_file;
 __MPFR_DECLSPEC extern int   mpfr_log_flush;
-__MPFR_DECLSPEC extern int   mpfr_log_type;
 __MPFR_DECLSPEC extern int   mpfr_log_level;
 __MPFR_DECLSPEC extern int   mpfr_log_current;
 __MPFR_DECLSPEC extern mpfr_prec_t mpfr_log_prec;
+__MPFR_DECLSPEC extern unsigned int mpfr_log_type;
 
 #if defined (__cplusplus)
  }
