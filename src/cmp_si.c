@@ -36,7 +36,7 @@ mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, mpfr_exp_t f)
   int si;
 
   MPFR_LOG_FUNC
-    (("x[%Pu]=%.*Rg i=%ld e=%" MPFR_EXP_FSPEC "d",
+    (("x[%Pd]=%.*Rg i=%ld e=%" MPFR_EXP_FSPEC "d",
       mpfr_get_prec (b), mpfr_log_prec, b, i, (mpfr_eexp_t) f),
      ("", 0));
 
