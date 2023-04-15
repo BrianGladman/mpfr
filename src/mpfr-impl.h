@@ -2196,7 +2196,7 @@ __MPFR_DECLSPEC extern unsigned int mpfr_log_type;
   while (0)
 
 #define MPFR_LOG_VAR(x)                                                 \
-  LOG_PRINT (MPFR_LOG_INTERNAL_F, "%s.%d:%s[%#Pu]=%.*Rg\n", __func__,   \
+  LOG_PRINT (MPFR_LOG_INTERNAL_F, "%s.%d:%s[%#Pd]=%.*Rg\n", __func__,   \
              (int) __LINE__, #x, mpfr_get_prec (x), mpfr_log_prec, x)
 
 #define MPFR_LOG_MSG2(format, ...)                                      \
