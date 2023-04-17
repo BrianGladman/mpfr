@@ -467,6 +467,7 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
   int s, cy, inex;
   mpfr_limb_ptr x;
   MPFR_TMP_DECL(marker);
+  MPFR_ZIV_DECL (loop);
 
   MPFR_LOG_FUNC
     (("x[%Pd]=%.*Rg rnd=%d", mpfr_get_prec (u), mpfr_log_prec, u, rnd_mode),
@@ -528,23 +529,13 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
 
   rn = LIMB_SIZE(rp);
 
-  /* FIXME: In case of alloca() used by MPFR_TMP_LIMBS_ALLOC,
-     MPFR_TMP_FREE(marker) will not free anything in the stack,
-     so that in case of a loop with many iterations from a not
-     too large precision, much memory will be taken in the stack
-     with the default value of MPFR_ALLOCA_MAX (16384), yielding
-     a stack overflow (testcase given by Fredrik Johansson). To
-     avoid many iterations (and probably make code much faster
-     on cases that are very hard to round), why not use a
-     standard Ziv loop???
-  */
-
   /* for the first iteration, if rp + 11 fits into rn limbs, we round up
      up to a full limb to maximize the chance of rounding, while avoiding
      to allocate extra space */
   wp = rp + 11;
   if (wp < rn * GMP_NUMB_BITS)
     wp = rn * GMP_NUMB_BITS;
+  MPFR_ZIV_INIT (loop, wp);
   for (;;)
     {
       MPFR_LOG_MSG (("working precision = %Pd\n", wp));
@@ -577,8 +568,9 @@ mpfr_rec_sqrt (mpfr_ptr r, mpfr_srcptr u, mpfr_rnd_t rnd_mode)
         }
       MPFR_TMP_FREE(marker);
 
-      wp += GMP_NUMB_BITS;
+      MPFR_ZIV_NEXT (loop, wp);
     }
+  MPFR_ZIV_FREE (loop);
   cy = mpfr_round_raw (MPFR_MANT(r), x, wp, 0, rp, rnd_mode, &inex);
   MPFR_EXP(r) = - (MPFR_EXP(u) - 1 - s) / 2;
   if (MPFR_UNLIKELY(cy != 0))
