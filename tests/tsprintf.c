@@ -1754,8 +1754,10 @@ test_locale (void)
      (as reported by Klaus Dittrich in the MPFR mailing-list); this is
      actually a bug introduced in glibc 2.37, not in MPFR:
        https://sourceware.org/bugzilla/show_bug.cgi?id=30068
-     Since this bug can yield a buffer overflow (CVE-2023-25139), let us
-     rather wait for a fix in glibc.
+     Since this bug can yield a buffer overflow (CVE-2023-25139), possibly
+     affecting MPFR users, let us rather require a fix in glibc. This bug
+     has been fixed in the 2.37 branch:
+       https://sourceware.org/git/?p=glibc.git;a=commit;h=07b9521fc6
      If we wanted to check that and avoid a failure of the test because of
      a buggy C library (while MPFR would be consistent with the C library),
      we could compare the MPFR output with both the correct output and the
