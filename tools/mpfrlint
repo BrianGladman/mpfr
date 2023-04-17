@@ -406,6 +406,30 @@ err-if-output --msg='Use mpn_sqr instead of mpn_mul_n.' "mpn mul/sqr" \
      do { $u =~ tr/ //d; $v =~ tr/ //d; $u eq $v and print "$ARGV: $_" }' \
   $src
 
+# Detect a Ziv loop that does not use the MPFR_ZIV_* macros, which may
+# give a bug like the one in rec_sqrt.c, found and fixed in 2023-04.
+# This is a heuristic; it assumes GNU style with correct indentation.
+# This can be silenced by using MPFR_ZIV_NEXT in a comment in the loop.
+# A false positive may actually be a bad indentation, which should be
+# fixed anyway.
+for file in $c_src
+do
+  err-if-output "Ziv loop" perl -e '
+    my $fname = $ARGV[0];
+    my $lrx = qr/(?:for|while) *\(.*\) *\n/;
+    $_ = do { local $/; <> };
+    while (/^( +)$lrx\1  \{.*\n(?:.*\n)*?\1  \}.*\n/gm)
+      {
+        my $loop = $&;
+        next if $loop !~ /\b(mpfr_can_round|mpfr_round_p)\b/i;
+        next if $loop =~ /MPFR_ZIV_NEXT/;
+        $! = 1;
+        die "Seems a Ziv loop without MPFR_ZIV_NEXT in \"$fname\".\n".
+            ($ENV{VERBOSE} ? "ZIV LOOP:\n$loop\n" :
+             "Define environment variable VERBOSE for loop output.\n");
+      }' $file
+done
+
 # Re-seeding mpfr_rands in the tests is bad practice, as it would affect
 # later tests, defeating the purpose of GMP_CHECK_RANDOMIZE.
 err-if-output \
