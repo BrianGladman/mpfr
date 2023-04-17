@@ -29,6 +29,11 @@ mpfr_mul_ui (mpfr_ptr y, mpfr_srcptr x, unsigned long int u, mpfr_rnd_t rnd_mode
 {
   int inexact;
 
+  MPFR_LOG_FUNC
+    (("x[%Pd]=%.*Rg u=%lu rnd=%d",
+      mpfr_get_prec(x), mpfr_log_prec, x, u, rnd_mode),
+     ("y[%Pd]=%.*Rg", mpfr_get_prec (y), mpfr_log_prec, y));
+
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
       if (MPFR_IS_NAN (x))

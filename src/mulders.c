@@ -244,6 +244,10 @@ mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
   mpfr_limb_ptr tp;
   MPFR_TMP_DECL(marker);
 
+  MPFR_LOG_FUNC
+    (("n=%Pd", (mpfr_prec_t) n),
+     ("k=%Pd qh=%Mu", (mpfr_prec_t) k, k == 0 ? MPFR_LIMB_ZERO : qh));
+
   MPFR_STAT_STATIC_ASSERT (MPFR_DIVHIGH_TAB_SIZE >= 15); /* so that 2*(n/3) >= (n+4)/2 */
   MPFR_ASSERTD(n >= 2);
   k = MPFR_LIKELY (n < MPFR_DIVHIGH_TAB_SIZE) ? divhigh_ktab[n] : 2*(n/3);

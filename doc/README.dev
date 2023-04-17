@@ -1006,6 +1006,7 @@ MPFR_LOG_INTERNAL: Log the intermediary variables if any.
 MPFR_LOG_MSG:      Log the messages sent by MPFR if any.
 MPFR_LOG_ZIV:      Log what the Ziv Loops do.
 MPFR_LOG_STAT:     Log how many times Ziv failed.
+MPFR_LOG_ALLOCA:   Log the alloca() amounts.
 MPFR_LOG_ALL:      Log everything
 
 Define them. Run your program, and view `mpfr.log`.

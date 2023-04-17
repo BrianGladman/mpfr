@@ -57,6 +57,10 @@ mpfr_prec_round (mpfr_ptr x, mpfr_prec_t prec, mpfr_rnd_t rnd_mode)
   mpfr_prec_t nw, ow;
   MPFR_TMP_DECL(marker);
 
+  MPFR_LOG_FUNC
+    (("prec=%Pd rnd=%d", prec, rnd_mode),
+     ("inexact=%d", inexact));
+
   MPFR_ASSERTN (MPFR_PREC_COND (prec));
 
   nw = MPFR_PREC2LIMBS (prec); /* needed allocated limbs */
@@ -186,6 +190,11 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg, mpfr_exp_t err,
   mp_limb_t cy = 0, tmp_hi;
   int res;
   MPFR_TMP_DECL(marker);
+
+  MPFR_LOG_FUNC
+    (("bn=%Pd neg=%d err=%" MPFR_EXP_FSPEC "d rnd1=%d rnd2=%d prec=%Pd",
+      (mpfr_prec_t) bn, neg, (mpfr_eexp_t) err, rnd1, rnd2, prec),
+     ("res=%d", res));
 
   /* Since mpfr_can_round is a function in the API, use MPFR_ASSERTN.
      The specification makes sense only for prec >= 1. */

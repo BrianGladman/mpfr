@@ -161,6 +161,10 @@ mpfr_mpn_rec_sqrt (mpfr_limb_ptr x, mpfr_prec_t p,
   mp_size_t n = LIMB_SIZE(p);   /* number of limbs of X */
   mp_size_t an = LIMB_SIZE(ap); /* number of limbs of A */
 
+  MPFR_LOG_FUNC
+    (("p=%Pd ap=%Pd as=%d", p, ap, as),
+     ("", 0));
+
   /* A should be normalized */
   MPFR_ASSERTD((a[an - 1] & MPFR_LIMB_HIGHBIT) != 0);
   /* We should have enough bits in one limb and GMP_NUMB_BITS should be even.

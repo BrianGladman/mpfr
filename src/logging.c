@@ -74,6 +74,8 @@ mpfr_log_begin (void)
     mpfr_log_type |= MPFR_LOG_MSG_F;
   if (getenv ("MPFR_LOG_STAT") != NULL)
     mpfr_log_type |= MPFR_LOG_STAT_F;
+  if (getenv ("MPFR_LOG_ALLOCA") != NULL)
+    mpfr_log_type |= MPFR_LOG_ALLOCA_F;
   if (getenv ("MPFR_LOG_ALL") != NULL)
     mpfr_log_type = (unsigned int) -1;
 

@@ -35,6 +35,12 @@ mpfr_add1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
   int sh, rb, fb, inex;
   MPFR_TMP_DECL(marker);
 
+  MPFR_LOG_FUNC
+    (("b[%Pd]=%.*Rg c[%Pd]=%.*Rg rnd=%d",
+      mpfr_get_prec (b), mpfr_log_prec, b,
+      mpfr_get_prec (c), mpfr_log_prec, c, rnd_mode),
+     ("a[%Pd]=%.*Rg", mpfr_get_prec (a), mpfr_log_prec, a));
+
   MPFR_ASSERTD (MPFR_IS_PURE_UBF (b));
   MPFR_ASSERTD (MPFR_IS_PURE_UBF (c));
   MPFR_ASSERTD (! MPFR_UBF_EXP_LESS_P (b, c));

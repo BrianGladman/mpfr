@@ -354,6 +354,10 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
   mp_size_t sbit, rrbit;
   MPFR_TMP_DECL(marker);
 
+  MPFR_LOG_FUNC
+    (("x[%Pd]=%.*Rg q=%Pd", mpfr_get_prec(r), mpfr_log_prec, r, q),
+     ("exps=%" MPFR_EXP_FSPEC "d l=%lu", (mpfr_eexp_t) exps, l));
+
   /* estimate value of l */
   MPFR_ASSERTD (MPFR_GET_EXP (r) < 0);
   l = q / (- MPFR_GET_EXP (r));
@@ -452,5 +456,6 @@ mpfr_exp2_aux2 (mpz_t s, mpfr_srcptr r, mpfr_prec_t q, mpfr_exp_t *exps)
   mpz_clear (t);
   mpz_clear (tmp);
 
-  return l * (l + 4);
+  l *= l + 4;
+  return l;
 }

@@ -2218,8 +2218,12 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
   const char *start, *end;
   /* pointer to arguments for gmp_vasprintf */
   va_list ap2;
-
   MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_LOG_FUNC
+    (("size=%zu", size),
+     ("nbchar=%d", nbchar));
+
   MPFR_SAVE_EXPO_MARK (expo);
 
   /* FIXME: For ptr = NULL, once buf.len >= size, switch to size = 0 for

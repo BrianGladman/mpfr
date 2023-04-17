@@ -2150,6 +2150,7 @@ typedef struct {
 #define MPFR_LOG_ZIV_F      16
 #define MPFR_LOG_MSG_F      32
 #define MPFR_LOG_STAT_F     64
+#define MPFR_LOG_ALLOCA_F   128
 
 #ifdef MPFR_USE_LOGGING
 
@@ -2226,6 +2227,13 @@ __MPFR_DECLSPEC extern unsigned int mpfr_log_type;
   static const char *__mpfr_log_fname = __func__;                       \
   MPFR_LOG_END2 x
 
+/* Note about the implementation of alloca() logging: In each function
+   where a TMP_ALLOC() is done, a variable __gmpfr_log_alloca_size needs
+   to be declared. In order to ensure that only one variable is declared
+   (even when several markers are used), we do this in MPFR_LOG_FUNC.
+   This means that the function needs to be logged with MPFR_LOG_FUNC
+   (otherwise, there will be a compilation error when logging is enabled).
+*/
 #define MPFR_LOG_FUNC(begin,end)                                        \
   static const char *__mpfr_log_fname = __func__;                       \
   auto void __mpfr_log_cleanup (int *time);                             \
@@ -2233,7 +2241,9 @@ __MPFR_DECLSPEC extern unsigned int mpfr_log_type;
     int __gmpfr_log_time = *time;                                       \
     MPFR_LOG_END2 end; }                                                \
   int __gmpfr_log_time __attribute__ ((cleanup (__mpfr_log_cleanup)));  \
+  size_t __gmpfr_log_alloca_size = 0;                                   \
   __gmpfr_log_time = 0;                                                 \
+  (void) __gmpfr_log_alloca_size;  /* use it to avoid warnings */       \
   MPFR_LOG_BEGIN2 begin
 
 #else /* MPFR_USE_LOGGING */

@@ -93,6 +93,11 @@ mpfr_get_str_aux (char *const str, mpfr_exp_t *const exp, mp_limb_t *const r,
   int exact = (e < 0);
   MPFR_TMP_DECL(marker);
 
+  MPFR_LOG_FUNC
+    (("n=%Pd f=%" MPFR_EXP_FSPEC "d e=%ld b=%d m=%zu rnd=%d",
+      (mpfr_prec_t) n, (mpfr_eexp_t) f, e, b, m, rnd),
+     ("exp=%" MPFR_EXP_FSPEC "d", (mpfr_eexp_t) exp));
+
   /* if f > 0, then the maximal error 2^(e+f) is larger than 2 so we can't
      determine the integer Y */
   MPFR_ASSERTN(f <= 0);
