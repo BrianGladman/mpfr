@@ -110,6 +110,13 @@ srctests=({src,tests}/**/*.[ch]~*mini-gmp.*)
 c_src=(src/*.c~src/*_extracted.c)
 c_srctests=($c_src tests/*.c)
 
+# Check that the source files end with a newline character.
+for file in $srctests
+do
+  tail -c 1 $file | od -b | \
+    err-if-output "no newline at the end of $file" grep -q ' 012'
+done
+
 # Detect the definition of reserved macro names.
 #
 # See ISO C 7.1.3 (Reserved identifiers) and 7.31 (Future library directions).
