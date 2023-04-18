@@ -110,7 +110,12 @@ srctests=({src,tests}/**/*.[ch]~*mini-gmp.*)
 c_src=(src/*.c~src/*_extracted.c)
 c_srctests=($c_src tests/*.c)
 
-# Check that the source files end with a newline character.
+# Check that the source files end with a newline character since a
+# missing newline at the end is not portable. Note that GCC does not
+# warn because at translation phase 1, it automatically adds a newline
+# at the end if it is missing:
+#   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81745
+#   https://gcc.gnu.org/legacy-ml/gcc-patches/2007-04/msg00651.html
 for file in $srctests
 do
   tail -c 1 $file | od -b | \
