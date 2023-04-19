@@ -3009,10 +3009,14 @@ argument.
 
 In case of non-decimal output, only the significand is written in the
 specified base, the exponent is always displayed in decimal.
-Special values are always displayed as @samp{nan}, @samp{-inf}, and @samp{inf}
-for @samp{a}, @samp{b}, @samp{e}, @samp{f}, and @samp{g} specifiers and
-@samp{NAN}, @samp{-INF}, and @samp{INF} for @samp{A}, @samp{E}, @samp{F}, and
-@samp{G} specifiers.
+
+Non-real values are always displayed as @samp{nan} / @samp{inf} for the
+@samp{a}, @samp{b}, @samp{e}, @samp{f}, and @samp{g} specifiers, and
+@samp{NAN} / @samp{INF} for @samp{A}, @samp{E}, @samp{F}, and @samp{G}
+specifiers, possibly preceded by a sign or a space (the minus sign
+when the value has a negative sign, the plus sign when the value has
+a positive sign and the @samp{+} flag is used, a space when the value
+has a positive sign and the @emph{space} flag is used).
 
 The @code{mpfr_t} number is rounded to the given precision in the direction
 specified by the rounding mode (see below if the precision is missing).

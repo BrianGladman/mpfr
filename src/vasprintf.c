@@ -887,7 +887,7 @@ struct number_parts
   enum pad_t pad_type;    /* Padding type */
   mpfr_intmax_t pad_size; /* Number of padding characters */
 
-  char sign;              /* Sign character */
+  char sign;              /* Sign character ('-', '+', ' ', or '\0') */
 
   char *prefix_ptr;       /* Pointer to prefix part */
   size_t prefix_size;     /* Number of characters in prefix_ptr */
@@ -1092,12 +1092,6 @@ regular_ab (struct number_parts *np, mpfr_srcptr p,
   mpfr_exp_t exp;
 
   uppercase = spec.spec == 'A';
-
-  /* sign */
-  if (MPFR_IS_NEG (p))
-    np->sign = '-';
-  else if (spec.showsign || spec.space)
-    np->sign = spec.showsign ? '+' : ' ';
 
   if (spec.spec == 'a' || spec.spec == 'A')
     /* prefix part */
@@ -1329,12 +1323,6 @@ regular_eg (struct number_parts *np, mpfr_srcptr p,
 
   const int uppercase = spec.spec == 'E' || spec.spec == 'G';
 
-  /* sign */
-  if (MPFR_IS_NEG (p))
-    np->sign = '-';
-  else if (spec.showsign || spec.space)
-    np->sign = spec.showsign ? '+' : ' ';
-
   /* integral part */
   np->ip_size = 1;
   if (dec_info == NULL)
@@ -1491,12 +1479,6 @@ regular_fg (struct number_parts *np, mpfr_srcptr p,
   /* WARNING: an empty precision field is forbidden (it means precision = 6
      and it should have been changed to 6 before the function call) */
   MPFR_ASSERTD (spec.prec >= 0);
-
-  /* sign */
-  if (MPFR_IS_NEG (p))
-    np->sign = '-';
-  else if (spec.showsign || spec.space)
-    np->sign = spec.showsign ? '+' : ' ';
 
   if (MPFR_GET_EXP (p) <= 0)
     /* 0 < |p| < 1 */
@@ -1808,7 +1790,6 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
   /* WARNING: left justification means right space padding */
   np->pad_type = spec.left ? RIGHT : spec.pad == '0' ? LEADING_ZEROS : LEFT;
   np->pad_size = 0;
-  np->sign = '\0';
   np->prefix_ptr = NULL;
   np->prefix_size = 0;
   np->thousands_sep = '\0';
@@ -1828,6 +1809,12 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
 
   uppercase = spec.spec == 'A' || spec.spec == 'E' || spec.spec == 'F'
     || spec.spec == 'G';
+
+  /* The sign/space rule is the same for all cases. */
+  np->sign =
+    MPFR_IS_NEG (p) ? '-' :
+    spec.showsign ? '+' :
+    spec.space ? ' ' : '\0';
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (p)))
     {
@@ -1850,9 +1837,6 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
                with left spaces instead */
             np->pad_type = LEFT;
 
-          if (MPFR_IS_NEG (p))
-            np->sign = '-';
-
           np->ip_size = MPFR_INF_STRING_LENGTH;
           str = (char *) mpfr_allocate_func (1 + np->ip_size);
           strcpy (str, uppercase ? MPFR_INF_STRING_UC : MPFR_INF_STRING_LC);
@@ -1864,11 +1848,6 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
           /* note: for 'g' spec, zero is always displayed with 'f'-style with
              precision spec.prec - 1 and the trailing zeros are removed unless
              the flag '#' is used. */
-          if (MPFR_IS_NEG (p))
-            /* signed zero */
-            np->sign = '-';
-          else if (spec.showsign || spec.space)
-            np->sign = spec.showsign ? '+' : ' ';
 
           if (spec.spec == 'a' || spec.spec == 'A')
             /* prefix part */
@@ -1931,9 +1910,6 @@ partition_number (struct number_parts *np, mpfr_srcptr p,
       if (np->pad_type == LEADING_ZEROS)
         /* change to right justification padding with left spaces */
         np->pad_type = LEFT;
-
-      if (MPFR_IS_NEG (p))
-        np->sign = '-';
 
       np->ip_size = 3;
       str = (char *) mpfr_allocate_func (1 + np->ip_size);
@@ -2129,7 +2105,7 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
   if (np.pad_type == LEFT && np.pad_size != 0)
     buffer_pad (buf, ' ', np.pad_size);
 
-  /* sign character (may be '-', '+', or ' ') */
+  /* sign character (may be '-', '+', ' ', or '\0') */
   if (np.sign)
     buffer_pad (buf, np.sign, 1);
 
