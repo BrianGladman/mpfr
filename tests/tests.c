@@ -1198,9 +1198,11 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
    the inverse function (argument inv).
    Argument name is the name of the tested function (for messages).
    Arguments pxmax and pymax are the maximum precisions for x and y
-   when considering y = fct(x) or x = inv(y); see the loops. They are
-   overridden by the MPFR_TESTS_OFUF_PMAX environment variable, when
-   it is defined.
+   when considering y = fct(x) or x = inv(y). Precisions are tested
+   starting at MPFR_PREC_MIN. If pxmax > 64 and pymax > 64, then
+   pxmax and pymax are overridden by the MPFR_TESTS_OFUF_PMAX
+   environment variable (when defined), and precisions are tested
+   in geometric progression. Otherwise all precisions are tested.
    If the function is locally increasing, use decr = 0.
    If the function is locally decreasing, use decr = 1.
    Argument threshold is the threshold type: positive or negative,
@@ -1248,7 +1250,7 @@ ofuf_thresholds (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
   mpfr_exp_t old_emin, old_emax;
   mpfr_prec_t px, py;
   mpfr_t t;
-  int neg, ufl, nxu, dbg;
+  int neg, ufl, nxu, dbg, skip;
   mpfr_flags_t eflags;
   int always_exact = 1;
 
@@ -1267,8 +1269,12 @@ ofuf_thresholds (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
     printf ("ofuf_thresholds: %s with %s %s\n", name,
             neg ? "negative" : "positive", ufl ? "underflow" : "overflow");
 
+  skip = pxmax > 64 && pymax > 64;
+
+  /* Override pxmax and pymax by MPFR_TESTS_OFUF_PMAX, but not when
+     testing all precisions, as this could take too much time. */
   pmaxenv = getenv ("MPFR_TESTS_OFUF_PMAX");
-  if (pmaxenv != 0)
+  if (skip && pmaxenv != 0)
     pxmax = pymax = atoi (pmaxenv);
 
   /* Extend the exponent range to the maximum since this is what is
@@ -1288,13 +1294,13 @@ ofuf_thresholds (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
       mpfr_setmin (t, mpfr_get_emin ());
     }
 
-  for (px = MPFR_PREC_MIN; px <= pxmax; px += (px >> 2) + 1)
+  for (px = MPFR_PREC_MIN; px <= pxmax; px += skip * (px >> 2) + 1)
     {
       mpfr_t x[2];
 
       mpfr_inits2 (px, x[0], x[1], (mpfr_ptr) 0);
 
-      for (py = MPFR_PREC_MIN; py <= pymax; py += (py >> 2) + 1)
+      for (py = MPFR_PREC_MIN; py <= pymax; py += skip * (py >> 2) + 1)
         {
           mpfr_t y;
           int inex, i, r;
