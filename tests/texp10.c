@@ -317,8 +317,24 @@ main (int argc, char *argv[])
   data_check ("data/exp10", mpfr_exp10, "mpfr_exp10");
   bad_cases (mpfr_exp10, mpfr_log10, "mpfr_exp10",
              0, -256, 255, 4, 128, 800, 50);
+
+  /* TODO: add hardcoded tests for the bugs mentioned below. */
+
+  /* The following tests triggered a bug in mpfr_pow_general, later fixed
+     in commit b62966df913f73f08b3c5252e1d0c702bc20442f. */
   ofuf_thresholds (mpfr_exp10, mpfr_log10, "mpfr_exp10", 999, 999, 0, POSOF);
   ofuf_thresholds (mpfr_exp10, mpfr_log10, "mpfr_exp10", 999, 999, 0, POSUF);
+
+  /* The following ofuf_thresholds calls will test all precisions up to 64.
+     On 2023-04-21, the POSUF one fails on a 64-bit Linux machine with
+     xprec=63, yprec=1, rnd=MPFR_RNDN
+     x = -0.100110100010000010011010100001001111101111001111111101111001101E61
+     Got 0.1E-4611686018427387903
+     with inex = -1 and flags = inexact (8)
+     expected underflow
+  */
+  ofuf_thresholds (mpfr_exp10, mpfr_log10, "mpfr_exp10", 64, 64, 0, POSOF);
+  ofuf_thresholds (mpfr_exp10, mpfr_log10, "mpfr_exp10", 64, 64, 0, POSUF);
 
   tests_end_mpfr ();
   return 0;
