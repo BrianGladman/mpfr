@@ -236,7 +236,7 @@ test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
                   exit (1);
                 }
 
-              /* foo(a, a, a,c) */
+              /* foo(a, a, a, c) */
               testfunc (ref, op1, op1, op3, rnd);
               mpfr_set (res, op1, rnd);
               testfunc (res, res, res, op3, rnd);
@@ -248,7 +248,7 @@ test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
                   exit (1);
                 }
 
-              /* foo(a, a, b,a) */
+              /* foo(a, a, b, a) */
               testfunc (ref, op1, op2, op1, rnd);
               mpfr_set (res, op1, rnd);
               testfunc (res, res, op2, res, rnd);
