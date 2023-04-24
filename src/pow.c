@@ -180,12 +180,12 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
       exp_t = MPFR_GET_EXP (t);
       if (k_non_zero)
         {
-          MPFR_LOG_MSG (("subtract k * ln(2)\n", 0));
+          MPFR_LOG_MSG (("k_non_zero: subtract k * ln(2)\n", 0));
           mpfr_const_log2 (u, MPFR_RNDD);
           mpfr_mul (u, u, k, MPFR_RNDD);
           /* Error on u = k * log(2): < k * 2^(-Nt) < 1. */
           mpfr_sub (t, t, u, MPFR_RNDU);
-          MPFR_LOG_MSG (("t = y * ln|x| - k * ln(2)\n", 0));
+          MPFR_LOG_MSG (("k_non_zero: t = y * ln|x| - k * ln(2)\n", 0));
           MPFR_LOG_VAR (t);
         }
       /* estimate of the error -- see pow function in algorithms.tex.
@@ -199,11 +199,14 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
          where err1 = EXP(t)+3 for EXP(t) >= -1, and 1 otherwise,
          and err2 = EXP(k). */
       err = MPFR_NOTZERO (t) && exp_t >= -1 ? exp_t + 3 : 1;
+      MPFR_LOG_MSG (("err=%" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) err));
       if (k_non_zero)
         {
           if (MPFR_GET_EXP (k) > err)
             err = MPFR_GET_EXP (k);
           err++;
+          MPFR_LOG_MSG (("k_non_zero: err=%" MPFR_EXP_FSPEC "d\n",
+                         (mpfr_eexp_t) err));
         }
       MPFR_BLOCK (flags1, mpfr_exp (t, t, MPFR_RNDN));  /* exp(y*ln|x|)*/
       /* We need to test */
@@ -251,6 +254,7 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
             }
 
           k_non_zero = 1;
+          MPFR_LOG_MSG (("k_non_zero: set to 1\n", 0));
           Ntmin = sizeof(mpfr_exp_t) * CHAR_BIT;
           if (Ntmin > Nt)
             {
