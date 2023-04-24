@@ -38,7 +38,10 @@ mpfr_reldiff (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
       else if (MPFR_IS_INF(b))
         {
           if (MPFR_IS_INF (c) && (MPFR_SIGN (c) == MPFR_SIGN (b)))
-            MPFR_SET_ZERO(a);
+            {
+              MPFR_SET_SAME_SIGN (a, b);
+              MPFR_SET_ZERO(a);
+            }
           else
             MPFR_SET_NAN(a);
           return;
