@@ -142,7 +142,7 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
 
   /* We put the absolute value of x in absx, pointing to the significand
      of x to avoid allocating memory for the significand of absx. */
-  MPFR_ALIAS(absx, x, /*sign=*/ 1, /*EXP=*/ MPFR_EXP(x));
+  MPFR_TMP_INIT_ABS (absx, x);
 
   /* We will compute the absolute value of the result. So, let's
      invert the rounding mode if the result is negative (in which case

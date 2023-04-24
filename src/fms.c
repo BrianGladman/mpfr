@@ -33,6 +33,6 @@ mpfr_fms (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
 {
   mpfr_t minus_z;
 
-  MPFR_ALIAS (minus_z, z, -MPFR_SIGN(z), MPFR_EXP(z));
+  MPFR_TMP_INIT_NEG (minus_z, z);
   return mpfr_fma (s, x, y, minus_z, rnd_mode);
 }

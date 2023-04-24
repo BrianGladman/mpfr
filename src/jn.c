@@ -179,7 +179,7 @@ mpfr_jn (mpfr_ptr res, long n, mpfr_srcptr z, mpfr_rnd_t r)
      but to get some margin we use it for |z| > p/2 */
   pbound = MPFR_PREC (res) / 2 + 3;
   MPFR_ASSERTN (pbound <= ULONG_MAX);
-  MPFR_ALIAS (absz, z, 1, MPFR_EXP (z));
+  MPFR_TMP_INIT_ABS (absz, z);
   if (mpfr_cmp_ui (absz, pbound) > 0)
     {
       inex = mpfr_jn_asympt (res, n, z, r);

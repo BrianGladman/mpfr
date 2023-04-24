@@ -610,7 +610,7 @@ mpfr_sincos_fast (mpfr_ptr s, mpfr_ptr c, mpfr_srcptr x, mpfr_rnd_t rnd)
       /* if -Pi/4 <= x < 0, use sin(-x)=-sin(x) */
       else if (MPFR_IS_NEG(x) && mpfr_cmp_si_2exp (x, -1686629713, -31) >= 0)
         {
-          MPFR_ALIAS(x_red, x, MPFR_SIGN_POS, MPFR_GET_EXP(x));
+          MPFR_TMP_INIT_ABS (x_red, x);
           err = sincos_aux (ts, tc, x_red, MPFR_RNDN);
           MPFR_CHANGE_SIGN(ts);
         }
