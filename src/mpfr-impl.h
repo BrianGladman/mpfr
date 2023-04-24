@@ -1018,9 +1018,9 @@ typedef uintmax_t mpfr_ueexp_t;
 #define MPFR_EXP_LIMB_SIZE \
   ((sizeof (mpfr_exp_t) - 1) / MPFR_BYTES_PER_MP_LIMB + 1)
 
-/* Invalid exponent value (to track bugs...) */
-#define MPFR_EXP_INVALID \
- ((mpfr_exp_t) 1 << (GMP_NUMB_BITS*sizeof(mpfr_exp_t)/sizeof(mp_limb_t)-2))
+/* Invalid exponent value (to track bugs...).
+   MPFR_EXP_MAX has the form 2^n-1; MPFR_EXP_INVALID is 2^(n-1). */
+#define MPFR_EXP_INVALID (MPFR_EXP_MAX / 2 + 1)
 
 /* Definition of the exponent limits for MPFR numbers.
  * These limits are chosen so that if e is such an exponent, then 2e-1 and

@@ -26,7 +26,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #ifdef _MPFR_H_HAVE_INTMAX_T
 
-#define uintmaxpml (sizeof(uintmax_t) / sizeof(mp_limb_t))
+#define uintmaxpml (sizeof(uintmax_t) / MPFR_BYTES_PER_MP_LIMB)
 
 int
 mpfr_set_uj (mpfr_ptr x, uintmax_t j, mpfr_rnd_t rnd)
@@ -57,7 +57,7 @@ mpfr_set_uj_2exp (mpfr_ptr x, uintmax_t j, intmax_t e, mpfr_rnd_t rnd)
   if (MPFR_UNLIKELY(e >= __gmpfr_emax))
     return mpfr_overflow (x, rnd, MPFR_SIGN_POS);
 
-  MPFR_ASSERTN (sizeof(uintmax_t) % sizeof(mp_limb_t) == 0);
+  MPFR_ASSERTN (sizeof(uintmax_t) % MPFR_BYTES_PER_MP_LIMB == 0);
 
   /* Create an auxiliary var */
   MPFR_TMP_INIT1 (yp, y, uintmax_bit_size);

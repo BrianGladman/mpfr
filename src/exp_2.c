@@ -106,7 +106,7 @@ mpfr_exp_2 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     n = 0;
   else
     {
-      mp_limb_t r_limb[(sizeof (long) -1) / sizeof(mp_limb_t) + 1];
+      mp_limb_t r_limb[(sizeof (long) - 1) / MPFR_BYTES_PER_MP_LIMB + 1];
       /* Note: we use precision sizeof (long) * CHAR_BIT - 1 here since it is
          more efficient that full limb precision.
          The value of n will depend on whether MPFR_LONG_WITHIN_LIMB is
