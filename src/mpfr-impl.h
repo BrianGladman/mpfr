@@ -86,7 +86,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* For the definition of MPFR_THREAD_ATTR. GCC/ICC detection macros are
    no longer used, as they sometimes gave incorrect information about
-   the support of thread-local variables. A configure check is now done. */
+   the support of thread-local variables. A configure check is now done.
+   Also defines macros related to thread locking. */
 #if defined(MPFR_WANT_SHARED_CACHE)
 # define MPFR_NEED_THREAD_LOCK 1
 #endif
@@ -1017,9 +1018,9 @@ typedef uintmax_t mpfr_ueexp_t;
 #define MPFR_EXP_LIMB_SIZE \
   ((sizeof (mpfr_exp_t) - 1) / MPFR_BYTES_PER_MP_LIMB + 1)
 
-/* Invalid exponent value (to track bugs...) */
-#define MPFR_EXP_INVALID \
- ((mpfr_exp_t) 1 << (GMP_NUMB_BITS*sizeof(mpfr_exp_t)/sizeof(mp_limb_t)-2))
+/* Invalid exponent value (to track bugs...).
+   MPFR_EXP_MAX has the form 2^n-1; MPFR_EXP_INVALID is 2^(n-1). */
+#define MPFR_EXP_INVALID (MPFR_EXP_MAX / 2 + 1)
 
 /* Definition of the exponent limits for MPFR numbers.
  * These limits are chosen so that if e is such an exponent, then 2e-1 and
@@ -1362,9 +1363,12 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 /* Set y to s*significand(x)*2^e, for example MPFR_ALIAS(y,x,1,MPFR_EXP(x))
    sets y to |x|, and MPFR_ALIAS(y,x,MPFR_SIGN(x),0) sets y to x*2^f such
    that 1/2 <= |y| < 1. Does not check y is in the valid exponent range.
-   WARNING! x and y share the same mantissa. So, some operations are
+   WARNING! x and y share the same significand. So, some operations are
    not valid if x has been provided via an argument, e.g., trying to
-   modify the mantissa of y, even temporarily, or calling mpfr_clear on y.
+   modify the significand of y, even temporarily, or calling mpfr_clear
+   on y. An alias may also break the detection of reuse of an argument
+   for the destination (since the pointers to the numbers are different,
+   the detection of reuse by a comparison of these pointers will fail).
 */
 #define MPFR_ALIAS(y,x,s,e)                     \
   (MPFR_PREC(y) = MPFR_PREC(x),                 \
@@ -1656,8 +1660,10 @@ do {                                                                  \
    this can be found in practice: https://reviews.llvm.org/D27167 says:
    "I found this problem on FreeBSD 11, where thousands_sep in fr_FR.UTF-8
    is a no-break space (U+00A0)."
-   Note, however, that this is not allowed by the C standard, which just
-   says "character" and not "multibyte character".
+   Under Linux, this is U+202F NARROW NO-BREAK SPACE (e2 80 af).
+   And in the ps_AF locale,
+     decimal_point = U+066B ARABIC DECIMAL SEPARATOR (d9 ab)
+     thousands_sep = U+066C ARABIC THOUSANDS SEPARATOR (d9 ac)
    In the mean time, in case of non-single-byte character, revert to the
    default value. */
 #if MPFR_LCONV_DPTS
@@ -2107,7 +2113,7 @@ typedef struct {
       (_x) = GMP_NUMB_BITS;                                             \
       if (mpfr_log_level >= 0)                                          \
         _x ## _loop ++;                                                 \
-      LOG_PRINT (MPFR_LOG_BADCASE_F, "%s:ZIV 1st prec=%Pd\n",           \
+      LOG_PRINT (MPFR_LOG_ZIV_F, "%s:ZIV 1st prec=%Pd\n",               \
                  __func__, (mpfr_prec_t) (_p));                         \
     }                                                                   \
   while (0)
@@ -2120,7 +2126,7 @@ typedef struct {
       if (mpfr_log_level >= 0)                                          \
         _x ## _bad += (_x ## _cpt == 1);                                \
       _x ## _cpt ++;                                                    \
-      LOG_PRINT (MPFR_LOG_BADCASE_F, "%s:ZIV new prec=%Pd\n",           \
+      LOG_PRINT (MPFR_LOG_ZIV_F, "%s:ZIV new prec=%Pd\n",               \
                  __func__, (mpfr_prec_t) (_p));                         \
     }                                                                   \
   while (0)
@@ -2128,7 +2134,7 @@ typedef struct {
 #define MPFR_ZIV_FREE(_x)                                               \
   do                                                                    \
     if (_x ## _cpt > 1)                                                 \
-      LOG_PRINT (MPFR_LOG_BADCASE_F, "%s:ZIV %d loops\n",               \
+      LOG_PRINT (MPFR_LOG_ZIV_F, "%s:ZIV %d loops\n",                   \
                  __func__, _x ## _cpt);                                 \
   while (0)
 
@@ -2144,9 +2150,10 @@ typedef struct {
 #define MPFR_LOG_OUTPUT_F   2
 #define MPFR_LOG_INTERNAL_F 4
 #define MPFR_LOG_TIME_F     8
-#define MPFR_LOG_BADCASE_F  16
+#define MPFR_LOG_ZIV_F      16
 #define MPFR_LOG_MSG_F      32
 #define MPFR_LOG_STAT_F     64
+#define MPFR_LOG_ALLOCA_F   128
 
 #ifdef MPFR_USE_LOGGING
 
@@ -2164,10 +2171,10 @@ extern "C" {
 
 __MPFR_DECLSPEC extern FILE *mpfr_log_file;
 __MPFR_DECLSPEC extern int   mpfr_log_flush;
-__MPFR_DECLSPEC extern int   mpfr_log_type;
 __MPFR_DECLSPEC extern int   mpfr_log_level;
 __MPFR_DECLSPEC extern int   mpfr_log_current;
 __MPFR_DECLSPEC extern mpfr_prec_t mpfr_log_prec;
+__MPFR_DECLSPEC extern unsigned int mpfr_log_type;
 
 #if defined (__cplusplus)
  }
@@ -2193,7 +2200,7 @@ __MPFR_DECLSPEC extern mpfr_prec_t mpfr_log_prec;
   while (0)
 
 #define MPFR_LOG_VAR(x)                                                 \
-  LOG_PRINT (MPFR_LOG_INTERNAL_F, "%s.%d:%s[%#Pu]=%.*Rg\n", __func__,   \
+  LOG_PRINT (MPFR_LOG_INTERNAL_F, "%s.%d:%s[%#Pd]=%.*Rg\n", __func__,   \
              (int) __LINE__, #x, mpfr_get_prec (x), mpfr_log_prec, x)
 
 #define MPFR_LOG_MSG2(format, ...)                                      \
@@ -2223,6 +2230,13 @@ __MPFR_DECLSPEC extern mpfr_prec_t mpfr_log_prec;
   static const char *__mpfr_log_fname = __func__;                       \
   MPFR_LOG_END2 x
 
+/* Note about the implementation of alloca() logging: In each function
+   where a TMP_ALLOC() is done, a variable __gmpfr_log_alloca_size needs
+   to be declared. In order to ensure that only one variable is declared
+   (even when several markers are used), we do this in MPFR_LOG_FUNC.
+   This means that the function needs to be logged with MPFR_LOG_FUNC
+   (otherwise, there will be a compilation error when logging is enabled).
+*/
 #define MPFR_LOG_FUNC(begin,end)                                        \
   static const char *__mpfr_log_fname = __func__;                       \
   auto void __mpfr_log_cleanup (int *time);                             \
@@ -2230,7 +2244,9 @@ __MPFR_DECLSPEC extern mpfr_prec_t mpfr_log_prec;
     int __gmpfr_log_time = *time;                                       \
     MPFR_LOG_END2 end; }                                                \
   int __gmpfr_log_time __attribute__ ((cleanup (__mpfr_log_cleanup)));  \
+  size_t __gmpfr_log_alloca_size = 0;                                   \
   __gmpfr_log_time = 0;                                                 \
+  (void) __gmpfr_log_alloca_size;  /* use it to avoid warnings */       \
   MPFR_LOG_BEGIN2 begin
 
 #else /* MPFR_USE_LOGGING */

@@ -5,7 +5,7 @@
 @c Note that the 5 occurrences of the version string in this file
 @c should be updated by the tools/update-version script.
 @set VERSION 4.3.0-dev
-@set UPDATED-MONTH January 2023
+@set UPDATED-MONTH April 2023
 @settitle GNU MPFR @value{VERSION}
 @synindex tp fn
 @iftex
@@ -1577,7 +1577,7 @@ Note that the input 0 is converted to @mm{+}0.
 Set @var{rop} to the value of the string @var{s} in base @var{base},
 rounded in the direction @var{rnd}.
 See the documentation of @code{mpfr_strtofr} for a detailed description
-of the valid string formats.
+of @var{base} (with its special value 0) and the valid string formats.
 Contrary to @code{mpfr_strtofr}, @code{mpfr_set_str} requires the
 @emph{whole} string to represent a valid floating-point number.
 @c Additionally, special values
@@ -2405,9 +2405,13 @@ used for @code{pow}.
 
 @deftypefun int mpfr_compound_si (mpfr_t @var{rop}, mpfr_t @var{op}, long int @var{n}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the power @var{n} of one plus @var{op},
-following IEEE@tie{}754 for the special cases and exceptions.
-When @var{n} is zero and @var{op} is NaN or greater or equal to @minus{}1,
-@var{rop} is set to 1.
+following IEEE@tie{}754 for the special cases and exceptions. In particular:
+@itemize @bullet
+@item When @tm{@var{op} < @minus{}1}, @var{rop} is set to NaN@.
+@item When @var{n} is zero and @var{op} is NaN (like any value greater or equal to @minus{}1), @var{rop} is set to 1.
+@item When @tm{@var{op} = @minus{}1}, @var{rop} is set to @mm{+}Inf for @tm{@var{n} < 0}, and to @mm{+}0 for @tm{@var{n} > 0}.
+@end itemize
+The other special cases follow the usual rules.
 @end deftypefun
 
 @deftypefun int mpfr_cos (mpfr_t @var{rop}, mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
@@ -2945,7 +2949,7 @@ mpfr_prec_t p;
 mpfr_init (x);
 @dots{}
 p = mpfr_get_prec (x);
-mpfr_printf ("variable x with %Pu bits", p);
+mpfr_printf ("variable x with %Pd bits", p);
 @end example
 
 The @samp{R} type specifies that a following @samp{a}, @samp{A}, @samp{b},
@@ -3005,10 +3009,14 @@ argument.
 
 In case of non-decimal output, only the significand is written in the
 specified base, the exponent is always displayed in decimal.
-Special values are always displayed as @samp{nan}, @samp{-inf}, and @samp{inf}
-for @samp{a}, @samp{b}, @samp{e}, @samp{f}, and @samp{g} specifiers and
-@samp{NAN}, @samp{-INF}, and @samp{INF} for @samp{A}, @samp{E}, @samp{F}, and
-@samp{G} specifiers.
+
+Non-real values are always displayed as @samp{nan} / @samp{inf} for the
+@samp{a}, @samp{b}, @samp{e}, @samp{f}, and @samp{g} specifiers, and
+@samp{NAN} / @samp{INF} for @samp{A}, @samp{E}, @samp{F}, and @samp{G}
+specifiers, possibly preceded by a sign or a space (the minus sign
+when the value has a negative sign, the plus sign when the value has
+a positive sign and the @samp{+} flag is used, a space when the value
+has a positive sign and the @emph{space} flag is used).
 
 The @code{mpfr_t} number is rounded to the given precision in the direction
 specified by the rounding mode (see below if the precision is missing).
@@ -3374,6 +3382,15 @@ if so, one can surely round to nearest to @var{prec} bits,
 and in addition one can determine the correct ternary value, which would not
 be the case when @var{b} is near from a value exactly representable on
 @var{prec} bits.
+
+@c TODO: Explain how to use mpfr_can_round in cases where rnd1 is some
+@c fixed directed rounding (e.g. to simplify the error analysis or to
+@c handle overflow/underflow correctly), the result may be very close
+@c to a machine number in the target precision and one knows that it is
+@c inexact. The issue is that mpfr_can_round does not have this latest
+@c knowledge and one needs to make sure to avoid huge precisions. Call
+@c mpfr_can_round with rnd2 = rnd1 and adjust the result with some
+@c mpfr_next* function afterwards?
 
 A detailed example is available in the @file{examples} subdirectory,
 file @file{can_round.c}.

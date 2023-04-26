@@ -60,13 +60,6 @@ const int prec_max_printf = 5000; /* limit for random precision in
                                      random_double() */
 #define BUF_SIZE 65536
 
-const char pinf_str[] = "inf";
-const char pinf_uc_str[] = "INF";
-const char minf_str[] = "-inf";
-const char minf_uc_str[] = "-INF";
-const char nan_str[] = "nan";
-const char nan_uc_str[] = "NAN";
-
 int randsize;
 
 /* 1. compare expected string with the string BUFFER returned by
@@ -287,6 +280,76 @@ native_types (void)
 }
 
 static void
+special (void)
+{
+  mpfr_t x;
+  const char *ns[] = { "nan", "NAN", "inf", "INF" };
+  const char *ps[] = { "", " ", "+", "+ ", " +" };
+  const char *rs[] = { "", "U", "D", "Y", "Z", "N" };
+  const char *fs[] = { "efgab", "EFGA" };
+  int ntests = 0, neg, psflag, r, f;
+  unsigned int i;
+
+  mpfr_init2 (x, 128);  /* initialized to NaN */
+
+  for (i = 0; i < numberof (ns); i++)
+    {
+      if (i == 2)
+        MPFR_SET_INF (x);
+
+      for (neg = 0; neg < 2; neg++)
+        {
+          MPFR_SET_SIGN (x, neg ? MPFR_SIGN_NEG : MPFR_SIGN_POS);
+          for (psflag = 0; psflag < 3; psflag++)
+            for (r = 0; r < numberof (rs); r++)
+              for (f = 0; fs[i & 1][f] != '\0'; f++)
+                {
+                  int fmtpsflags = psflag;
+                  int zeroflag, width;
+                  char ws[4], fmt[12], expected[12], sign, *p;
+                  int sp;
+
+                  /* In case of '+' flag, let's randomly test an additional
+                     space flag, which should be ignored. */
+                  if (psflag == 2)
+                    fmtpsflags += randlimb () % 3;
+
+                  /* '0' flag ignored for NaN and Inf; use it randomly. */
+                  zeroflag = RAND_BOOL ();
+
+                  width = randlimb () % 12;
+                  if (width != 0)
+                    sprintf (ws, "%d", width);
+                  else
+                    ws[0] = '\0';
+
+                  sprintf (fmt, "%%%s%s%sR%s%c", ps[fmtpsflags],
+                           zeroflag ? "0" : "", ws, rs[r], fs[i & 1][f]);
+                  /* printf ("Format string: \"%s\"\n", fmt); */
+
+                  p = expected;
+                  sign = neg ? '-' : ps[psflag][0];
+                  for (sp = width - (sign != '\0') - 3; sp > 0; sp--)
+                    *p++ = ' ';
+                  if (sign != '\0')
+                    *p++ = sign;
+                  strcpy (p, ns[i]);
+
+                  check_sprintf (expected, fmt, x);
+                  ntests++;
+                }
+        }
+    }
+
+  /* 2 base values (NaN and Inf), 2 signs (positive and negative),
+     3 possible '+'/space flag cases, 6 cases for the rounding mode,
+     9 format specifiers (efgab / EFGA). */
+  MPFR_ASSERTN (ntests == 2 * 2 * 3 * 6 * 9);
+
+  mpfr_clear (x);
+}
+
+static void
 decimal (void)
 {
   mpfr_prec_t p = 128;
@@ -322,53 +385,7 @@ decimal (void)
   mpfr_init (z);
   mpfr_init2 (x, 128);
 
-  /* special numbers */
-  mpfr_set_inf (x, 1);
-  check_sprintf (pinf_str, "%Re", x);
-  check_sprintf (pinf_str, "%RUe", x);
-  check_sprintf (pinf_uc_str, "%RE", x);
-  check_sprintf (pinf_uc_str, "%RDE", x);
-  check_sprintf (pinf_str, "%Rf", x);
-  check_sprintf (pinf_str, "%RYf", x);
-  check_sprintf (pinf_uc_str, "%RF", x);
-  check_sprintf (pinf_uc_str, "%RZF", x);
-  check_sprintf (pinf_str, "%Rg", x);
-  check_sprintf (pinf_str, "%RNg", x);
-  check_sprintf (pinf_uc_str, "%RG", x);
-  check_sprintf (pinf_uc_str, "%RUG", x);
-  check_sprintf ("       inf", "%010Re", x);
-  check_sprintf ("       inf", "%010RDe", x);
-
-  mpfr_set_inf (x, -1);
-  check_sprintf (minf_str, "%Re", x);
-  check_sprintf (minf_str, "%RYe", x);
-  check_sprintf (minf_uc_str, "%RE", x);
-  check_sprintf (minf_uc_str, "%RZE", x);
-  check_sprintf (minf_str, "%Rf", x);
-  check_sprintf (minf_str, "%RNf", x);
-  check_sprintf (minf_uc_str, "%RF", x);
-  check_sprintf (minf_uc_str, "%RUF", x);
-  check_sprintf (minf_str, "%Rg", x);
-  check_sprintf (minf_str, "%RDg", x);
-  check_sprintf (minf_uc_str, "%RG", x);
-  check_sprintf (minf_uc_str, "%RYG", x);
-  check_sprintf ("      -inf", "%010Re", x);
-  check_sprintf ("      -inf", "%010RZe", x);
-
-  mpfr_set_nan (x);
-  check_sprintf (nan_str, "%Re", x);
-  check_sprintf (nan_str, "%RNe", x);
-  check_sprintf (nan_uc_str, "%RE", x);
-  check_sprintf (nan_uc_str, "%RUE", x);
-  check_sprintf (nan_str, "%Rf", x);
-  check_sprintf (nan_str, "%RDf", x);
-  check_sprintf (nan_uc_str, "%RF", x);
-  check_sprintf (nan_uc_str, "%RYF", x);
-  check_sprintf (nan_str, "%Rg", x);
-  check_sprintf (nan_str, "%RZg", x);
-  check_sprintf (nan_uc_str, "%RG", x);
-  check_sprintf (nan_uc_str, "%RNG", x);
-  check_sprintf ("       nan", "%010Re", x);
+  /* special numbers: tested in special() */
 
   /* positive numbers */
   mpfr_set_str (x, "18993474.61279296875", 10, MPFR_RNDN);
@@ -693,28 +710,7 @@ hexadecimal (void)
 
   mpfr_inits2 (64, x, z, (mpfr_ptr) 0);
 
-  /* special */
-  mpfr_set_inf (x, 1);
-  check_sprintf (pinf_str, "%Ra", x);
-  check_sprintf (pinf_str, "%RUa", x);
-  check_sprintf (pinf_str, "%RDa", x);
-  check_sprintf (pinf_uc_str, "%RA", x);
-  check_sprintf (pinf_uc_str, "%RYA", x);
-  check_sprintf (pinf_uc_str, "%RZA", x);
-  check_sprintf (pinf_uc_str, "%RNA", x);
-
-  mpfr_set_inf (x, -1);
-  check_sprintf (minf_str, "%Ra", x);
-  check_sprintf (minf_str, "%RYa", x);
-  check_sprintf (minf_str, "%RZa", x);
-  check_sprintf (minf_str, "%RNa", x);
-  check_sprintf (minf_uc_str, "%RA", x);
-  check_sprintf (minf_uc_str, "%RUA", x);
-  check_sprintf (minf_uc_str, "%RDA", x);
-
-  mpfr_set_nan (x);
-  check_sprintf (nan_str, "%Ra", x);
-  check_sprintf (nan_uc_str, "%RA", x);
+  /* special numbers: tested in special() */
 
   /* regular numbers */
   mpfr_set_str (x, "FEDCBA9.87654321", 16, MPFR_RNDN);
@@ -839,15 +835,7 @@ binary (void)
 
   mpfr_inits2 (64, x, z, (mpfr_ptr) 0);
 
-  /* special */
-  mpfr_set_inf (x, 1);
-  check_sprintf (pinf_str, "%Rb", x);
-
-  mpfr_set_inf (x, -1);
-  check_sprintf (minf_str, "%Rb", x);
-
-  mpfr_set_nan (x);
-  check_sprintf (nan_str, "%Rb", x);
+  /* special numbers: tested in special() */
 
   /* regular numbers */
   mpfr_set_str (x, "1110010101.1001101", 2, MPFR_RNDN);
@@ -1499,7 +1487,9 @@ bug21056 (void)
      https://austingroupbugs.net/view.php?id=761
      https://austingroupbugs.net/view.php?id=1219
      https://gcc.gnu.org/bugzilla/show_bug.cgi?id=87096
-   Fixed in r11429.
+   The issue was due to a 64-bit size_t converted to a 32-bit int.
+   Fixed in r11429 (6b8cf3e2bdc285027627281cac230ed932c1b73f) on 2017-04-07.
+   Code reworked in 080f6828d785801aba8b8c1e139752d1c5a3cd54 on 2023-03-21.
 */
 static void
 snprintf_size (void)
@@ -1624,6 +1614,30 @@ check_length_overflow (void)
   mpfr_clear (x);
 }
 
+/* On 2023-03-22, on a 64-bit Linux machine (thus with 32-bit int),
+   the case %.2147483648Rg yields an incorrect size computation and
+   MPFR wants to allocate 18446744071562070545 bytes. With assertion
+   checking (--enable-assert), one gets:
+     vasprintf.c:1908: MPFR assertion failed: threshold >= 1
+
+   This case should either succeed or fail as reaching an environmental limit
+   like with glibc (note that the precision does not fit in an int).
+*/
+static void
+large_prec_for_g (void)
+{
+  mpfr_t x;
+  int r;
+
+  mpfr_init2 (x, 128);
+  mpfr_set_ui (x, 1, MPFR_RNDN);
+  r = mpfr_snprintf (NULL, 0, "%.2147483647Rg\n", x);
+  MPFR_ASSERTN (r == 2);
+  r = mpfr_snprintf (NULL, 0, "%.2147483648Rg\n", x);
+  MPFR_ASSERTN (r == 2 || r < 0);
+  mpfr_clear (x);
+}
+
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
 
 /* The following tests should be equivalent to those from test_locale()
@@ -1724,6 +1738,14 @@ test_locale (void)
      "%0+ -'13.10Pd:" (used up to MPFR 4.2.0), since the GNU libc is
      buggy: https://sourceware.org/bugzilla/show_bug.cgi?id=23432
      We don't know about the other implementations.
+     This new test works fine with glibc up to 2.36, but fails with 2.37
+     (as reported by Klaus Dittrich in the MPFR mailing-list); this is
+     actually a bug introduced in glibc 2.37, not in MPFR:
+       https://sourceware.org/bugzilla/show_bug.cgi?id=30068
+     Since this bug can yield a buffer overflow (CVE-2023-25139), possibly
+     affecting MPFR users, let us rather require a fix in glibc. This bug
+     has been fixed in the 2.37 branch:
+       https://sourceware.org/git/?p=glibc.git;a=commit;h=07b9521fc6
      If we wanted to check that and avoid a failure of the test because of
      a buggy C library (while MPFR would be consistent with the C library),
      we could compare the MPFR output with both the correct output and the
@@ -1766,9 +1788,10 @@ main (int argc, char **argv)
   for (k = 0; k < 40; k++)
     {
       native_types ();
+      special ();
+      decimal ();
       hexadecimal ();
       binary ();
-      decimal ();
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE) && MPFR_LCONV_DPTS
       locale_da_DK ();
@@ -1789,6 +1812,7 @@ main (int argc, char **argv)
   percent_n ();
   mixed ();
   check_length_overflow ();
+  large_prec_for_g ();
   test_locale ();
 
   if (getenv ("MPFR_CHECK_LIBC_PRINTF"))

@@ -58,6 +58,20 @@ struct header {
    programs may also change the memory limit. */
 size_t tests_memory_limit = DEFAULT_MEMORY_LIMIT;
 
+/* The special tests_allocate/tests_reallocate/tests_free memory allocation
+   functions for the testsuite track memory allocations and record them via
+   the tests_memory_list and tests_total_size global variables. For tests
+   that use several threads, these data are shared between all threads
+   (obviously by design), so that thread locking must be used by these
+   special memory allocation functions.
+   On 2023-04-12: thread locking is currently enabled only with the
+   shared cache (--enable-shared-cache); since the only test that uses
+   several threads (it is in tconst_pi.c) can be executed only with the
+   shared cache enabled, this is OK. But in the future, if other tests
+   with several threads are added and executed whether the shared cache
+   is enabled or not, thread locking should be enabled together with TLS
+   whenever possible, and when it is unavailable, these multithread tests
+   must not be run. */
 static struct header  *tests_memory_list;
 static size_t tests_total_size = 0;
 MPFR_LOCK_DECL(mpfr_lock_memory)

@@ -70,10 +70,12 @@ int
 mpfr_set (mpfr_ptr a, mpfr_srcptr b, mpfr_rnd_t rnd_mode)
 {
   /* Contrary to other mpfr_set4 based functions (mpfr_abs, mpfr_neg, etc.),
-     do not detect the case a == b as there is no interest to call mpfr_set
-     in this case, so that it is very unlikely that the user calls it
-     with a == b (this is the reverse of what is assumed for the other
-     functions). */
+     do not detect the case a == b as it is assumed that this case is
+     uncommon (this is the reverse of what is assumed for the other
+     functions). However, it may occur, e.g. for mpfr_fma(z,x,y,z,rnd_mode)
+     when x and y happen to be both 0. Note also that it is possible to
+     have a != b while they share their significand, e.g. with mpfr_fms
+     due to the use of an alias via MPFR_TMP_INIT_NEG. */
   return mpfr_set4 (a, b, rnd_mode, MPFR_SIGN (b));
 }
 

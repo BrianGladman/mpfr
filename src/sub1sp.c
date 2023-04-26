@@ -1451,8 +1451,13 @@ mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
     gcc claims that they might be used uninitialized. We fill them with invalid
     values, which should produce a failure if so. See README.dev file. */
   int pow2;
-
   MPFR_TMP_DECL(marker);
+
+  MPFR_LOG_FUNC
+    (("b[%Pd]=%.*Rg c[%Pd]=%.*Rg rnd=%d",
+      mpfr_get_prec (b), mpfr_log_prec, b,
+      mpfr_get_prec (c), mpfr_log_prec, c, rnd_mode),
+     ("a[%Pd]=%.*Rg", mpfr_get_prec (a), mpfr_log_prec, a));
 
   MPFR_ASSERTD(MPFR_PREC(a) == MPFR_PREC(b) && MPFR_PREC(b) == MPFR_PREC(c));
   MPFR_ASSERTD(MPFR_IS_PURE_FP(b));

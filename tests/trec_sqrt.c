@@ -242,6 +242,8 @@ main (int argc, char *argv[])
   data_check ("data/rec_sqrt", mpfr_rec_sqrt, "mpfr_rec_sqrt");
   bad_cases (mpfr_rec_sqrt, pm2, "mpfr_rec_sqrt", 0, -256, 255, 4, 128,
              800, 50);
+  bad_cases (mpfr_rec_sqrt, pm2, "mpfr_rec_sqrt", 0, -256, 255, 9999, 9999,
+             120000, 1);
 
  end:
   tests_end_mpfr ();

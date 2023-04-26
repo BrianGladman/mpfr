@@ -759,6 +759,13 @@ Table of contents:
   be unset (only when invoking pkg-config) as a workaround to
     https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=984504
 
+- [2023-04-24] Check potential issues between aliases and the reuse of
+  arguments (typical case: mpfr_fms): if the detection of reuse is done
+  by a comparison on the pointers to the MPFR numbers, this detection
+  will fail as these pointers are different though these numbers share
+  their significand. Check that potentially problematic cases are tested
+  in the testsuite.
+
 
 ##############################################################################
 7. Portability

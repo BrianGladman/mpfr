@@ -27,7 +27,7 @@ mpfr_ui_pow (mpfr_ptr y, unsigned long int n, mpfr_srcptr x, mpfr_rnd_t rnd_mode
 {
   mpfr_t t;
   int inexact;
-  mp_limb_t tmp_mant[(sizeof (n) - 1) / sizeof (mp_limb_t) + 1];
+  mp_limb_t tmp_mant[(sizeof (n) - 1) / MPFR_BYTES_PER_MP_LIMB + 1];
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_SAVE_EXPO_MARK (expo);

@@ -99,6 +99,11 @@ mpfr_log_ui (mpfr_ptr x, unsigned long n, mpfr_rnd_t rnd_mode)
   MPFR_ZIV_DECL(loop);
   MPFR_SAVE_EXPO_DECL (expo);
 
+  MPFR_LOG_FUNC
+    (("n=%lu rnd=%d", n, rnd_mode),
+     ("y[%Pd]=%.*Rg inexact=%d",
+      mpfr_get_prec(x), mpfr_log_prec, x, inexact));
+
   if (n <= 2)
     {
       if (n == 0)

@@ -22,6 +22,11 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+/* Note: This implementation via mpfr_ui_pow allows one to test
+   mpfr_ui_pow with texp10 tests. If the implementation changes,
+   a comparison with mpfr_ui_pow results will need to be done in
+   the tests. */
+
 int
 mpfr_exp10 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {

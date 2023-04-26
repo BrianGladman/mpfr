@@ -35,6 +35,11 @@ mpfr_cmp_si_2exp (mpfr_srcptr b, long int i, mpfr_exp_t f)
 {
   int si;
 
+  MPFR_LOG_FUNC
+    (("x[%Pd]=%.*Rg i=%ld e=%" MPFR_EXP_FSPEC "d",
+      mpfr_get_prec (b), mpfr_log_prec, b, i, (mpfr_eexp_t) f),
+     ("", 0));
+
   si = i < 0 ? -1 : 1; /* sign of i */
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (b)))
     {

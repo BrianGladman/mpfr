@@ -131,19 +131,18 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   /* Declaration of the size variable */
   mpfr_prec_t Nz = MPFR_PREC(z);               /* target precision */
   mpfr_prec_t Nt;                              /* working precision */
-  mpfr_exp_t err;                              /* error */
   MPFR_ZIV_DECL (ziv_loop);
 
   MPFR_LOG_FUNC
-    (("x[%Pu]=%.*Rg y[%Pu]=%.*Rg rnd=%d",
+    (("x[%Pd]=%.*Rg y[%Pd]=%.*Rg rnd=%d",
       mpfr_get_prec (x), mpfr_log_prec, x,
       mpfr_get_prec (y), mpfr_log_prec, y, rnd_mode),
-     ("z[%Pu]=%.*Rg inexact=%d",
+     ("z[%Pd]=%.*Rg inexact=%d",
       mpfr_get_prec (z), mpfr_log_prec, z, inexact));
 
   /* We put the absolute value of x in absx, pointing to the significand
      of x to avoid allocating memory for the significand of absx. */
-  MPFR_ALIAS(absx, x, /*sign=*/ 1, /*EXP=*/ MPFR_EXP(x));
+  MPFR_TMP_INIT_ABS (absx, x);
 
   /* We will compute the absolute value of the result. So, let's
      invert the rounding mode if the result is negative (in which case
@@ -171,36 +170,43 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   MPFR_ZIV_INIT (ziv_loop, Nt);
   for (;;)
     {
+      mpfr_exp_t err, exp_t;
       MPFR_BLOCK_DECL (flags1);
 
       /* compute exp(y*ln|x|), using MPFR_RNDU to get an upper bound, so
          that we can detect underflows. */
       mpfr_log (t, absx, MPFR_IS_NEG (y) ? MPFR_RNDD : MPFR_RNDU); /* ln|x| */
       mpfr_mul (t, y, t, MPFR_RNDU);                              /* y*ln|x| */
+      exp_t = MPFR_GET_EXP (t);
       if (k_non_zero)
         {
-          MPFR_LOG_MSG (("subtract k * ln(2)\n", 0));
+          MPFR_LOG_MSG (("k_non_zero: subtract k * ln(2)\n", 0));
           mpfr_const_log2 (u, MPFR_RNDD);
           mpfr_mul (u, u, k, MPFR_RNDD);
           /* Error on u = k * log(2): < k * 2^(-Nt) < 1. */
           mpfr_sub (t, t, u, MPFR_RNDU);
-          MPFR_LOG_MSG (("t = y * ln|x| - k * ln(2)\n", 0));
+          MPFR_LOG_MSG (("k_non_zero: t = y * ln|x| - k * ln(2)\n", 0));
           MPFR_LOG_VAR (t);
         }
       /* estimate of the error -- see pow function in algorithms.tex.
-         The error on t is at most 1/2 + 3*2^(EXP(t)+1) ulps, which is
-         <= 2^(EXP(t)+3) for EXP(t) >= -1, and <= 2 ulps for EXP(t) <= -2.
+         The error on t before the subtraction of k*log(2) is at most
+         1/2 + 3*2^(EXP(t)+1) ulps, which is <= 2^(EXP(t)+3) for EXP(t) >= -1,
+         and <= 2 ulps for EXP(t) <= -2.
          Additional error if k_no_zero: treal = t * errk, with
          1 - |k| * 2^(-Nt) <= exp(-|k| * 2^(-Nt)) <= errk <= 1,
          i.e., additional absolute error <= 2^(EXP(k)+EXP(t)-Nt).
-         Total error <= 2^err1 + 2^err2 <= 2^(max(err1,err2)+1). */
-      err = MPFR_NOTZERO (t) && MPFR_GET_EXP (t) >= -1 ?
-        MPFR_GET_EXP (t) + 3 : 1;
+         Total ulp error <= 2^err1 + 2^err2 <= 2^(max(err1,err2)+1),
+         where err1 = EXP(t)+3 for EXP(t) >= -1, and 1 otherwise,
+         and err2 = EXP(k). */
+      err = MPFR_NOTZERO (t) && exp_t >= -1 ? exp_t + 3 : 1;
+      MPFR_LOG_MSG (("err=%" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) err));
       if (k_non_zero)
         {
           if (MPFR_GET_EXP (k) > err)
             err = MPFR_GET_EXP (k);
           err++;
+          MPFR_LOG_MSG (("k_non_zero: err=%" MPFR_EXP_FSPEC "d\n",
+                         (mpfr_eexp_t) err));
         }
       MPFR_BLOCK (flags1, mpfr_exp (t, t, MPFR_RNDN));  /* exp(y*ln|x|)*/
       /* We need to test */
@@ -248,6 +254,7 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
             }
 
           k_non_zero = 1;
+          MPFR_LOG_MSG (("k_non_zero: set to 1\n", 0));
           Ntmin = sizeof(mpfr_exp_t) * CHAR_BIT;
           if (Ntmin > Nt)
             {
@@ -385,10 +392,10 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC
-    (("x[%Pu]=%.*Rg y[%Pu]=%.*Rg rnd=%d",
+    (("x[%Pd]=%.*Rg y[%Pd]=%.*Rg rnd=%d",
       mpfr_get_prec (x), mpfr_log_prec, x,
       mpfr_get_prec (y), mpfr_log_prec, y, rnd_mode),
-     ("z[%Pu]=%.*Rg inexact=%d",
+     ("z[%Pd]=%.*Rg inexact=%d",
       mpfr_get_prec (z), mpfr_log_prec, z, inexact));
 
   if (MPFR_ARE_SINGULAR (x, y))

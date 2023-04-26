@@ -287,7 +287,7 @@ To make a release (for the MPFR team):
      platform supports that (e.g. under Linux/x86, with GCC and its -mpc64
      option to simulate the FreeBSD / NetBSD 6- behavior, where by default,
      the x87 FPU is configured to round on 53 bits), and in various locales
-     (LC_ALL=tr_TR in particular, if installed).
+     (LC_ALL=tr_TR and LC_ALL=ps_AF in particular, if installed).
      On x86, test with -m96bit-long-double and -m128bit-long-double.
      Try also with gcc's -fno-common option.
      Check also with "-Wformat=2", but without logging support (in order
@@ -659,6 +659,8 @@ Environment variables that affect the tests:
 
 + MPFR_DEBUG_BADCASES:  For debugging (see tests.c, function bad_cases).
 
++ MPFR_DEBUG_OFUF:      For debugging (see tests.c, function ofuf_thresholds).
+
 + MPFR_SUSPICIOUS_OVERFLOW:
                         Define to check suspicious overflow in the generic
                         tests (tgeneric.c). For developers and testers.
@@ -669,6 +671,9 @@ Environment variables that affect the tests:
 
 + MPFR_TESTS_TIMEOUT:   When timeout in the tests is enabled, this
                         overrides the value of the macro.
+
++ MPFR_TESTS_OFUF_PMAX: Maximum precision for both x and y in the
+                        ofuf_thresholds tests (see tests.c).
 
 + MPFR_TGENERIC_STAT:   For the generic tests, output the number of normal
                         cases and the total.
@@ -696,7 +701,7 @@ The C language:
   https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf (C99)
   https://www.open-std.org/jtc1/sc22/wg14/www/C99RationaleV5.10.pdf
   https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf (C11 draft)
-  https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3054.pdf (C2x draft)
+  https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3096.pdf (C2x draft)
   http://home.datacomm.ch/t_wolf/tw/c/c9x_changes.html
 
 About undefined behavior:
@@ -989,8 +994,7 @@ You can control what is logged using the environment variables:
 
 MPFR_LOG_FILE:  Name of the LOG file (default: mpfr.log).
 MPFR_LOG_FLUSH: When this variable is set, flush the log stream after
-                each log output (useful to get the latest logs in case
-                of crash, but this makes logging slower).
+                each log output.
 MPFR_LOG_PREC:  Number of digits of the output (set the internal variable
                 mpfr_log_prec, default: 6).
 MPFR_LOG_LEVEL: Max recursive level (default: 7).
@@ -1002,11 +1006,20 @@ MPFR_LOG_INTERNAL: Log the intermediary variables if any.
 MPFR_LOG_MSG:      Log the messages sent by MPFR if any.
 MPFR_LOG_ZIV:      Log what the Ziv Loops do.
 MPFR_LOG_STAT:     Log how many times Ziv failed.
+MPFR_LOG_ALLOCA:   Log the alloca() amounts.
 MPFR_LOG_ALL:      Log everything
 
 Define them. Run your program, and view `mpfr.log`.
 
 For example, just define MPFR_LOG_ALL, run you program, and view `mpfr.log`.
+
+If you want to debug a crash in MPFR, in order to get the latest logs, you
+will need to set MPFR_LOG_FLUSH (note that this makes logging slower) and
+choose a low enough optimization level (e.g., -O1), so that the compiler
+does not delay the log code. For instance, concerning mpfr_rec_sqrt() in
+rec_sqrt.c, with -O2, GCC 12 delays the fflush() from the loop after the
+loop, so that one cannot see any of the "working precision =" line in case
+of a crash in the loop, even if hundreds of such lines are expected.
 
 Note: The running time may be much longer. If logging is used on the
 test suite with a default timeout, it may be necessary to increase the
@@ -1036,13 +1049,13 @@ after the format string.
 Example:
  int dodo (mpfr_t x, mpfr_t op, int cnt, mpfr_rnd_t rnd) {
   [decl]
-  MPFR_LOG_BEGIN (("op[%Pu]=%.*Rg rnd=%s",
+  MPFR_LOG_BEGIN (("op[%Pd]=%.*Rg rnd=%s",
                     mpfr_get_prec(op), mpfr_log_prec, op, RND2STR(rnd)));
 
 +++ MPFR_LOG_END(x)
  Add this macro at the end of a function.
 Example:
- MPFR_LOG_END (("x[%Pu]=%.*Rg i=%d", mpfr_get_prec (x), mpfr_log_prec, x, i));
+ MPFR_LOG_END (("x[%Pd]=%.*Rg i=%d", mpfr_get_prec (x), mpfr_log_prec, x, i));
  return i;
 }
 
@@ -1052,8 +1065,8 @@ the same job as MPFR_LOG_BEGIN and MPFR_LOG_END but it is smatter
 since it intercepts the return itself to put the end statement.
 Example
  MPFR_LOG_FUNC (
-    ("op[%Pu]=%.*Rg rnd=%d", op, mpfr_get_prec (op), mpfr_log_prec, op),
-    ("x[%Pu]=%.*Rg inexact=%d", mpfr_get_prec (x), mpfr_log_prec, x, i));
+    ("op[%Pd]=%.*Rg rnd=%d", op, mpfr_get_prec (op), mpfr_log_prec, op),
+    ("x[%Pd]=%.*Rg inexact=%d", mpfr_get_prec (x), mpfr_log_prec, x, i));
 
 
 The double brackets "((" and "))" are needed since MPFR must still
@@ -1099,8 +1112,8 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mpfr_rnd_t rnd)
 
   /* Log it if requested */
   MPFR_LOG_BEGIN
-    (("op[%Pu]=%.*Rg rnd=%d", mpfr_get_prec (op), mpfr_log_prec, op, rnd),
-     ("rop[%Pu]=%.*Rg inexact=%d",
+    (("op[%Pd]=%.*Rg rnd=%d", mpfr_get_prec (op), mpfr_log_prec, op, rnd),
+     ("rop[%Pd]=%.*Rg inexact=%d",
        mpfr_get_prec (rop), mpfr_log_prec, rop, inexact));
 
   /* First deal with particular cases */
@@ -1887,6 +1900,19 @@ In the MPFR source directory:
 $ ./configure --host=i686-w64-mingw32 --disable-shared --with-gmp=...
 $ make
 $ make check LOG_COMPILER=wine
+
+In case of "module:import_dll Library ....dll ... not found" error, locate
+the dll file and set the WINEPATH environment variable to its directory.
+
+For instance, to use POSIX threads instead of win32 threads:
+$ ./configure --host=i686-w64-mingw32 --disable-shared --with-gmp=... \
+    CC=i686-w64-mingw32-gcc-posix
+$ make
+$ make check LOG_COMPILER="env WINEPATH=/usr/i686-w64-mingw32/lib wine"
+
+When abort() is called, wine returns with exit status 3. Since this value
+is not used by the MPFR tests, such an exit status probably means that an
+abort() was called somewhere.
 
 Note: Due to bugs in autoconf[1] and dash[2], the configure script
 may create files with a binary filename or have any other arbitrary

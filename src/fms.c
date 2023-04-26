@@ -33,6 +33,12 @@ mpfr_fms (mpfr_ptr s, mpfr_srcptr x, mpfr_srcptr y, mpfr_srcptr z,
 {
   mpfr_t minus_z;
 
-  MPFR_ALIAS (minus_z, z, -MPFR_SIGN(z), MPFR_EXP(z));
+  /* Warning! If s == z (reuse of z for the destination), s and minus_z
+     will be different pointers in mpfr_fma, while they actually share
+     their significand. So mpfr_fma must either assume a possible reuse
+     of z (at least for the significand) in *any* case or compare the
+     pointers to the significands for reuse detection, if needed. And
+     be careful with sharing that propagates to called functions. */
+  MPFR_TMP_INIT_NEG (minus_z, z);
   return mpfr_fma (s, x, y, minus_z, rnd_mode);
 }

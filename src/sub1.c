@@ -22,6 +22,10 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+/* Warning! Because of possible aliases (e.g. from mpfr_fms), for the
+   detection of reused arguments, do comparisons on the pointers to the
+   significands instead of pointers to the MPFR numbers. */
+
 /* compute sign(b) * (|b| - |c|), with |b| > |c|, diff_exp = EXP(b) - EXP(c)
    Returns 0 iff result is exact,
    a negative value when the result is less than the exact value,
@@ -43,6 +47,12 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
                       negative if low(b) < low(c), positive if low(b) > low(c) */
   int sh, k;
   MPFR_TMP_DECL(marker);
+
+  MPFR_LOG_FUNC
+    (("b[%Pd]=%.*Rg c[%Pd]=%.*Rg rnd=%d",
+      mpfr_get_prec (b), mpfr_log_prec, b,
+      mpfr_get_prec (c), mpfr_log_prec, c, rnd_mode),
+     ("a[%Pd]=%.*Rg", mpfr_get_prec (a), mpfr_log_prec, a));
 
   MPFR_TMP_MARK(marker);
   ap = MPFR_MANT(a);
