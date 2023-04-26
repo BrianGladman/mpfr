@@ -27,6 +27,13 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    fma(x,y,z)= x*y + z
 */
 
+/* Warning! mpfr_fma may be called by mpfr_fms where z is aliased to s and
+   negated (in the case where s == z in the mpfr_fms call), i.e. s and z
+   may share their significand even if s != z as pointers. So one must be
+   careful in the code below. For instance, on mpfr_add(s,...,z,...) and
+   mpfr_set (s,z,...), one may have s != z while these MPFR numbers share
+   their significand. */
+
 /* this function deals with all cases where inputs are singular, i.e.,
    either NaN, Inf or zero */
 static int

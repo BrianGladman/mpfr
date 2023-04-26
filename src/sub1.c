@@ -22,6 +22,10 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+/* Warning! Because of possible aliases (e.g. from mpfr_fms), for the
+   detection of reused arguments, do comparisons on the pointers to the
+   significands instead of pointers to the MPFR numbers. */
+
 /* compute sign(b) * (|b| - |c|), with |b| > |c|, diff_exp = EXP(b) - EXP(c)
    Returns 0 iff result is exact,
    a negative value when the result is less than the exact value,

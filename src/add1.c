@@ -22,6 +22,10 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include "mpfr-impl.h"
 
+/* Warning! Because of possible aliases (e.g. from mpfr_fms), for the
+   detection of reused arguments, do comparisons on the pointers to the
+   significands instead of pointers to the MPFR numbers. */
+
 /* compute sign(b) * (|b| + |c|), assuming that b and c
    are not NaN, Inf, nor zero. Assumes EXP(b) >= EXP(c).
 */
