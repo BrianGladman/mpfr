@@ -1363,9 +1363,12 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 /* Set y to s*significand(x)*2^e, for example MPFR_ALIAS(y,x,1,MPFR_EXP(x))
    sets y to |x|, and MPFR_ALIAS(y,x,MPFR_SIGN(x),0) sets y to x*2^f such
    that 1/2 <= |y| < 1. Does not check y is in the valid exponent range.
-   WARNING! x and y share the same mantissa. So, some operations are
+   WARNING! x and y share the same significand. So, some operations are
    not valid if x has been provided via an argument, e.g., trying to
-   modify the mantissa of y, even temporarily, or calling mpfr_clear on y.
+   modify the significand of y, even temporarily, or calling mpfr_clear
+   on y. An alias may also break the detection of reuse of an argument
+   for the destination (since the pointers to the numbers are different,
+   the detection of reuse by a comparison of these pointers will fail).
 */
 #define MPFR_ALIAS(y,x,s,e)                     \
   (MPFR_PREC(y) = MPFR_PREC(x),                 \
