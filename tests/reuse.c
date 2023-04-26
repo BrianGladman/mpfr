@@ -165,137 +165,168 @@ test3 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_rnd_t),
 static void
 test4 (int (*testfunc)(mpfr_ptr, mpfr_srcptr, mpfr_srcptr, mpfr_srcptr,
                        mpfr_rnd_t),
-       const char *foo, mpfr_prec_t prec, mpfr_rnd_t rnd)
+       const char *foo, mpfr_rnd_t rnd)
 {
-  mpfr_t ref, op1, op2, op3;
-  mpfr_t res;
-  int i, j, k;
+  mpfr_t op1, op2, op3, ref1, ref2, ref3, res1, res2, res3;
+  mpfr_prec_t p[4];
+  int i, j, k, inex;
 
 #ifdef MPFR_DEBUG
   printf ("checking %s\n", foo);
 #endif
-  mpfr_init2 (ref, prec);
-  mpfr_init2 (op1, prec);
-  mpfr_init2 (op2, prec);
-  mpfr_init2 (op3, prec);
-  mpfr_init2 (res, prec);
+
+  /* Testing mpfr_fms with arguments having different precisions
+     is important, as some branches might be affected by an aliased
+     argument z (which is negated via MPFR_TMP_INIT_NEG). And we
+     also need to test these functions when the precisions are the
+     same, due to potentially specific code for this case. That's
+     why the precisions are chosen just below, before the loops of
+     the tests. */
+  for (i = 0; i < 4; i++)
+    {
+      /* (i%4)+1 limb(s), with a random number of trailing bits. */
+      p[i] = GMP_NUMB_BITS * ((i % 4) + 1) - (randlimb () % GMP_NUMB_BITS);
+      if (p[i] < MPFR_PREC_MIN)
+        p[i] = MPFR_PREC_MIN;
+    }
 
   /* for each variable, consider each of the following 6 possibilities:
      NaN, +Infinity, -Infinity, +0, -0 or a random number */
 
-  for (i = 0; i < SPECIAL_MAX; i++)
+  for (i = 0; i < 4 * SPECIAL_MAX; i++)
     {
-      set_special (op1, i);
-      for (j = 0; j < SPECIAL_MAX; j++)
-        {
-          set_special (op2, j);
-          for (k = 0; k < SPECIAL_MAX; k++)
-            {
-              set_special (op3, k);
+      mpfr_inits2 (p[i % 4], op1, ref1, res1, (mpfr_ptr) 0);
+      set_special (op1, i / 4);
 
-              /* reference call: foo(s, a, b, c) */
-              testfunc (ref, op1, op2, op3, rnd);
+      for (j = 0; j < 4 * SPECIAL_MAX; j++)
+        {
+          mpfr_inits2 (p[j % 4], op2, ref2, res2, (mpfr_ptr) 0);
+          set_special (op2, j / 4);
+
+          for (k = 0; k < 4 * SPECIAL_MAX; k++)
+            {
+              mpfr_inits2 (p[j % 4], op3, ref3, res3, (mpfr_ptr) 0);
+              set_special (op3, k / 4);
 
               /* foo(a, a, b, c) */
-              mpfr_set (res, op1, rnd); /* exact operation */
-              testfunc (res, res, op2, op3, rnd);
+              testfunc (ref1, op1, op2, op3, rnd);
+              inex = mpfr_set (res1, op1, rnd); /* exact operation */
+              MPFR_ASSERTN (inex == 0);
+              testfunc (res1, res1, op2, op3, rnd);
 
-              if (! SAME_VAL (res, ref))
+              if (! SAME_VAL (res1, ref1))
                 {
                   printf ("Error for %s(a, a, b, c) for ", foo);
                   DISP("a=", op1); DISP(", b=", op2); DISP2(", c=", op3);
-                  printf ("expected "); mpfr_dump (ref);
-                  printf ("got      "); mpfr_dump (res);
+                  printf ("expected "); mpfr_dump (ref1);
+                  printf ("got      "); mpfr_dump (res1);
                   exit (1);
                 }
 
               /* foo(b, a, b, c) */
-              mpfr_set (res, op2, rnd);
-              testfunc (res, op1, res, op3, rnd);
+              testfunc (ref2, op1, op2, op3, rnd);
+              inex = mpfr_set (res2, op2, rnd); /* exact operation */
+              MPFR_ASSERTN (inex == 0);
+              testfunc (res2, op1, res2, op3, rnd);
 
-              if (! SAME_VAL (res, ref))
+              if (! SAME_VAL (res2, ref2))
                 {
-                  printf ("Error for %s(a, a, b, c) for ", foo);
+                  printf ("Error for %s(b, a, b, c) for ", foo);
                   DISP("a=", op1); DISP(", b=", op2); DISP2(", c=", op3);
-                  printf ("expected "); mpfr_dump (ref);
-                  printf ("got      "); mpfr_dump (res);
+                  printf ("expected "); mpfr_dump (ref2);
+                  printf ("got      "); mpfr_dump (res2);
                   exit (1);
                 }
 
               /* foo(c, a, b, c) */
-              mpfr_set (res, op3, rnd);
-              testfunc (res, op1, op2, res, rnd);
+              testfunc (ref3, op1, op2, op3, rnd);
+              inex = mpfr_set (res3, op3, rnd); /* exact operation */
+              MPFR_ASSERTN (inex == 0);
+              testfunc (res3, op1, op2, res3, rnd);
 
-              if (! SAME_VAL (res, ref))
+              if (! SAME_VAL (res3, ref3))
                 {
-                  printf ("Error for %s(a, a, b, c) for ", foo);
+                  printf ("Error for %s(c, a, b, c) for ", foo);
                   DISP("a=", op1); DISP(", b=", op2); DISP2(", c=", op3);
-                  printf ("expected "); mpfr_dump (ref);
-                  printf ("got      "); mpfr_dump (res);
+                  printf ("expected "); mpfr_dump (ref3);
+                  printf ("got      "); mpfr_dump (res3);
                   exit (1);
                 }
 
               /* foo(a, a, a, c) */
-              testfunc (ref, op1, op1, op3, rnd);
-              mpfr_set (res, op1, rnd);
-              testfunc (res, res, res, op3, rnd);
-              if (! SAME_VAL (res, ref))
+              if (j == 0)  /* op2 not used, test only 1 iteration of op2 */
                 {
-                  printf ("Error for %s(a, a, b, c) for ", foo);
-                  DISP("a=", op1); DISP(", a=", op2); DISP2(", c=", op3);
-                  printf ("expected "); mpfr_dump (ref);
-                  printf ("got      "); mpfr_dump (res);
-                  exit (1);
+                  testfunc (ref1, op1, op1, op3, rnd);
+                  inex = mpfr_set (res1, op1, rnd); /* exact operation */
+                  MPFR_ASSERTN (inex == 0);
+                  testfunc (res1, res1, res1, op3, rnd);
+                  if (! SAME_VAL (res1, ref1))
+                    {
+                      printf ("Error for %s(a, a, a, c) for ", foo);
+                      DISP("a=", op1); DISP(", a=", op2); DISP2(", c=", op3);
+                      printf ("expected "); mpfr_dump (ref1);
+                      printf ("got      "); mpfr_dump (res1);
+                      exit (1);
+                    }
                 }
 
               /* foo(a, a, b, a) */
-              testfunc (ref, op1, op2, op1, rnd);
-              mpfr_set (res, op1, rnd);
-              testfunc (res, res, op2, res, rnd);
-              if (! SAME_VAL (res, ref))
+              if (k == 0)  /* op3 not used, test only 1 iteration of op3 */
                 {
-                  printf ("Error for %s(a, a, b, c) for ", foo);
-                  DISP("a=", op1); DISP(", a=", op2); DISP2(", c=", op3);
-                  printf ("expected "); mpfr_dump (ref);
-                  printf ("got      "); mpfr_dump (res);
-                  exit (1);
+                  testfunc (ref1, op1, op2, op1, rnd);
+                  inex = mpfr_set (res1, op1, rnd); /* exact operation */
+                  MPFR_ASSERTN (inex == 0);
+                  testfunc (res1, res1, op2, res1, rnd);
+                  if (! SAME_VAL (res1, ref1))
+                    {
+                      printf ("Error for %s(a, a, b, a) for ", foo);
+                      DISP("a=", op1); DISP(", a=", op2); DISP2(", c=", op3);
+                      printf ("expected "); mpfr_dump (ref1);
+                      printf ("got      "); mpfr_dump (res1);
+                      exit (1);
+                    }
                 }
 
               /* foo(b, a, b, b) */
-              testfunc (ref, op1, op2, op2, rnd);
-              mpfr_set (res, op2, rnd);
-              testfunc (res, op1, res, res, rnd);
-              if (! SAME_VAL (res, ref))
+              if (k == 0)  /* op3 not used, test only 1 iteration of op3 */
                 {
-                  printf ("Error for %s(a, a, b, c) for ", foo);
-                  DISP("a=", op1); DISP(", a=", op2); DISP2(", c=", op3);
-                  printf ("expected "); mpfr_dump (ref);
-                  printf ("got      "); mpfr_dump (res);
-                  exit (1);
+                  testfunc (ref2, op1, op2, op2, rnd);
+                  inex = mpfr_set (res2, op2, rnd); /* exact operation */
+                  MPFR_ASSERTN (inex == 0);
+                  testfunc (res2, op1, res2, res2, rnd);
+                  if (! SAME_VAL (res2, ref2))
+                    {
+                      printf ("Error for %s(b, a, b, b) for ", foo);
+                      DISP("a=", op1); DISP(", a=", op2); DISP2(", c=", op3);
+                      printf ("expected "); mpfr_dump (ref2);
+                      printf ("got      "); mpfr_dump (res2);
+                      exit (1);
+                    }
                 }
 
               /* foo (a, a, a, a) */
-              testfunc (ref, op1, op1, op1, rnd);
-              mpfr_set (res, op1, rnd);
-              testfunc (res, res, res, res, rnd);
-              if (! SAME_VAL (res, ref))
+              if (j == 0 && k == 0)  /* op2 and op3 not used */
                 {
-                  printf ("Error for %s(a, a, a, a) for ", foo);
-                  DISP2("a=", op1);
-                  printf ("expected "); mpfr_dump (ref);
-                  printf ("got      "); mpfr_dump (res);
-                  exit (1);
+                  testfunc (ref1, op1, op1, op1, rnd);
+                  inex = mpfr_set (res1, op1, rnd); /* exact operation */
+                  MPFR_ASSERTN (inex == 0);
+                  testfunc (res1, res1, res1, res1, rnd);
+                  if (! SAME_VAL (res1, ref1))
+                    {
+                      printf ("Error for %s(a, a, a, a) for ", foo);
+                      DISP2("a=", op1);
+                      printf ("expected "); mpfr_dump (ref1);
+                      printf ("got      "); mpfr_dump (res1);
+                      exit (1);
+                    }
                 }
+
+              mpfr_clears (op3, ref3, res3, (mpfr_ptr) 0);
             }
+          mpfr_clears (op2, ref2, res2, (mpfr_ptr) 0);
         }
+      mpfr_clears (op1, ref1, res1, (mpfr_ptr) 0);
     }
-
-  mpfr_clear (ref);
-  mpfr_clear (op1);
-  mpfr_clear (op2);
-  mpfr_clear (op3);
-  mpfr_clear (res);
-
 }
 
 static void
@@ -585,15 +616,15 @@ main (void)
 
   tests_start_mpfr ();
 
-  for (i = 1; i <= 5; i++)
+  RND_LOOP (rnd)
     {
-      /* Test on i limb(s), with a random number of trailing bits. */
-      p = GMP_NUMB_BITS * i - (randlimb () % GMP_NUMB_BITS);
-      if (p < MPFR_PREC_MIN)
-        p = MPFR_PREC_MIN;
-
-      RND_LOOP (rnd)
+      for (i = 1; i <= 5; i++)
         {
+          /* Test on i limb(s), with a random number of trailing bits. */
+          p = GMP_NUMB_BITS * i - (randlimb () % GMP_NUMB_BITS);
+          if (p < MPFR_PREC_MIN)
+            p = MPFR_PREC_MIN;
+
           test2a (mpfr_round, "mpfr_round", p);
           test2a (mpfr_ceil, "mpfr_ceil", p);
           test2a (mpfr_floor, "mpfr_floor", p);
@@ -688,9 +719,6 @@ main (void)
 
           test3a (mpfr_sin_cos, "mpfr_sin_cos", p, (mpfr_rnd_t) rnd);
 
-          test4 (mpfr_fma, "mpfr_fma", p, (mpfr_rnd_t) rnd);
-          test4 (mpfr_fms, "mpfr_fms", p, (mpfr_rnd_t) rnd);
-
           test2 (mpfr_li2, "mpfr_li2",  p, (mpfr_rnd_t) rnd);
           test2 (mpfr_rec_sqrt, "mpfr_rec_sqrt",  p, (mpfr_rnd_t) rnd);
           test3 (mpfr_fmod, "mpfr_fmod", p, (mpfr_rnd_t) rnd);
@@ -702,6 +730,9 @@ main (void)
           test2 (mpfr_digamma, "mpfr_digamma", p, (mpfr_rnd_t) rnd);
 #endif
         }
+
+      test4 (mpfr_fma, "mpfr_fma", (mpfr_rnd_t) rnd);
+      test4 (mpfr_fms, "mpfr_fms", (mpfr_rnd_t) rnd);
     }
 
   tests_end_mpfr ();
