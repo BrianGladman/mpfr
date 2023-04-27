@@ -195,6 +195,28 @@ overfl_exp10_0 (void)
   mpfr_clear (y);
 }
 
+static void
+bug20230427 (void)
+{
+  mpfr_t x, y;
+  mpfr_exp_t emin = mpfr_get_emin ();
+  mpfr_set_emin (mpfr_get_emin_min ());
+  mpfr_init2 (x, 63);
+  mpfr_init2 (y, 1);
+  mpfr_set_str_binary (x, "-0.100110100010000010011010100001001111101111001111111101111001101E61");
+  mpfr_exp10 (y, x, MPFR_RNDN);
+  if (mpfr_cmp_ui (y, 0) != 0)
+    {
+      printf ("Error in bug20230427\n");
+      mpfr_printf ("expected 0, got %Ra\n", y);
+      printf ("emin=%ld\n", mpfr_get_emin ());
+      exit (1);
+    }
+  mpfr_clear (x);
+  mpfr_clear (y);
+  mpfr_set_emin (emin);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -203,6 +225,8 @@ main (int argc, char *argv[])
   int inex, ov;
 
   tests_start_mpfr ();
+
+  bug20230427 ();
 
   special_overflow ();
   emax_m_eps ();
