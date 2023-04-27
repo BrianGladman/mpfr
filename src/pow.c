@@ -339,7 +339,6 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
          * underflow case */
         {
           inex2 = mpfr_underflow (z, MPFR_RNDZ, MPFR_SIGN_POS);
-          MPFR_CLEAR_FLAGS ();
           goto underflow;
         }
       MPFR_CLEAR_FLAGS ();
