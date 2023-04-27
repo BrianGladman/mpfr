@@ -317,6 +317,10 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
        * And one even has the following assertion. TODO: complete proof.
        */
       MPFR_ASSERTD (lk > LONG_MIN && lk < LONG_MAX);
+      /* FIXME: The comment below and the code (for lk inexact) are no longer
+       * valid after commit ef31bb98521ecf7d100593346e2f4d7a7724c573. This
+       * may be the cause of the new failures (or there is another issue).
+       */
       /* Note: even in case of overflow (lk inexact), the code is correct.
        * Indeed, for the 3 occurrences of lk:
        *   - The test lk < 0 is correct as sign(lk) = sign(k).
