@@ -216,7 +216,7 @@ bug20230427 (void)
   mpfr_set_str_binary (x, "-0.100110100010000010011010100001001111101111001111111101111001101E61");
   mpfr_exp10 (y, x, MPFR_RNDN);
   mpfr_set_str_binary (z, "0.1E-4611686018427387903");
-  if (mpfr_cmp (y, z) != 0)
+  if (! mpfr_equal_p (y, z))
     {
       printf ("Error in bug20230427\n");
       printf ("expected "); mpfr_dump (z);
