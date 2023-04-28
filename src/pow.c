@@ -338,14 +338,15 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
         /* Rounding to nearest, real result > z * 2^k = 2^(emin - 2),
          * underflow case */
         {
-          inex2 = mpfr_underflow (z, MPFR_RNDZ, MPFR_SIGN_POS);
-          goto underflow;
+          if (MPFR_PREC(z) > 1)
+            mpfr_nextabove (z);
+          else
+            rnd_mode = MPFR_RNDU;
         }
       MPFR_CLEAR_FLAGS ();
       inex2 = mpfr_mul_2si (z, z, lk, rnd_mode);
       if (inex2)  /* underflow or overflow */
         {
-        underflow:
           inexact = inex2;
           if (expo != NULL)
             MPFR_SAVE_EXPO_UPDATE_FLAGS (*expo, __gmpfr_flags);

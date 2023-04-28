@@ -198,14 +198,16 @@ overfl_exp10_0 (void)
 static void
 bug20230427 (void)
 {
-  mpfr_t x, y;
+  mpfr_t x, y, z;
   mpfr_exp_t emin = mpfr_get_emin ();
   mpfr_set_emin (mpfr_get_emin_min ());
   mpfr_init2 (x, 63);
   mpfr_init2 (y, 1);
+  mpfr_init2 (z, 1);
   mpfr_set_str_binary (x, "-0.100110100010000010011010100001001111101111001111111101111001101E61");
+  mpfr_set_str_binary (z, "0x1p-4611686018427387904");
   mpfr_exp10 (y, x, MPFR_RNDN);
-  if (mpfr_cmp_ui (y, 0) != 0)
+  if (mpfr_cmp (y, y) != 0)
     {
       printf ("Error in bug20230427\n");
       mpfr_printf ("expected 0, got %Ra\n", y);
@@ -214,6 +216,7 @@ bug20230427 (void)
     }
   mpfr_clear (x);
   mpfr_clear (y);
+  mpfr_clear (z);
   mpfr_set_emin (emin);
 }
 
