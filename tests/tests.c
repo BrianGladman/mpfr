@@ -1235,6 +1235,11 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
    [positive overflow] and (63,1) [positive underflow], i.e. about 0.01%
    of the cases.
 */
+/* FIXME: Since underflow is after rounding, the test does not seem to
+   be correct in some cases of MPFR_RNDN. Add comments to describe all
+   the possible cases and fix the code. For underflow, consistency
+   checks could be added when testing various precisions, as the true
+   underflow threshold increases with the precision. */
 void
 ofuf_thresholds (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
                  mpfr_prec_t pxmax, mpfr_prec_t pymax,
