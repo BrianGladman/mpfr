@@ -1239,7 +1239,8 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
    be correct in some cases of MPFR_RNDN. Add comments to describe all
    the possible cases and fix the code. For underflow, consistency
    checks could be added when testing various precisions, as the true
-   underflow threshold increases with the precision. */
+   underflow threshold increases with the precision.
+   Also check whether there isn't the same kind of issue for overflow. */
 void
 ofuf_thresholds (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
                  mpfr_prec_t pxmax, mpfr_prec_t pymax,
