@@ -345,6 +345,10 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
           if (MPFR_PREC(z) > 1)
             mpfr_nextabove (z);
           else
+            /* For PREC(z)=1, mpfr_nextabove would yield z * 2^k = 2^(emin-1),
+               thus the mpfr_mul_2si() call below would give inex2 = 0, and we
+               would get inexact < 0 which is wrong. Another solution would be
+               (if we call mpfr_nextabove for PREC(z)=1) to set inexact to 1. */
             rnd_mode = MPFR_RNDU;
         }
       MPFR_CLEAR_FLAGS ();
