@@ -199,25 +199,35 @@ static void
 bug20230427 (void)
 {
   mpfr_t x, y, z;
-  mpfr_exp_t emin = mpfr_get_emin ();
-  mpfr_set_emin (mpfr_get_emin_min ());
+  mpfr_exp_t old_emin;
+
+  /* This test assumes an exponent of at most 64 bits
+     (otherwise, there should be no underflow).
+     The "+ 0UL" ensures that the ">> 31" is valid. */
+  if ((((MPFR_EXP_MAX + 0UL) >> 31) >> 31) > 1)
+    return;
+
+  old_emin = mpfr_get_emin ();
+  set_emin (MPFR_EMIN_MIN);
+
   mpfr_init2 (x, 63);
   mpfr_init2 (y, 1);
   mpfr_init2 (z, 1);
   mpfr_set_str_binary (x, "-0.100110100010000010011010100001001111101111001111111101111001101E61");
-  mpfr_set_str_binary (z, "0x1p-4611686018427387904");
   mpfr_exp10 (y, x, MPFR_RNDN);
-  if (mpfr_cmp (y, y) != 0)
+  mpfr_set_str_binary (z, "0.1E-4611686018427387903");
+  if (mpfr_cmp (y, z) != 0)
     {
       printf ("Error in bug20230427\n");
-      mpfr_printf ("expected 0, got %Ra\n", y);
+      printf ("expected "); mpfr_dump (z);
+      printf ("got      "); mpfr_dump (y);
       printf ("emin=%ld\n", mpfr_get_emin ());
       exit (1);
     }
   mpfr_clear (x);
   mpfr_clear (y);
   mpfr_clear (z);
-  mpfr_set_emin (emin);
+  set_emin (old_emin);
 }
 
 int
