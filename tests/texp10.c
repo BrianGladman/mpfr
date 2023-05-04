@@ -198,13 +198,14 @@ overfl_exp10_0 (void)
 static void
 bug20230427 (void)
 {
-  mpfr_t x, y, z;
+  mpfr_t x, y, z, t1, t2;
   mpfr_exp_t old_emin;
+  mpfr_flags_t flags, ex_flags;
+  int inex;
 
-  /* This test assumes an exponent of at most 64 bits
-     (otherwise, there should be no underflow).
-     The "+ 0UL" ensures that the ">> 31" is valid. */
-  if ((((MPFR_EXP_MAX + 0UL) >> 31) >> 31) > 1)
+  /* This test assumes that MPFR_EMIN_MIN = -2^62.
+     The "0UL" ensures that the shifts are valid. */
+  if ((((0UL - MPFR_EMIN_MIN) >> 31) >> 30) != 1)
     return;
 
   old_emin = mpfr_get_emin ();
@@ -214,14 +215,51 @@ bug20230427 (void)
   mpfr_init2 (y, 1);
   mpfr_init2 (z, 1);
   mpfr_set_str_binary (x, "-0.100110100010000010011010100001001111101111001111111101111001101E61");
+
+  /* We will test 10^x rounded to nearest in precision 1.
+     Check that 2^(emin - 2) < 10^x < (3/2) * 2^(emin - 2).
+     This is approximate, but by outputting the values, one can check
+     that one is not too close to the boundaries:
+       emin - 2              = -4611686018427387905
+       log2(10^x)           ~= -4611686018427387904.598
+       emin - 2 + log2(3/2) ~= -4611686018427387904.415
+     Thus the result should be the smallest positive number 2^(emin - 1)
+     because 10^x is closer to this number than to 0, the midpoint being
+     2^(emin - 2). And there should be an underflow in precision 1 because
+     the result rounded to nearest in an unbounded exponent range should
+     have been 2^(emin - 2), the midpoint being (3/2) * 2^(emin - 2).
+  */
+  mpfr_inits2 (128, t1, t2, (mpfr_ptr) 0);
+  mpfr_set_ui (t1, 10, MPFR_RNDN);
+  mpfr_log2 (t2, t1, MPFR_RNDN);
+  mpfr_mul (t1, t2, x, MPFR_RNDN);
+  inex = mpfr_set_exp_t (t2, mpfr_get_emin () - 2, MPFR_RNDN);
+  MPFR_ASSERTN (inex == 0);
+  MPFR_ASSERTN (mpfr_greater_p (t1, t2));  /* log2(10^x) > emin - 2 */
+  inex = mpfr_sub (t1, t1, t2, MPFR_RNDN);
+  MPFR_ASSERTN (inex == 0);
+  mpfr_set_ui (t2, 3, MPFR_RNDN);
+  mpfr_log2 (t2, t2, MPFR_RNDN);
+  mpfr_sub_ui (t2, t2, 1, MPFR_RNDN);  /* log2(3/2) */
+  MPFR_ASSERTN (mpfr_less_p (t1, t2));
+  mpfr_clears (t1, t2, (mpfr_ptr) 0);
+
+  mpfr_clear_flags ();
   mpfr_exp10 (y, x, MPFR_RNDN);
+  flags = __gmpfr_flags;
+  ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
+
   mpfr_set_str_binary (z, "0.1E-4611686018427387903");
-  if (! mpfr_equal_p (y, z))
+  if (! (mpfr_equal_p (y, z) && flags == ex_flags))
     {
       printf ("Error in bug20230427\n");
       printf ("expected "); mpfr_dump (z);
       printf ("got      "); mpfr_dump (y);
-      printf ("emin=%ld\n", mpfr_get_emin ());
+      printf ("emin =       %ld\n", mpfr_get_emin ());
+      printf ("expected flags =");
+      flags_out (ex_flags);
+      printf ("got flags      =");
+      flags_out (flags);
       exit (1);
     }
   mpfr_clear (x);
