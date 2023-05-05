@@ -275,7 +275,8 @@ bug20230427 (void)
           printf ("Error in bug20230427 for i=%d\n", i);
           printf ("expected "); mpfr_dump (z);
           printf ("got      "); mpfr_dump (y);
-          printf ("emin =       %ld\n", mpfr_get_emin ());
+          printf ("emin =       %" MPFR_EXP_FSPEC "d\n",
+                  (mpfr_eexp_t) mpfr_get_emin ());
           printf ("expected flags =");
           flags_out (ex_flags);
           printf ("got flags      =");
