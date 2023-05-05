@@ -195,76 +195,96 @@ overfl_exp10_0 (void)
   mpfr_clear (y);
 }
 
+/* Bug in mpfr_pow_general fixed in ff5012b61d5e5fee5156c57b8aa8fc1739c2a771
+   initially found by ofuf_thresholds (though the test was incorrect).
+   With a 32-bit exponent, failure for i=0.
+   With a 64-bit exponent, failure for i=1.
+*/
 static void
 bug20230427 (void)
 {
+  const char *s[2] = {
+    "-0.1001101000100000100110101000011E29",
+    "-0.100110100010000010011010100001001111101111001111111101111001101E61"
+  };
   mpfr_t x, y, z, t1, t2;
   mpfr_exp_t old_emin;
   mpfr_flags_t flags, ex_flags;
-  int inex;
-
-  /* This test assumes that MPFR_EMIN_MIN = -2^62.
-     The "0UL" ensures that the shifts are valid. */
-  if ((((0UL - MPFR_EMIN_MIN) >> 31) >> 30) != 1)
-    return;
+  int i, inex;
 
   old_emin = mpfr_get_emin ();
-  set_emin (MPFR_EMIN_MIN);
 
   mpfr_init2 (x, 63);
-  mpfr_init2 (y, 1);
-  mpfr_init2 (z, 1);
-  mpfr_set_str_binary (x, "-0.100110100010000010011010100001001111101111001111111101111001101E61");
-
-  /* We will test 10^x rounded to nearest in precision 1.
-     Check that 2^(emin - 2) < 10^x < (3/2) * 2^(emin - 2).
-     This is approximate, but by outputting the values, one can check
-     that one is not too close to the boundaries:
-       emin - 2              = -4611686018427387905
-       log2(10^x)           ~= -4611686018427387904.598
-       emin - 2 + log2(3/2) ~= -4611686018427387904.415
-     Thus the result should be the smallest positive number 2^(emin - 1)
-     because 10^x is closer to this number than to 0, the midpoint being
-     2^(emin - 2). And there should be an underflow in precision 1 because
-     the result rounded to nearest in an unbounded exponent range should
-     have been 2^(emin - 2), the midpoint being (3/2) * 2^(emin - 2).
-  */
+  mpfr_inits2 (1, y, z, (mpfr_ptr) 0);
   mpfr_inits2 (128, t1, t2, (mpfr_ptr) 0);
-  mpfr_set_ui (t1, 10, MPFR_RNDN);
-  mpfr_log2 (t2, t1, MPFR_RNDN);
-  mpfr_mul (t1, t2, x, MPFR_RNDN);
-  inex = mpfr_set_exp_t (t2, mpfr_get_emin () - 2, MPFR_RNDN);
-  MPFR_ASSERTN (inex == 0);
-  MPFR_ASSERTN (mpfr_greater_p (t1, t2));  /* log2(10^x) > emin - 2 */
-  inex = mpfr_sub (t1, t1, t2, MPFR_RNDN);
-  MPFR_ASSERTN (inex == 0);
-  mpfr_set_ui (t2, 3, MPFR_RNDN);
-  mpfr_log2 (t2, t2, MPFR_RNDN);
-  mpfr_sub_ui (t2, t2, 1, MPFR_RNDN);  /* log2(3/2) */
-  MPFR_ASSERTN (mpfr_less_p (t1, t2));
-  mpfr_clears (t1, t2, (mpfr_ptr) 0);
 
-  mpfr_clear_flags ();
-  mpfr_exp10 (y, x, MPFR_RNDN);
-  flags = __gmpfr_flags;
-  ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
-
-  mpfr_set_str_binary (z, "0.1E-4611686018427387903");
-  if (! (mpfr_equal_p (y, z) && flags == ex_flags))
+  for (i = 0; i < 2; i++)
     {
-      printf ("Error in bug20230427\n");
-      printf ("expected "); mpfr_dump (z);
-      printf ("got      "); mpfr_dump (y);
-      printf ("emin =       %ld\n", mpfr_get_emin ());
-      printf ("expected flags =");
-      flags_out (ex_flags);
-      printf ("got flags      =");
-      flags_out (flags);
-      exit (1);
+      if (i == 0)
+        {
+          /* Basic check: the default emin should be -2^30 (exactly). */
+          if (mpfr_get_emin () != -1073741823)
+            abort ();
+        }
+      else
+        {
+          /* This test assumes that MPFR_EMIN_MIN = -2^62 (exactly).
+             The "0UL" ensures that the shifts are valid. */
+          if ((((0UL - MPFR_EMIN_MIN) >> 31) >> 30) != 1)
+            break;
+
+          set_emin (MPFR_EMIN_MIN);
+        }
+
+      mpfr_set_str_binary (x, s[i]);
+
+      /* We will test 10^x rounded to nearest in precision 1.
+         Check that 2^(emin - 2) < 10^x < (3/2) * 2^(emin - 2).
+         This is approximate, but by outputting the values, one can check
+         that one is not too close to the boundaries:
+           emin - 2              = -4611686018427387905
+           log2(10^x)           ~= -4611686018427387904.598
+           emin - 2 + log2(3/2) ~= -4611686018427387904.415
+         Thus the result should be the smallest positive number 2^(emin - 1)
+         because 10^x is closer to this number than to 0, the midpoint being
+         2^(emin - 2). And there should be an underflow in precision 1 because
+         the result rounded to nearest in an unbounded exponent range should
+         have been 2^(emin - 2), the midpoint being (3/2) * 2^(emin - 2).
+      */
+      mpfr_set_ui (t1, 10, MPFR_RNDN);
+      mpfr_log2 (t2, t1, MPFR_RNDN);
+      mpfr_mul (t1, t2, x, MPFR_RNDN);
+      inex = mpfr_set_exp_t (t2, mpfr_get_emin () - 2, MPFR_RNDN);
+      MPFR_ASSERTN (inex == 0);
+      MPFR_ASSERTN (mpfr_greater_p (t1, t2));  /* log2(10^x) > emin - 2 */
+      inex = mpfr_sub (t1, t1, t2, MPFR_RNDN);
+      MPFR_ASSERTN (inex == 0);
+      mpfr_set_ui (t2, 3, MPFR_RNDN);
+      mpfr_log2 (t2, t2, MPFR_RNDN);
+      mpfr_sub_ui (t2, t2, 1, MPFR_RNDN);  /* log2(3/2) */
+      MPFR_ASSERTN (mpfr_less_p (t1, t2));
+
+      mpfr_clear_flags ();
+      mpfr_exp10 (y, x, MPFR_RNDN);
+      flags = __gmpfr_flags;
+      ex_flags = MPFR_FLAGS_UNDERFLOW | MPFR_FLAGS_INEXACT;
+
+      mpfr_setmin (z, mpfr_get_emin ());  /* z = 0.1@emin */
+      if (! (mpfr_equal_p (y, z) && flags == ex_flags))
+        {
+          printf ("Error in bug20230427 for i=%d\n", i);
+          printf ("expected "); mpfr_dump (z);
+          printf ("got      "); mpfr_dump (y);
+          printf ("emin =       %ld\n", mpfr_get_emin ());
+          printf ("expected flags =");
+          flags_out (ex_flags);
+          printf ("got flags      =");
+          flags_out (flags);
+          exit (1);
+        }
     }
-  mpfr_clear (x);
-  mpfr_clear (y);
-  mpfr_clear (z);
+
+  mpfr_clears (x, y, z, t1, t2, (mpfr_ptr) 0);
   set_emin (old_emin);
 }
 
