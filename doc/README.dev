@@ -1469,10 +1469,12 @@ in the MPFR shared library when the encoding is BID:
 When using GNU extensions (based on the value of the __GNUC_* macros), check
 whether they work with ICC. The following paper can give useful information:
 "Intel® Compilers for Linux*: Compatibility with GNU Compilers" at
-<https://software.intel.com/articles/intel-compilers-for-linux-compatibility-with-gnu-compilers>.
+  https://www.intel.com/content/www/us/en/content-details/686146/intel-c-compiler-compatibility-with-gnu-gcc-compiler-for-linux.html
+
+Direct link to the PDF file:
+  https://cdrdv2.intel.com/v1/dl/getContent/686146?fileName=gnu-icc-compatibility-v03.pdf
 
 To detect compilers, see
-
   https://sourceforge.net/p/predef/wiki/Compilers/
 
 ===========================================================================
