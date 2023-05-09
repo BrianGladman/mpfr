@@ -305,9 +305,10 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
        * affect the result. We need to cope with that before overwriting z.
        * This can occur only if k < 0 (this test is necessary to avoid a
        * potential integer overflow).
-       * If inexact >= 0, then the real result is <= 2^(emin - 2), so that
-       * o(2^(emin - 2)) = +0 is correct. If inexact < 0, then the real
-       * result is > 2^(emin - 2) and we need to round to 2^(emin - 1).
+       * If inexact >= 0, then the exact result is <= 2^(emin - 2), so that
+       * the computed result RN(2^(emin - 2)) = +0 is correct.
+       * If inexact < 0, then the exact result is > 2^(emin - 2) and we need
+       * to round to 2^(emin - 1).
        */
       MPFR_ASSERTN (MPFR_EXP_MAX <= LONG_MAX);
       lk = mpfr_get_si (k, MPFR_RNDN);
@@ -335,11 +336,13 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
        */
       if (rnd_mode == MPFR_RNDN && inexact < 0 && lk < 0 &&
           MPFR_GET_EXP (z) == __gmpfr_emin - 1 - lk && mpfr_powerof2_raw (z))
-        /* Rounding to nearest, real result > z * 2^k = 2^(emin - 2),
-         * underflow case: we will obtain the correct result and exceptions
-         *  by replacing z by nextabove(z).
-         */
-        mpfr_nextabove (z);
+        /* Rounding to nearest, exact result > z * 2^k = 2^(emin - 2),
+         * underflow case. We need to round to 2^(emin - 1), i.e. to
+         * round toward +inf.
+         * Note: the old code was using "mpfr_nextabove (z);" instead of
+         * setting rnd_mode to MPFR_RNDU for the mpfr_mul_2si, but this
+         * was incorrect in precision 1. */
+        rnd_mode = MPFR_RNDU;
       MPFR_CLEAR_FLAGS ();
       inex2 = mpfr_mul_2si (z, z, lk, rnd_mode);
       if (inex2)  /* underflow or overflow */

@@ -1390,11 +1390,16 @@ ofuf_thresholds (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
 
                 /* failure */
                 printf ("ofuf_thresholds: error for %s with %s %s,\n"
-                        "xprec=%lu, yprec=%lu, rnd=%s\nx = ", name,
+                        "xprec=%lu, yprec=%lu, rnd=%s\n", name,
                         neg ? "negative" : "positive",
                         ufl ? "underflow" : "overflow",
                         (unsigned long) px, (unsigned long) py,
                         mpfr_print_rnd_mode ((mpfr_rnd_t) r));
+                printf ("emin=%" MPFR_EXP_FSPEC "d "
+                        "emax=%" MPFR_EXP_FSPEC "d\n",
+                        (mpfr_eexp_t) mpfr_get_emin (),
+                        (mpfr_eexp_t) mpfr_get_emax ());
+                printf ("x = ");
                 mpfr_dump (x[i]);
                 printf ("Got ");
                 mpfr_dump (y);
