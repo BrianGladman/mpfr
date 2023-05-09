@@ -389,6 +389,7 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
 int
 mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
 {
+  mpfr_exp_t ex, ey;
   int inexact;
   int cmp_x_1;
   int y_is_integer;
@@ -505,7 +506,11 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
 
   cmp_x_1 = mpfr_cmpabs (x, __gmpfr_one);
   if (cmp_x_1 == 0)
-    return mpfr_set_si (z, MPFR_IS_NEG (x) && mpfr_odd_p (y) ? -1 : 1, rnd_mode);
+    return mpfr_set_si (z, MPFR_IS_NEG (x) && mpfr_odd_p (y) ? -1 : 1,
+                        rnd_mode);
+
+  ex = MPFR_GET_EXP (x);
+  ey = MPFR_GET_EXP (y);
 
   /* now we have:
      (1) either x > 0
@@ -528,11 +533,11 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
   */
 
   /* fast check for cases where no overflow nor underflow is possible:
-     if |y| <= 2^15, and -32767 < EXP(x) <= 32767, then
+     if |y| <= 2^15, and -32767 < ex <= 32767, then
      |y*log2(x)| <= 2^15*32767 < 1073741823, thus for the default
      emax=1073741823 and emin=-emax there can be no overflow nor underflow */
   if (__gmpfr_emax >= 1073741823 && __gmpfr_emin <= -1073741823 &&
-      MPFR_EXP(y) <= 15 && -32767 < MPFR_EXP(x) && MPFR_EXP(x) <= 32767)
+      ey <= 15 && -32767 < ex && ex <= 32767)
     goto no_overflow_nor_underflow;
 
   if (cmp_x_1 * MPFR_SIGN (y) > 0)
@@ -561,13 +566,13 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
     }
 
   /* Basic underflow checking. One has:
-   *   - if y > 0, |x^y| < 2^(EXP(x) * y);
-   *   - if y < 0, |x^y| <= 2^((EXP(x) - 1) * y);
+   *   - if y > 0, |x^y| < 2^(ex * y);
+   *   - if y < 0, |x^y| <= 2^((ex - 1) * y);
    * so that one can compute a value ebound such that |x^y| < 2^ebound.
    * If we have ebound <= emin - 2 (emin - 1 in directed rounding modes),
    * then there is an underflow and we can decide the return value.
    */
-  if (MPFR_IS_NEG (y) ? (MPFR_GET_EXP (x) > 1) : (MPFR_GET_EXP (x) < 0))
+  if (MPFR_IS_NEG (y) ? (ex > 1) : (ex < 0))
     {
       mp_limb_t tmp_limb[MPFR_EXP_LIMB_SIZE];
       mpfr_t tmp;
@@ -577,7 +582,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
       /* We must restore the flags. */
       MPFR_SAVE_EXPO_MARK (expo);
       MPFR_TMP_INIT1 (tmp_limb, tmp, sizeof (mpfr_exp_t) * CHAR_BIT);
-      inex2 = mpfr_set_exp_t (tmp, MPFR_GET_EXP (x), MPFR_RNDN);
+      inex2 = mpfr_set_exp_t (tmp, ex, MPFR_RNDN);
       MPFR_ASSERTN (inex2 == 0);
       if (MPFR_IS_NEG (y))
         {
@@ -613,7 +618,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
      any precision supported by MPFR (the general case uses this property).
      Note: the threshold of 256 should not be decreased too much, see the
      comments about (-2^b)^y just below. */
-  if (y_is_integer && MPFR_GET_EXP (y) <= MPFR_POW_EXP_THRESHOLD)
+  if (y_is_integer && ey <= MPFR_POW_EXP_THRESHOLD)
     {
       mpz_t zi;
 
@@ -629,22 +634,22 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
      necessarily y is a large integer. */
   if (mpfr_powerof2_raw (x))
     {
-      mpfr_exp_t b = MPFR_GET_EXP (x) - 1;
+      mpfr_exp_t b = ex - 1;
       mpfr_t tmp;
 
       MPFR_STAT_STATIC_ASSERT (MPFR_POW_EXP_THRESHOLD >=
                                sizeof(mpfr_exp_t) * CHAR_BIT);
 
-      /* For x < 0, we have EXP(y) > MPFR_POW_EXP_THRESHOLD, thus
-         EXP(y) > bitsize of mpfr_exp_t (1). Therefore, since |x| <> 1:
+      /* For x < 0, we have ey > MPFR_POW_EXP_THRESHOLD, thus
+         ey > bitsize of mpfr_exp_t (1). Therefore, since |x| <> 1:
          (a) either |x| >= 2, and we have an overflow due to (1), but
              this was detected by the early overflow detection above,
              i.e. this case is not possible;
          (b) either |x| <= 1/2, and we have underflow. */
       if (MPFR_SIGN (x) < 0)
         {
-          MPFR_ASSERTD (MPFR_EXP (x) <= 0);
-          MPFR_ASSERTD (MPFR_EXP (y) > sizeof(mpfr_exp_t) * CHAR_BIT);
+          MPFR_ASSERTD (ex <= 0);
+          MPFR_ASSERTD (ey > sizeof(mpfr_exp_t) * CHAR_BIT);
           return mpfr_underflow (z,
                                  rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode,
                                  MPFR_IS_NEG (x) && mpfr_odd_p (y) ? -1 : 1);
@@ -680,10 +685,7 @@ mpfr_pow (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
     mpfr_exp_t err, expx, logt;
 
     /* We need an upper bound on the exponent of y * log(x). */
-    if (MPFR_IS_POS(x))
-      expx = cmp_x_1 > 0 ? MPFR_EXP(x) : 1 - MPFR_EXP(x);
-    else
-      expx = mpfr_cmp_si (x, -1) > 0 ? 1 - MPFR_EXP(x) : MPFR_EXP(x);
+    expx = cmp_x_1 < 0 ? 1 - ex : ex;
     MPFR_ASSERTD(expx >= 0);
     /* now |log(x)| < expx */
     logt = MPFR_INT_CEIL_LOG2 (expx);
