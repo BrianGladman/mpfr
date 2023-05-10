@@ -195,10 +195,14 @@ overfl_exp10_0 (void)
   mpfr_clear (y);
 }
 
-/* Bug in mpfr_pow_general fixed in ff5012b61d5e5fee5156c57b8aa8fc1739c2a771
+/* Bug in mpfr_pow_general in precision 1 in the particular case of
+   rounding to nearest, z * 2^k = 2^(emin - 2) and real result larger
+   than this value; fixed in ff5012b61d5e5fee5156c57b8aa8fc1739c2a771
+   (which is simplified in 4f5de980be290687ac1409aa02873e9e0dd1a030);
    initially found by ofuf_thresholds (though the test was incorrect).
    With a 32-bit exponent, failure for i=0.
    With a 64-bit exponent, failure for i=1.
+   The result was correct, but the underflow flag was missing.
 */
 static void
 bug20230427 (void)
@@ -414,10 +418,9 @@ main (int argc, char *argv[])
   bad_cases (mpfr_exp10, mpfr_log10, "mpfr_exp10",
              0, -256, 255, 4, 128, 800, 50);
 
-  /* TODO: add hardcoded tests for the bugs mentioned below. */
-
   /* The following tests triggered a bug in mpfr_pow_general, later fixed
      in commit b62966df913f73f08b3c5252e1d0c702bc20442f. */
+  /* TODO: add hardcoded tests for this bug. */
   ofuf_thresholds (mpfr_exp10, mpfr_log10, "mpfr_exp10", 999, 999, 0, POSOF);
   ofuf_thresholds (mpfr_exp10, mpfr_log10, "mpfr_exp10", 999, 999, 0, POSUF);
 
