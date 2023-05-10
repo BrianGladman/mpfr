@@ -431,6 +431,12 @@ main (int argc, char *argv[])
      Got 0.1E-4611686018427387903
      with inex = -1 and flags = inexact (8)
      expected underflow
+     Note: Since the ofuf_thresholds test to find this bug is incorrect
+     (it may incorrect expect an underflow; the above one is really
+     expected, though), the following calls may need to be changed to
+     still detect this bug after ofuf_thresholds is fixed. In case this
+     is not possible, testcases have been added (bug20230427) and should
+     be sufficient.
   */
   ofuf_thresholds (mpfr_exp10, mpfr_log10, "mpfr_exp10", 64, 64, 0, POSOF);
   ofuf_thresholds (mpfr_exp10, mpfr_log10, "mpfr_exp10", 64, 64, 0, POSUF);
