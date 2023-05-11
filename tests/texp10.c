@@ -195,6 +195,85 @@ overfl_exp10_0 (void)
   mpfr_clear (y);
 }
 
+/* Bug in mpfr_pow_general found by ofuf_thresholds (on 2023-02-13 for
+   a 32-bit exponent, changed on 2023-03-06 for a 64-bit exponent too),
+   fixed in commit b62966df913f73f08b3c5252e1d0c702bc20442f.
+   With a 32-bit exponent, failure for i=0.
+     expected 0.1111E1073741823
+     got      @Inf@
+     expected flags = inexact (8)
+     got flags      = overflow inexact (10)
+   With a 64-bit exponent, failure for i=1.
+     expected 0.11111111111111111111111E4611686018427387903
+     got      @Inf@
+     expected flags = inexact (8)
+     got flags      = overflow inexact (10)
+*/
+static void
+bug20230213 (void)
+{
+  const char *s[2] = {
+    "0x1.34413504b3ccdbd5dd8p+28",
+    "0x1.34413509f79fef2c4e0dd14a7ae0ecfbacdbp+60"
+  };
+  mpfr_t x1, x2, y1, y2;
+  mpfr_prec_t px[2] = { 74, 147 };
+  mpfr_prec_t py[2] = { 4, 23 };
+  mpfr_exp_t old_emax, emax;
+  mpfr_flags_t flags1, flags2;
+  int i;
+
+  old_emax = mpfr_get_emax ();
+
+  for (i = 0; i < 2; i++)
+    {
+      if (i != 0)
+        set_emax (MPFR_EMAX_MAX);
+
+      emax = mpfr_get_emax ();
+
+      mpfr_inits2 (px[i], x1, x2, (mpfr_ptr) 0);
+      mpfr_inits2 (py[i], y1, y2, (mpfr_ptr) 0);
+
+      mpfr_setmax (y1, emax);
+      mpfr_log10 (x1, y1, MPFR_RNDD);
+      mpfr_set_str (x2, s[i], 0, MPFR_RNDN);
+      /* For i == 0, emax == 2^30, so that the value can be checked.
+         For i != 0, check the value for the case emax == 2^62.
+         The "0UL" ensures that the shifts are valid. */
+      if (i == 0 || (((0UL + MPFR_EMAX_MAX) >> 31) >> 30) == 1)
+        {
+          /* printf ("Checking x1 for i=%d\n", i); */
+          MPFR_ASSERTN (mpfr_equal_p (x1, x2));
+        }
+
+      /* Let MAXF be the maximum finite value (y1 above).
+         Since x1 < log10(MAXF), one should have exp10(x1) < MAXF, and
+         therefore, y2 = RU(exp10(x1)) <= RU(MAXF) = MAXF (no overflow). */
+      flags1 = MPFR_FLAGS_INEXACT;
+      mpfr_clear_flags ();
+      mpfr_exp10 (y2, x1, MPFR_RNDU);
+      flags2 = __gmpfr_flags;
+
+      if (! (mpfr_lessequal_p (y2, y1) && flags2 == flags1))
+        {
+          printf ("Error in bug20230213 for i=%d\n", i);
+          printf ("emax = %" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) emax);
+          printf ("expected "); mpfr_dump (y1);
+          printf ("got      "); mpfr_dump (y2);
+          printf ("expected flags =");
+          flags_out (flags1);
+          printf ("got flags      =");
+          flags_out (flags2);
+          exit (1);
+        }
+
+      mpfr_clears (x1, x2, y1, y2, (mpfr_ptr) 0);
+    }
+
+  set_emax (old_emax);
+}
+
 /* Bug in mpfr_pow_general in precision 1 in the particular case of
    rounding to nearest, z * 2^k = 2^(emin - 2) and real result larger
    than this value; fixed in ff5012b61d5e5fee5156c57b8aa8fc1739c2a771
@@ -302,6 +381,7 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
+  bug20230213 ();
   bug20230427 ();
 
   special_overflow ();
@@ -419,8 +499,8 @@ main (int argc, char *argv[])
              0, -256, 255, 4, 128, 800, 50);
 
   /* The following tests triggered a bug in mpfr_pow_general, later fixed
-     in commit b62966df913f73f08b3c5252e1d0c702bc20442f. */
-  /* TODO: add hardcoded tests for this bug. */
+     in commit b62966df913f73f08b3c5252e1d0c702bc20442f.
+     Hardcoded testcases: bug20230213. */
   ofuf_thresholds (mpfr_exp10, mpfr_log10, "mpfr_exp10", 999, 999, 0, POSOF);
   ofuf_thresholds (mpfr_exp10, mpfr_log10, "mpfr_exp10", 999, 999, 0, POSUF);
 
