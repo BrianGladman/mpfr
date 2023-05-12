@@ -337,11 +337,15 @@ mpfr_pow_general (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
       if (rnd_mode == MPFR_RNDN && inexact < 0 && lk < 0 &&
           MPFR_GET_EXP (z) == __gmpfr_emin - 1 - lk && mpfr_powerof2_raw (z))
         /* Rounding to nearest, exact result > z * 2^k = 2^(emin - 2),
-         * underflow case. We need to round to 2^(emin - 1), i.e. to
-         * round toward +inf.
+         * and underflow case because the rounded result assuming an
+         * unbounded exponent range is 2^(emin - 2). We need to round
+         * to 2^(emin - 1), i.e. to round toward +inf.
          * Note: the old code was using "mpfr_nextabove (z);" instead of
-         * setting rnd_mode to MPFR_RNDU for the mpfr_mul_2si, but this
-         * was incorrect in precision 1. */
+         * setting rnd_mode to MPFR_RNDU for the call to mpfr_mul_2si, but
+         * this was incorrect in precision 1 because in this precision,
+         * mpfr_nextabove gave 2^(emin - 1), which is representable,
+         * so that mpfr_mul_2si did not generate the wanted underflow
+         * (the value was correct, but the underflow flag was missing). */
         rnd_mode = MPFR_RNDU;
       MPFR_CLEAR_FLAGS ();
       inex2 = mpfr_mul_2si (z, z, lk, rnd_mode);
