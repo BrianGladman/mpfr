@@ -1218,8 +1218,9 @@ bad_cases (int (*fct)(FLIST), int (*inv)(FLIST), const char *name,
         generate the testcases, these global variables could temporarily
         be set to MPFR_EMIN_MIN-1 and MPFR_EMAX_MAX+1 respectively, but
         with no guarantee that this will work. Alternatively, they could
-        be set to MPFR_EMIN_MIN+1 and MPFR_EMAX_MAX-1 respectively for
-        the test of the library, but again, there may be fake failures.
+        be set to MPFR_EMIN_MIN+1 and MPFR_EMAX_MAX-1 respectively (or
+        powers of 2) for the test of the library, but again, there may
+        be fake failures (not a real issue for the developers).
      2. Generate testcases on a 64-bit build for a 32-bit target (where
         the extended exponent range is smaller). Then copy these testcases
         in the testsuite (they will be significant only on 32-bit hosts,
