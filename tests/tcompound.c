@@ -22,7 +22,10 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* TODO: Generate and test cases that are very close to the overflow
    and underflow thresholds (for all rounding modes), both below and
-   above the thresholds. */
+   above the thresholds.
+   Note: This is the goal of the ofuf_thresholds tests in tests/tests.c
+   (work in progress); hardcoded tests, e.g. from ofuf_thresholds failures,
+   could also be added as ofuf_thresholds may be modified. */
 
 #include "mpfr-test.h"
 
