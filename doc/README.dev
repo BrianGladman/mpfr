@@ -995,7 +995,8 @@ You can control what is logged using the environment variables:
 
 MPFR_LOG_FILE:  Name of the LOG file (default: mpfr.log).
 MPFR_LOG_FLUSH: When this variable is set, flush the log stream after
-                each log output.
+                each log output (useful to get the latest logs in case
+                of crash, but this makes logging slower).
 MPFR_LOG_PREC:  Number of digits of the output (set the internal variable
                 mpfr_log_prec, default: 6).
 MPFR_LOG_LEVEL: Max recursive level (default: 7).
@@ -1013,14 +1014,6 @@ MPFR_LOG_ALL:      Log everything
 Define them. Run your program, and view `mpfr.log`.
 
 For example, just define MPFR_LOG_ALL, run you program, and view `mpfr.log`.
-
-If you want to debug a crash in MPFR, in order to get the latest logs, you
-will need to set MPFR_LOG_FLUSH (note that this makes logging slower) and
-choose a low enough optimization level (e.g., -O1), so that the compiler
-does not delay the log code. For instance, concerning mpfr_rec_sqrt() in
-rec_sqrt.c, with -O2, GCC 12 delays the fflush() from the loop after the
-loop, so that one cannot see any of the "working precision =" line in case
-of a crash in the loop, even if hundreds of such lines are expected.
 
 Note: The running time may be much longer. If logging is used on the
 test suite with a default timeout, it may be necessary to increase the
