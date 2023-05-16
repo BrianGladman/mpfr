@@ -277,7 +277,7 @@ mpfr_sub1 (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
           MPN_COPY(cp, ap, cn);
         }
     }
- else
+  else
     {
       cp = MPFR_TMP_LIMBS_ALLOC (cn + 1);
       cp[0] = mpn_rshift (cp + 1, MPFR_MANT(c), cn++, shift_c);
