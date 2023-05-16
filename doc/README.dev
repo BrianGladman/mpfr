@@ -710,6 +710,7 @@ About undefined behavior:
   https://blog.regehr.org/archives/232
   https://blog.regehr.org/archives/1520
   https://blog.llvm.org/posts/2011-05-13-what-every-c-programmer-should-know/
+  https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3128.pdf
 
 Type punning, strict aliasing, and optimization:
   https://blog.regehr.org/archives/959
