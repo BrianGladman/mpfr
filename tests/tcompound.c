@@ -262,9 +262,9 @@ bug_20230206 (void)
       mpfr_inits2 (1, x, y1, y2, (mpfr_ptr) 0);
       mpfr_set_ui_2exp (x, 1, -1, MPFR_RNDN);  /* x = 1/2 */
 
-      /* This first test is for a 32-bit mpfr_exp_t type
-         (no failure with a 64-bit mpfr_exp_t type since
-         the underflow threshold is much lower). */
+      /* This first test is useful mainly for a 32-bit mpfr_exp_t type
+         (no failure with a 64-bit mpfr_exp_t type since the underflow
+         threshold in the extended exponent range is much lower). */
 
       mpfr_set_ui_2exp (y1, 1, -1072124363, MPFR_RNDN);
       inex1 = -1;
