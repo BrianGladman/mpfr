@@ -144,8 +144,8 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
 
   k = MPFR_INT_CEIL_LOG2(SAFE_ABS (unsigned long, n));  /* thus |n| <= 2^k */
 
-  /* we compute u=log2p1(x) with prec+extra bits, since we loose some bits
-     in 2^u */
+  /* We compute u=log2p1(x) with prec+extra bits, since we lose some bits
+     in 2^u. */
   extra = 0;
   rnd1 = VSIGN (n) == MPFR_SIGN (x) ? MPFR_RNDD : MPFR_RNDU;
 
