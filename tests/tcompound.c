@@ -371,7 +371,9 @@ bug_20230211 (void)
    random value, this probably doesn't affect the result (one might enter
    the "if" while one shouldn't, but the real check is done inside the "if").
    This test fails if -fsanitize=undefined -fno-sanitize-recover is used or
-   if the processor emits a signal in case of integer overflow. */
+   if the processor emits a signal in case of integer overflow.
+   This test has been made obsolete by the "kx < ex" condition
+   in 2cb3123891dd46fe0258d4aec7f8655b8ec69aaf. */
 static void
 bug_20230517 (void)
 {
