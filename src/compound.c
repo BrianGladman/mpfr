@@ -242,9 +242,9 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
           break;
         }
 
-      /* Check whether x^n fits in the target precision (or 1 more bit for
-         rounding to nearest), as in such a case, Ziv's strategy may take
-         too long.
+      /* When x > 65535 (some rather arbitrary value), check whether x^n fits
+         in the target precision (or 1 more bit for rounding to nearest), as
+         in such a case, Ziv's strategy may take too long.
          Let k be the minimum length of the significand of x, i.e. if x is
          regarded as an odd integer, this means that 2^(k-1) <= x < 2^k.
          Thus 2^(n*(k-1)) <= x^n < 2^(k*n), and x^n has between n*(k-1)+1
