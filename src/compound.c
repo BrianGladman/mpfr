@@ -56,7 +56,7 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
 {
   int inexact, compared, k, nloop;
   mpfr_t t, u;
-  mpfr_prec_t prec, extra;
+  mpfr_prec_t py, prec, extra;
   mpfr_rnd_t rnd1;
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
@@ -136,8 +136,8 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
 
   MPFR_SAVE_EXPO_MARK (expo);
 
-  prec = MPFR_PREC(y);
-  prec += MPFR_INT_CEIL_LOG2 (prec) + 6;
+  py = MPFR_GET_PREC (y);
+  prec = py + MPFR_INT_CEIL_LOG2 (py) + 6;
 
   mpfr_init2 (t, prec);
   mpfr_init2 (u, prec);
@@ -198,9 +198,9 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
         }
       /* Detect cases where result is 1 or 1+ulp(1) or 1-1/2*ulp(1):
          |2^u - 1| = |exp(u*log(2)) - 1| <= |u|*log(2) < |u| */
-      if (nloop == 0 && MPFR_GET_EXP(u) < - (mpfr_exp_t) MPFR_PREC(y))
+      if (nloop == 0 && MPFR_GET_EXP(u) < - py)
         {
-          /* since ulp(1) = 2^(1-PREC(y)), we have |u| < 1/4*ulp(1) */
+          /* since ulp(1) = 2^(1-py), we have |u| < 1/4*ulp(1) */
           /* mpfr_compound_near_one must be called in the extended
              exponent range, so that 1 is representable. */
           inexact = mpfr_compound_near_one (y, MPFR_SIGN (u), rnd_mode);
@@ -222,8 +222,7 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       e = (precu - prec >= e) ? 1 : e + 1 - (precu - prec);
       /* now |t - (1+x)^n| < 2^(EXP(t)+e-prec) */
 
-      if (MPFR_LIKELY (!inex ||
-                       MPFR_CAN_ROUND (t, prec - e, MPFR_PREC(y), rnd_mode)))
+      if (MPFR_LIKELY (!inex || MPFR_CAN_ROUND (t, prec - e, py, rnd_mode)))
         break;
 
       /* If t fits in the target precision (or with 1 more bit), then we can
@@ -232,9 +231,8 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
          value. However since we rounded t toward 1, we can determine it.
          Since the error in the approximation t is at most 2^e ulp(t),
          this error should be less than 1/2 ulp(y), thus we should have
-         prec - PREC(y) >= e + 1. */
-      if (mpfr_min_prec (t) <= MPFR_PREC(y) + 1 &&
-          prec - MPFR_PREC(y) >= e + 1)
+         prec - py >= e + 1. */
+      if (mpfr_min_prec (t) <= py + 1 && prec - py >= e + 1)
         {
           /* we add/subtract one ulp to get the correct rounding */
           if (rnd2 == MPFR_RNDD) /* t was rounded downwards */
@@ -262,14 +260,13 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       if (nloop == 0 && n > 1 && mpfr_cmp_ui (x, 65535) > 0)
         {
           mpfr_prec_t kx = mpfr_min_prec (x);
-          mpfr_prec_t p = MPFR_PREC(y) + (rnd_mode == MPFR_RNDN);
+          mpfr_prec_t p = py + (rnd_mode == MPFR_RNDN);
 
           MPFR_LOG_MSG (("Check if x^n fits... n=%ld kx=%Pd p=%Pd\n",
                          n, kx, p));
           if (kx - 1 <= (p - 1) / n)
             {
               mpfr_t v;
-              mpfr_prec_t min_prec_v;
 
               /* Check whether x^n really fits into p bits. */
               mpfr_init2 (v, p);
@@ -277,7 +274,6 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
               if (inexact == 0)
                 {
                   MPFR_LOG_MSG (("x^n fits into p bits", 0));
-                  min_prec_v = mpfr_min_prec (v);
                   /* (x+1)^n = x^n * (1 + 1/x)^n
                      For directed rounding, we can round when (1 + 1/x)^n
                      < 1 + 2^-p, and then the result is x^n,
@@ -292,11 +288,10 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
                   mpfr_pow_ui (t, t, n, MPFR_RNDU);
                   mpfr_sub_ui (t, t, 1, MPFR_RNDU);
                   /* t cannot be zero */
-                  if (MPFR_GET_EXP(t) < -MPFR_PREC(y))
+                  if (MPFR_GET_EXP(t) < - py)
                     {
                       mpfr_set (y, v, MPFR_RNDZ);
-                      mpfr_clear (v);  /* due to the "goto end;" */
-                      if (rnd_mode == MPFR_RNDN && min_prec_v == p)
+                      if (rnd_mode == MPFR_RNDN && mpfr_min_prec (v) == p)
                         rnd_mode = MPFR_RNDU; /* midpoint: round up */
                       if (rnd_mode != MPFR_RNDU && rnd_mode != MPFR_RNDA)
                         inexact = -1;
@@ -305,6 +300,7 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
                           mpfr_nextabove (y);
                           inexact = 1;
                         }
+                      mpfr_clear (v);
                       goto end;
                     }
                 }
