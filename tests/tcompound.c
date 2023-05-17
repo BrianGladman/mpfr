@@ -368,9 +368,10 @@ bug_20230211 (void)
 
 /* Integer overflow with compound.c d04caeae04c6a83276916c4fbac1fe9b0cec3c8b
    (2023-02-23) on "n * (kx - 1) + 1". Note: if the only effect is just a
-   random value, this probably doesn't affect the result. This test fails
-   if -fsanitize=undefined -fno-sanitize-recover is used or if the processor
-   emits a signal in case of integer overflow. */
+   random value, this probably doesn't affect the result (one might enter
+   the "if" while one shouldn't, but the real check is done inside the "if").
+   This test fails if -fsanitize=undefined -fno-sanitize-recover is used or
+   if the processor emits a signal in case of integer overflow. */
 static void
 bug_20230517 (void)
 {
