@@ -274,10 +274,10 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
               /* Check whether x^n really fits into p bits. */
               mpfr_init2 (v, p);
               inexact = mpfr_pow_ui (v, x, n, MPFR_RNDZ);
-              min_prec_v = mpfr_min_prec (v);
-              mpfr_clear (v);
               if (inexact == 0)
                 {
+                  MPFR_LOG_MSG (("x^n fits into p bits", 0));
+                  min_prec_v = mpfr_min_prec (v);
                   /* (x+1)^n = x^n * (1 + 1/x)^n
                      For directed rounding, we can round when (1 + 1/x)^n
                      < 1 + 2^-p, and then the result is x^n,
@@ -294,7 +294,8 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
                   /* t cannot be zero */
                   if (MPFR_GET_EXP(t) < -MPFR_PREC(y))
                     {
-                      mpfr_pow_si (y, x, n, MPFR_RNDZ);
+                      mpfr_set (y, v, MPFR_RNDZ);
+                      mpfr_clear (v);  /* due to the "goto end;" */
                       if (rnd_mode == MPFR_RNDN && min_prec_v == p)
                         rnd_mode = MPFR_RNDU; /* midpoint: round up */
                       if (rnd_mode != MPFR_RNDU && rnd_mode != MPFR_RNDA)
@@ -307,6 +308,7 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
                       goto end;
                     }
                 }
+              mpfr_clear (v);
             }
         }
 
