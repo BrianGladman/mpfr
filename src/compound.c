@@ -254,16 +254,15 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
          The second test of the second "if" corresponds to another simple
          condition that implies that x^n fits in the target precision.
          Here are the details:
-         Let k be the minimum length of the significand of x, i.e. if x is
-         regarded as an odd integer (after an exponent shift), this means
-         that 2^(k-1) <= x < 2^k. Thus 2^(n*(k-1)) <= x^n < 2^(k*n), and
-         x^n has between n*(k-1)+1 and k*n bits. So x^n can fit into p bits
-         only if p >= n*(k-1)+1, which implies that k-1 <= trunc((p-1)/n).
-         This latter condition will be tested in order to avoid a possible
-         integer overflow in the computation of n*(k-1). Let's summarize:
-         if k-1 <= trunc((p-1)/n), then x^n may fit into p bits (we will
-         need to check that exactly); otherwise x^n cannot fit into p bits
-         (so there is nothing special to do). */
+         Let k be the minimum length of the significand of x, and x' the odd
+         (integer) significand of x. This means  that 2^(k-1) <= x' < 2^k.
+         Thus 2^(n*(k-1)) <= (x')^n < 2^(k*n), and x^n has between n*(k-1)+1
+         and k*n bits. So x^n can fit into p bits only if p >= n*(k-1)+1,
+         i.e. n*(k-1) <= p-1.
+         Note that x >= 2^k, so that x^n >= 2^(k*n). Since raw overflow
+         has already been detected, k*n cannot overflow if computed with
+         the mpfr_exp_t type. Hence the second test of the second "if",
+         which cannot overflow. */
       MPFR_ASSERTD (n < 0 || n > 1);
       if (nloop == 0 && n > 1 && (ex = MPFR_GET_EXP (x)) >= 17)
         {
@@ -272,7 +271,7 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
 
           MPFR_LOG_MSG (("Check if x^n fits... n=%ld kx=%Pd p=%Pd\n",
                          n, kx, p));
-          if (kx < ex && kx - 1 <= (p - 1) / n)
+          if (kx < ex && n * (mpfr_exp_t) (kx - 1) <= p - 1)
             {
               mpfr_t v;
 
