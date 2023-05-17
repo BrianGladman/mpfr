@@ -244,13 +244,21 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
           break;
         }
 
-      /* Check if x^n fits in the target precision (or 1 more bit for
-         rounding to nearest),
-         then if x is very large Ziv's strategy will take too long.
-         If x fits into k bits, then 2^(k-1) <= x < 2^k, thus
-         2^(n*(k-1)) <= x^n < 2^(k*n), thus x^n has between n*(k-1)+1 and
-         k*n bits. Since this does not depend on the working precision,
-         we only check this at the first iteration. */
+      /* Check whether x^n fits in the target precision (or 1 more bit for
+         rounding to nearest), as in such a case, Ziv's strategy may take
+         too long.
+         Let k be the minimum length of the significand of x, i.e. if x is
+         regarded as an odd integer, this means that 2^(k-1) <= x < 2^k.
+         Thus 2^(n*(k-1)) <= x^n < 2^(k*n), and x^n has between n*(k-1)+1
+         and k*n bits. Since this does not depend on the working precision,
+         we only check this at the first iteration (nloop == 0).
+         So x^n can fit into p bits only if p >= n*(k-1)+1, which implies
+         that k-1 <= trunc((p-1)/n). This latter condition will be tested
+         in order to avoid a possible integer overflow in the computation
+         of n*(k-1). Let's summarize: if k-1 <= trunc((p-1)/n), then x^n
+         may fit into p bits (we will need to check); otherwise x^n cannot
+         fit into p bits (so there is nothing special to do). */
+      MPFR_ASSERTD (n < 0 || n > 1);
       if (nloop == 0 && n > 1 && mpfr_cmp_ui (x, 65535) > 0)
         {
           mpfr_prec_t kx = mpfr_min_prec (x);
@@ -258,12 +266,12 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
 
           MPFR_LOG_MSG (("Check if x^n fits... n=%ld kx=%Pd p=%Pd\n",
                          n, kx, p));
-          if (n * (kx - 1) + 1 <= p)
+          if (kx - 1 <= (p - 1) / n)
             {
-              /* first check that x^n really fits into p bits */
               mpfr_t v;
               mpfr_prec_t min_prec_v;
 
+              /* Check whether x^n really fits into p bits. */
               mpfr_init2 (v, p);
               inexact = mpfr_pow_ui (v, x, n, MPFR_RNDZ);
               min_prec_v = mpfr_min_prec (v);
