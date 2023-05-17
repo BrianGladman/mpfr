@@ -273,7 +273,7 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
               inexact = mpfr_pow_ui (v, x, n, MPFR_RNDZ);
               if (inexact == 0)
                 {
-                  MPFR_LOG_MSG (("x^n fits into p bits", 0));
+                  MPFR_LOG_MSG (("x^n fits into p bits\n", 0));
                   /* (x+1)^n = x^n * (1 + 1/x)^n
                      For directed rounding, we can round when (1 + 1/x)^n
                      < 1 + 2^-p, and then the result is x^n,
