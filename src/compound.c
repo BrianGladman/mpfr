@@ -255,6 +255,9 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
         {
           mpfr_prec_t kx = mpfr_min_prec (x);
           mpfr_prec_t p = MPFR_PREC(y) + (rnd_mode == MPFR_RNDN);
+
+          MPFR_LOG_MSG (("Check if x^n fits... n=%ld kx=%Pd p=%Pd\n",
+                         n, kx, p));
           if (n * (kx - 1) + 1 <= p)
             {
               /* first check that x^n really fits into p bits */
