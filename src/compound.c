@@ -291,15 +291,15 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
                   if (MPFR_GET_EXP(t) < - py)
                     {
                       mpfr_set (y, v, MPFR_RNDZ);
-                      if (rnd_mode == MPFR_RNDN && mpfr_min_prec (v) == p)
-                        rnd_mode = MPFR_RNDU; /* midpoint: round up */
-                      if (rnd_mode != MPFR_RNDU && rnd_mode != MPFR_RNDA)
-                        inexact = -1;
-                      else /* round up */
+                      if ((rnd_mode == MPFR_RNDN && mpfr_min_prec (v) == p)
+                          || rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA)
                         {
+                          /* round up */
                           mpfr_nextabove (y);
                           inexact = 1;
                         }
+                      else
+                        inexact = -1;
                       mpfr_clear (v);
                       goto end;
                     }
