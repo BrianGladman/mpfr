@@ -366,6 +366,29 @@ bug_20230211 (void)
   mpfr_clears (x, y1, y2, (mpfr_ptr) 0);
 }
 
+/* Integer overflow with compound.c d04caeae04c6a83276916c4fbac1fe9b0cec3c8b
+   (2023-02-23) on "n * (kx - 1) + 1". Note: if the only effect is just a
+   random value, this probably doesn't affect the result. This test fails
+   if -fsanitize=undefined -fno-sanitize-recover is used or if the processor
+   emits a signal in case of integer overflow. */
+static void
+bug_20230517 (void)
+{
+  mpfr_exp_t old_emax;
+  mpfr_t x;
+
+  old_emax = mpfr_get_emax ();
+  set_emax (MPFR_EMAX_MAX);
+
+  mpfr_init2 (x, 123456);
+  mpfr_set_ui (x, 65536, MPFR_RNDN);
+  mpfr_nextabove (x);
+  mpfr_compound_si (x, x, LONG_MAX >> 16, MPFR_RNDN);
+  mpfr_clear (x);
+
+  set_emax (old_emax);
+}
+
 /* Inverse function on non-special cases...
    One has x = (1+y)^n with y > -1 and x > 0. Thus y = x^(1/n) - 1.
    The inverse function is useful
@@ -506,6 +529,7 @@ main (void)
   check_ieee754 ();
   bug_20230206 ();
   bug_20230211 ();
+  bug_20230517 ();
 
   test_generic_si (MPFR_PREC_MIN, 100, 100);
 
