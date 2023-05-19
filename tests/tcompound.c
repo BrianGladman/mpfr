@@ -22,7 +22,10 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 /* TODO: Generate and test cases that are very close to the overflow
    and underflow thresholds (for all rounding modes), both below and
-   above the thresholds. */
+   above the thresholds.
+   Note: This is the goal of the ofuf_thresholds tests in tests/tests.c
+   (work in progress); hardcoded tests, e.g. from ofuf_thresholds failures,
+   could also be added as ofuf_thresholds may be modified. */
 
 #include "mpfr-test.h"
 
@@ -259,9 +262,9 @@ bug_20230206 (void)
       mpfr_inits2 (1, x, y1, y2, (mpfr_ptr) 0);
       mpfr_set_ui_2exp (x, 1, -1, MPFR_RNDN);  /* x = 1/2 */
 
-      /* This first test is for a 32-bit mpfr_exp_t type
-         (no failure with a 64-bit mpfr_exp_t type since
-         the underflow threshold is much lower). */
+      /* This first test is useful mainly for a 32-bit mpfr_exp_t type
+         (no failure with a 64-bit mpfr_exp_t type since the underflow
+         threshold in the extended exponent range is much lower). */
 
       mpfr_set_ui_2exp (y1, 1, -1072124363, MPFR_RNDN);
       inex1 = -1;
@@ -361,6 +364,32 @@ bug_20230211 (void)
       exit (1);
     }
   mpfr_clears (x, y1, y2, (mpfr_ptr) 0);
+}
+
+/* Integer overflow with compound.c d04caeae04c6a83276916c4fbac1fe9b0cec3c8b
+   (2023-02-23) on "n * (kx - 1) + 1". Note: if the only effect is just a
+   random value, this probably doesn't affect the result (one might enter
+   the "if" while one shouldn't, but the real check is done inside the "if").
+   This test fails if -fsanitize=undefined -fno-sanitize-recover is used or
+   if the processor emits a signal in case of integer overflow.
+   This test has been made obsolete by the "kx < ex" condition
+   in 2cb3123891dd46fe0258d4aec7f8655b8ec69aaf. */
+static void
+bug_20230517 (void)
+{
+  mpfr_exp_t old_emax;
+  mpfr_t x;
+
+  old_emax = mpfr_get_emax ();
+  set_emax (MPFR_EMAX_MAX);
+
+  mpfr_init2 (x, 123456);
+  mpfr_set_ui (x, 65536, MPFR_RNDN);
+  mpfr_nextabove (x);
+  mpfr_compound_si (x, x, LONG_MAX >> 16, MPFR_RNDN);
+  mpfr_clear (x);
+
+  set_emax (old_emax);
 }
 
 /* Inverse function on non-special cases...
@@ -503,6 +532,7 @@ main (void)
   check_ieee754 ();
   bug_20230206 ();
   bug_20230211 ();
+  bug_20230517 ();
 
   test_generic_si (MPFR_PREC_MIN, 100, 100);
 

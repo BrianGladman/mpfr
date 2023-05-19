@@ -710,6 +710,7 @@ About undefined behavior:
   https://blog.regehr.org/archives/232
   https://blog.regehr.org/archives/1520
   https://blog.llvm.org/posts/2011-05-13-what-every-c-programmer-should-know/
+  https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3128.pdf
 
 Type punning, strict aliasing, and optimization:
   https://blog.regehr.org/archives/959
@@ -994,7 +995,8 @@ You can control what is logged using the environment variables:
 
 MPFR_LOG_FILE:  Name of the LOG file (default: mpfr.log).
 MPFR_LOG_FLUSH: When this variable is set, flush the log stream after
-                each log output.
+                each log output (useful to get the latest logs in case
+                of crash, but this makes logging slower).
 MPFR_LOG_PREC:  Number of digits of the output (set the internal variable
                 mpfr_log_prec, default: 6).
 MPFR_LOG_LEVEL: Max recursive level (default: 7).
@@ -1012,14 +1014,6 @@ MPFR_LOG_ALL:      Log everything
 Define them. Run your program, and view `mpfr.log`.
 
 For example, just define MPFR_LOG_ALL, run you program, and view `mpfr.log`.
-
-If you want to debug a crash in MPFR, in order to get the latest logs, you
-will need to set MPFR_LOG_FLUSH (note that this makes logging slower) and
-choose a low enough optimization level (e.g., -O1), so that the compiler
-does not delay the log code. For instance, concerning mpfr_rec_sqrt() in
-rec_sqrt.c, with -O2, GCC 12 delays the fflush() from the loop after the
-loop, so that one cannot see any of the "working precision =" line in case
-of a crash in the loop, even if hundreds of such lines are expected.
 
 Note: The running time may be much longer. If logging is used on the
 test suite with a default timeout, it may be necessary to increase the
@@ -1469,10 +1463,12 @@ in the MPFR shared library when the encoding is BID:
 When using GNU extensions (based on the value of the __GNUC_* macros), check
 whether they work with ICC. The following paper can give useful information:
 "Intel® Compilers for Linux*: Compatibility with GNU Compilers" at
-<https://software.intel.com/articles/intel-compilers-for-linux-compatibility-with-gnu-compilers>.
+  https://www.intel.com/content/www/us/en/content-details/686146/intel-c-compiler-compatibility-with-gnu-gcc-compiler-for-linux.html
+
+Direct link to the PDF file:
+  https://cdrdv2.intel.com/v1/dl/getContent/686146?fileName=gnu-icc-compatibility-v03.pdf
 
 To detect compilers, see
-
   https://sourceforge.net/p/predef/wiki/Compilers/
 
 ===========================================================================

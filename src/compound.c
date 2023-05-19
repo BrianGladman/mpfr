@@ -56,7 +56,7 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
 {
   int inexact, compared, k, nloop;
   mpfr_t t, u;
-  mpfr_prec_t prec, extra;
+  mpfr_prec_t py, prec, extra;
   mpfr_rnd_t rnd1;
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
@@ -136,16 +136,16 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
 
   MPFR_SAVE_EXPO_MARK (expo);
 
-  prec = MPFR_PREC(y);
-  prec += MPFR_INT_CEIL_LOG2 (prec) + 6;
+  py = MPFR_GET_PREC (y);
+  prec = py + MPFR_INT_CEIL_LOG2 (py) + 6;
 
   mpfr_init2 (t, prec);
   mpfr_init2 (u, prec);
 
   k = MPFR_INT_CEIL_LOG2(SAFE_ABS (unsigned long, n));  /* thus |n| <= 2^k */
 
-  /* we compute u=log2p1(x) with prec+extra bits, since we loose some bits
-     in 2^u */
+  /* We compute u=log2p1(x) with prec+extra bits, since we lose some bits
+     in 2^u. */
   extra = 0;
   rnd1 = VSIGN (n) == MPFR_SIGN (x) ? MPFR_RNDD : MPFR_RNDU;
 
@@ -153,7 +153,7 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
   for (nloop = 0; ; nloop++)
     {
       unsigned int inex;
-      mpfr_exp_t e, e2;
+      mpfr_exp_t e, e2, ex;
       mpfr_prec_t precu = MPFR_ADD_PREC (prec, extra);
       mpfr_prec_t new_extra;
       mpfr_rnd_t rnd2;
@@ -198,9 +198,9 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
         }
       /* Detect cases where result is 1 or 1+ulp(1) or 1-1/2*ulp(1):
          |2^u - 1| = |exp(u*log(2)) - 1| <= |u|*log(2) < |u| */
-      if (nloop == 0 && MPFR_GET_EXP(u) < - (mpfr_exp_t) MPFR_PREC(y))
+      if (nloop == 0 && MPFR_GET_EXP(u) < - py)
         {
-          /* since ulp(1) = 2^(1-PREC(y)), we have |u| < 1/4*ulp(1) */
+          /* since ulp(1) = 2^(1-py), we have |u| < 1/4*ulp(1) */
           /* mpfr_compound_near_one must be called in the extended
              exponent range, so that 1 is representable. */
           inexact = mpfr_compound_near_one (y, MPFR_SIGN (u), rnd_mode);
@@ -222,8 +222,7 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       e = (precu - prec >= e) ? 1 : e + 1 - (precu - prec);
       /* now |t - (1+x)^n| < 2^(EXP(t)+e-prec) */
 
-      if (MPFR_LIKELY (!inex ||
-                       MPFR_CAN_ROUND (t, prec - e, MPFR_PREC(y), rnd_mode)))
+      if (MPFR_LIKELY (!inex || MPFR_CAN_ROUND (t, prec - e, py, rnd_mode)))
         break;
 
       /* If t fits in the target precision (or with 1 more bit), then we can
@@ -232,9 +231,8 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
          value. However since we rounded t toward 1, we can determine it.
          Since the error in the approximation t is at most 2^e ulp(t),
          this error should be less than 1/2 ulp(y), thus we should have
-         prec - PREC(y) >= e + 1. */
-      if (mpfr_min_prec (t) <= MPFR_PREC(y) + 1 &&
-          prec - MPFR_PREC(y) >= e + 1)
+         prec - py >= e + 1. */
+      if (mpfr_min_prec (t) <= py + 1 && prec - py >= e + 1)
         {
           /* we add/subtract one ulp to get the correct rounding */
           if (rnd2 == MPFR_RNDD) /* t was rounded downwards */
@@ -244,29 +242,45 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
           break;
         }
 
-      /* Check if x^n fits in the target precision (or 1 more bit for
-         rounding to nearest),
-         then if x is very large Ziv's strategy will take too long.
-         If x fits into k bits, then 2^(k-1) <= x < 2^k, thus
-         2^(n*(k-1)) <= x^n < 2^(k*n), thus x^n has between n*(k-1)+1 and
-         k*n bits. Since this does not depend on the working precision,
-         we only check this at the first iteration. */
-      if (nloop == 0 && n > 1 && mpfr_cmp_ui (x, 65535) > 0)
+      /* Detect particular cases where Ziv's strategy may take too much
+         memory and be too long, i.e. when x^n fits in the target precision
+         (+ 1 additional bit for rounding to nearest) and the exact result
+         (1+x)^n is very close to x^n.
+         Necessarily, x is a large even integer and n > 0 (thus n > 1).
+         Since this does not depend on the working precision, we only
+         check this at the first iteration (nloop == 0).
+         Hence the first "if" below and the kx < ex test of the second "if"
+         (x is an even integer iff its least bit 1 has exponent >= 1).
+         The second test of the second "if" corresponds to another simple
+         condition that implies that x^n fits in the target precision.
+         Here are the details:
+         Let k be the minimum length of the significand of x, and x' the odd
+         (integer) significand of x. This means  that 2^(k-1) <= x' < 2^k.
+         Thus 2^(n*(k-1)) <= (x')^n < 2^(k*n), and x^n has between n*(k-1)+1
+         and k*n bits. So x^n can fit into p bits only if p >= n*(k-1)+1,
+         i.e. n*(k-1) <= p-1.
+         Note that x >= 2^k, so that x^n >= 2^(k*n). Since raw overflow
+         has already been detected, k*n cannot overflow if computed with
+         the mpfr_exp_t type. Hence the second test of the second "if",
+         which cannot overflow. */
+      MPFR_ASSERTD (n < 0 || n > 1);
+      if (nloop == 0 && n > 1 && (ex = MPFR_GET_EXP (x)) >= 17)
         {
           mpfr_prec_t kx = mpfr_min_prec (x);
-          mpfr_prec_t p = MPFR_PREC(y) + (rnd_mode == MPFR_RNDN);
-          if (n * (kx - 1) + 1 <= p)
-            {
-              /* first check that x^n really fits into p bits */
-              mpfr_t v;
-              mpfr_prec_t min_prec_v;
+          mpfr_prec_t p = py + (rnd_mode == MPFR_RNDN);
 
+          MPFR_LOG_MSG (("Check if x^n fits... n=%ld kx=%Pd p=%Pd\n",
+                         n, kx, p));
+          if (kx < ex && n * (mpfr_exp_t) (kx - 1) <= p - 1)
+            {
+              mpfr_t v;
+
+              /* Check whether x^n really fits into p bits. */
               mpfr_init2 (v, p);
               inexact = mpfr_pow_ui (v, x, n, MPFR_RNDZ);
-              min_prec_v = mpfr_min_prec (v);
-              mpfr_clear (v);
               if (inexact == 0)
                 {
+                  MPFR_LOG_MSG (("x^n fits into p bits\n", 0));
                   /* (x+1)^n = x^n * (1 + 1/x)^n
                      For directed rounding, we can round when (1 + 1/x)^n
                      < 1 + 2^-p, and then the result is x^n,
@@ -281,21 +295,23 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
                   mpfr_pow_ui (t, t, n, MPFR_RNDU);
                   mpfr_sub_ui (t, t, 1, MPFR_RNDU);
                   /* t cannot be zero */
-                  if (MPFR_GET_EXP(t) < -MPFR_PREC(y))
+                  if (MPFR_GET_EXP(t) < - py)
                     {
-                      mpfr_pow_si (y, x, n, MPFR_RNDZ);
-                      if (rnd_mode == MPFR_RNDN && min_prec_v == p)
-                        rnd_mode = MPFR_RNDU; /* midpoint: round up */
-                      if (rnd_mode != MPFR_RNDU && rnd_mode != MPFR_RNDA)
-                        inexact = -1;
-                      else /* round up */
+                      mpfr_set (y, v, MPFR_RNDZ);
+                      if ((rnd_mode == MPFR_RNDN && mpfr_min_prec (v) == p)
+                          || rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA)
                         {
+                          /* round up */
                           mpfr_nextabove (y);
                           inexact = 1;
                         }
+                      else
+                        inexact = -1;
+                      mpfr_clear (v);
                       goto end;
                     }
                 }
+              mpfr_clear (v);
             }
         }
 
