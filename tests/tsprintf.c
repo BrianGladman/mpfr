@@ -1631,7 +1631,7 @@ static void
 large_prec_for_g (void)
 {
   mpfr_t x;
-  char buf1[3], buf2[3], buf3[3], buf4[3];
+  char buf1[3] = "xxx", buf2[3] = "xxx", buf3[3] = "xxx", buf4[3] = "xxx";
   int r;
 
   mpfr_init2 (x, 128);
