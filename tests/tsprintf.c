@@ -1619,22 +1619,46 @@ check_length_overflow (void)
    MPFR wants to allocate 18446744071562070545 bytes. With assertion
    checking (--enable-assert), one gets:
      vasprintf.c:1908: MPFR assertion failed: threshold >= 1
+   for the 2nd mpfr_snprintf below (the other calls with %.2147483648Rg
+   have the same issue).
 
    This case should either succeed or fail as reaching an environmental limit
    like with glibc (note that the precision does not fit in an int).
+   For MPFR, once this bug is fixed, this case should actually succeed,
+   so let's assume that in the tests below.
 */
 static void
 large_prec_for_g (void)
 {
   mpfr_t x;
+  char buf1[3], buf2[3], buf3[3], buf4[3];
   int r;
 
   mpfr_init2 (x, 128);
   mpfr_set_ui (x, 1, MPFR_RNDN);
+
   r = mpfr_snprintf (NULL, 0, "%.2147483647Rg\n", x);
   MPFR_ASSERTN (r == 2);
+
   r = mpfr_snprintf (NULL, 0, "%.2147483648Rg\n", x);
-  MPFR_ASSERTN (r == 2 || r < 0);
+  MPFR_ASSERTN (r == 2);
+
+  r = mpfr_snprintf (buf1, sizeof(buf1), "%.2147483647Rg\n", x);
+  MPFR_ASSERTN (r == 2);
+  MPFR_ASSERTN (buf1[0] == '1' && buf1[1] == '\n' && buf1[2] == 0);
+
+  r = mpfr_snprintf (buf2, sizeof(buf2), "%.2147483648Rg\n", x);
+  MPFR_ASSERTN (r == 2);
+  MPFR_ASSERTN (buf2[0] == '1' && buf2[1] == '\n' && buf2[2] == 0);
+
+  r = mpfr_sprintf (buf3, "%.2147483647Rg\n", x);
+  MPFR_ASSERTN (r == 2);
+  MPFR_ASSERTN (buf3[0] == '1' && buf3[1] == '\n' && buf3[2] == 0);
+
+  r = mpfr_sprintf (buf4, "%.2147483648Rg\n", x);
+  MPFR_ASSERTN (r == 2);
+  MPFR_ASSERTN (buf4[0] == '1' && buf4[1] == '\n' && buf4[2] == 0);
+
   mpfr_clear (x);
 }
 
