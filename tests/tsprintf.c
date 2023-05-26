@@ -54,6 +54,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <locale.h>
 #endif
 
+#define MPFR_NEED_INTMAX_H
 #include "mpfr-test.h"
 
 const int prec_max_printf = 5000; /* limit for random precision in
@@ -1625,13 +1626,19 @@ check_length_overflow (void)
    This case should either succeed or fail as reaching an environmental limit
    like with glibc (note that the precision does not fit in an int).
    For MPFR, once this bug is fixed, this case should actually succeed,
-   so let's assume that in the tests below.
+   unless mpfr_intmax_t is a 32-bit type[*] (because 2147483648 is not
+   representable in mpfr_intmax_t and in an int), so let's assume that
+   in the tests below.
+   [*] can be tested with
+       -std=c90 -Werror -pedantic -Wformat -Wno-error=overlength-strings
+       (this is a way to disable intmax_t).
 */
 static void
 large_prec_for_g (void)
 {
   mpfr_t x;
   char buf1[4] = "xxx", buf2[4] = "xxx", buf3[4] = "xxx", buf4[4] = "xxx";
+  int allow_fail = (mpfr_uintmax_t) -1 == 0xffffffff;
   int r;
 
   mpfr_init2 (x, 128);
@@ -1641,23 +1648,33 @@ large_prec_for_g (void)
   MPFR_ASSERTN (r == 2);
 
   r = mpfr_snprintf (NULL, 0, "%.2147483648Rg\n", x);
-  MPFR_ASSERTN (r == 2);
+  MPFR_ASSERTN (r == 2 || (allow_fail && r < 0));
 
   r = mpfr_snprintf (buf1, sizeof(buf1), "%.2147483647Rg\n", x);
   MPFR_ASSERTN (r == 2);
   MPFR_ASSERTN (buf1[0] == '1' && buf1[1] == '\n' && buf1[2] == 0);
 
   r = mpfr_snprintf (buf2, sizeof(buf2), "%.2147483648Rg\n", x);
-  MPFR_ASSERTN (r == 2);
-  MPFR_ASSERTN (buf2[0] == '1' && buf2[1] == '\n' && buf2[2] == 0);
+  if (r < 0)
+    MPFR_ASSERTN (allow_fail);
+  else
+    {
+      MPFR_ASSERTN (r == 2);
+      MPFR_ASSERTN (buf2[0] == '1' && buf2[1] == '\n' && buf2[2] == 0);
+    }
 
   r = mpfr_sprintf (buf3, "%.2147483647Rg\n", x);
   MPFR_ASSERTN (r == 2);
   MPFR_ASSERTN (buf3[0] == '1' && buf3[1] == '\n' && buf3[2] == 0);
 
   r = mpfr_sprintf (buf4, "%.2147483648Rg\n", x);
-  MPFR_ASSERTN (r == 2);
-  MPFR_ASSERTN (buf4[0] == '1' && buf4[1] == '\n' && buf4[2] == 0);
+  if (r < 0)
+    MPFR_ASSERTN (allow_fail);
+  else
+    {
+      MPFR_ASSERTN (r == 2);
+      MPFR_ASSERTN (buf4[0] == '1' && buf4[1] == '\n' && buf4[2] == 0);
+    }
 
   mpfr_clear (x);
 }
