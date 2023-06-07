@@ -425,7 +425,8 @@ parse_string (mpfr_ptr x, struct parsed_string *pstr,
   /* Remove 0's at the beginning and end of mantissa[0..prec-1] */
   mant = pstr->mantissa;
   for ( ; (pstr->prec > 0) && (*mant == 0) ; mant++, pstr->prec--)
-    pstr->exp_base--;
+    if (MPFR_LIKELY (pstr->exp_base != MPFR_EXP_MIN))
+      pstr->exp_base--;
   for ( ; (pstr->prec > 0) && (mant[pstr->prec - 1] == 0); pstr->prec--);
   pstr->mant = mant;
 
@@ -742,7 +743,9 @@ parsed_string_to_mpfr (mpfr_ptr x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           MPN_ZERO (y0, ysize);
 
           /* pstr_size - pstr->exp_base can overflow */
-          MPFR_SADD_OVERFLOW (exp_z, (mpfr_exp_t) pstr_size, -pstr->exp_base,
+          exp_z = pstr->exp_base == MPFR_EXP_MIN ?
+            MPFR_EXP_MAX : -pstr->exp_base;  /* avoid integer overflow */
+          MPFR_SADD_OVERFLOW (exp_z, (mpfr_exp_t) pstr_size, exp_z,
                               mpfr_exp_t, mpfr_uexp_t,
                               MPFR_EXP_MIN, MPFR_EXP_MAX,
                               goto underflow, goto overflow);
