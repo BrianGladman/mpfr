@@ -1366,7 +1366,17 @@ bug20181127 (void)
 /* Bug reported by Michael Jones
    https://sympa.inria.fr/sympa/arc/mpfr/2023-06/msg00000.html.
    This yields an integer overflow, which is not necessarily detected,
-   however the result might still be correct. */
+   however, the result might still be correct.
+   A runtime error is obtained with an UB sanitizer.
+   With GCC 4.9.4, one gets an assertion failure:
+     mpn_exp.c:94: MPFR assertion failed: e > 0
+   And if all assertions are disabled with
+     ./configure --enable-assert=none CC=gcc-4.9
+   one gets:
+     Error in bug20230606
+     Expected x = 0
+     Got      x = 0.11001100110011001E-3
+*/
 static void
 bug20230606 (void)
 {
@@ -1381,7 +1391,6 @@ bug20230606 (void)
       printf ("Expected x = 0\n");
       printf ("Got      x = ");
       mpfr_dump (x);
-      printf ("\n");
       exit (1);
     }
   mpfr_clear (x);
