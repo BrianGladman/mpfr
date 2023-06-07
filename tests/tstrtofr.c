@@ -1363,6 +1363,30 @@ bug20181127 (void)
   mpfr_clears (x, y, (mpfr_ptr) 0);
 }
 
+/* Bug reported by Michael Jones
+   https://sympa.inria.fr/sympa/arc/mpfr/2023-06/msg00000.html.
+   This yields an integer overflow, which is not necessarily detected,
+   however the result might still be correct. */
+static void
+bug20230606 (void)
+{
+  char s[] = "0.1E-99999999999999999999";
+  mpfr_t x;
+
+  mpfr_init2 (x, 17);
+  mpfr_strtofr (x, s, NULL, 10, MPFR_RNDZ);
+  if (!mpfr_zero_p (x) || mpfr_signbit (x) != 0)
+    {
+      printf ("Error in bug20230606\n");
+      printf ("Expected x = 0\n");
+      printf ("Got      x = ");
+      mpfr_dump (x);
+      printf ("\n");
+      exit (1);
+    }
+  mpfr_clear (x);
+}
+
 static void
 coverage (void)
 {
@@ -1563,6 +1587,7 @@ main (int argc, char *argv[])
   bug20161217 ();
   bug20170308 ();
   bug20181127 ();
+  bug20230606 ();
   random_tests ();
 
   tests_end_mpfr ();
