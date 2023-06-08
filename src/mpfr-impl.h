@@ -1566,6 +1566,18 @@ asm (".section predict_data, \"aw\"; .previous\n"
   if ((c) < (a)) ACTION_IF_OVERFLOW;                                  \
  } while (0)
 
+/* FIXME:
+   This macro should currently be called in such a way that MIN is the
+   minimum value of the type and MAX is the maximum value of the type.
+   Otherwise the last "else" case does not ensure that MIN <= c <= MAX.
+   However, this is not how it is always called in strtofr.c: there's
+   sometimes MPFR_EXP_MIN+2 and MPFR_EXP_MAX-2 (this is not always
+   optimal, but some adjustments are needed).
+   Then (a) >= 0 && (b) >= 0 could be changed to (a) > 0 && (b) > 0
+   so that when one of the arguments is 0, one would use the simple
+   addition (last "else"). But the strtofr.c code needs to be fixed
+   first.
+*/
 #define MPFR_SADD_OVERFLOW(c,a,b,STYPE,UTYPE,MIN,MAX,ACTION_IF_POS_OVERFLOW,ACTION_IF_NEG_OVERFLOW) \
   do {                                                                \
   if ((a) >= 0 && (b) >= 0) {                                         \
