@@ -20,6 +20,25 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+/* FIXME: MPFR_SADD_OVERFLOW is sometimes called with
+     MPFR_EXP_MIN+2, MPFR_EXP_MAX-2
+   which is not supported by the current implementation (if an argument
+   is >= 0 and the other one is < 0, a simple addition is done, so that
+   it is not guaranteed that the result is between these two values).
+   It is not clear whether one can find failing cases in practice, as
+   previous MPFR_SADD_OVERFLOW calls exclude some underflow/overflow
+   cases. One would need to analyze the full code and do a case-by-case
+   study.
+   Moreover, mpfr_check_range() is called with an exponent field that
+   may be far from the MPFR_EMIN_MIN and MPFR_EMAX_MAX limits (which is
+   discouraged), and if the exponent field happens to be equal to one of
+   the special values, erratic behavior will occur. It happens that this
+   is probably not possible with the current code, due to the
+     MPFR_SADD_OVERFLOW (exp, exp, ysize_bits, [...])
+   where ysize_bits >= GMP_NUMB_BITS > 4, but this could silently be
+   broken with future code.
+*/
+
 #include <ctype.h>  /* For isspace */
 
 #define MPFR_NEED_LONGLONG_H
