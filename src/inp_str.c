@@ -43,6 +43,9 @@ mpfr_inp_str (mpfr_ptr rop, FILE *stream, int base, mpfr_rnd_t rnd_mode)
   nread = 0;
 
   /* Skip whitespace. EOF will be detected later. */
+  /* FIXME: Should we explicitly stop at a null character?
+     (For non-"C" locales, the ISO C standard allows isspace(0)
+     to return true.) Also check other parts of the MPFR code. */
   do
     {
       c = getc (stream);
