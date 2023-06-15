@@ -307,7 +307,7 @@ special (void)
                 {
                   int fmtpsflags = psflag;
                   int zeroflag, width;
-                  char ws[4], fmt[12], expected[12], sign, *p;
+                  char ws[4], fmt[20], expected[20], sign, *p;
                   int sp;
 
                   /* In case of '+' flag, let's randomly test an additional
@@ -324,11 +324,15 @@ special (void)
                   else
                     ws[0] = '\0';
 
-                  sprintf (fmt, "%%%s%s%sR%s%c", ps[fmtpsflags],
+                  /* The following is a common prefix to better identify
+                     error messages produced in this function. */
+                  strcpy (expected, "special ");
+
+                  sprintf (fmt, "%s%%%s%s%sR%s%c", expected, ps[fmtpsflags],
                            zeroflag ? "0" : "", ws, rs[r], fs[i & 1][f]);
                   /* printf ("Format string: \"%s\"\n", fmt); */
 
-                  p = expected;
+                  p = expected + 8;
                   sign = neg ? '-' : ps[psflag][0];
                   for (sp = width - (sign != '\0') - 3; sp > 0; sp--)
                     *p++ = ' ';
