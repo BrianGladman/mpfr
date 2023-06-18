@@ -54,6 +54,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include <locale.h>
 #endif
 
+#define MPFR_NEED_INTMAX_H
 #include "mpfr-test.h"
 
 const int prec_max_printf = 5000; /* limit for random precision in
@@ -306,7 +307,7 @@ special (void)
                 {
                   int fmtpsflags = psflag;
                   int zeroflag, width;
-                  char ws[4], fmt[12], expected[12], sign, *p;
+                  char ws[4], fmt[20], expected[20], sign, *p;
                   int sp;
 
                   /* In case of '+' flag, let's randomly test an additional
@@ -323,11 +324,15 @@ special (void)
                   else
                     ws[0] = '\0';
 
-                  sprintf (fmt, "%%%s%s%sR%s%c", ps[fmtpsflags],
+                  /* The following is a common prefix to better identify
+                     error messages produced in this function. */
+                  strcpy (expected, "special ");
+
+                  sprintf (fmt, "%s%%%s%s%sR%s%c", expected, ps[fmtpsflags],
                            zeroflag ? "0" : "", ws, rs[r], fs[i & 1][f]);
                   /* printf ("Format string: \"%s\"\n", fmt); */
 
-                  p = expected;
+                  p = expected + 8;
                   sign = neg ? '-' : ps[psflag][0];
                   for (sp = width - (sign != '\0') - 3; sp > 0; sp--)
                     *p++ = ' ';
@@ -1619,22 +1624,62 @@ check_length_overflow (void)
    MPFR wants to allocate 18446744071562070545 bytes. With assertion
    checking (--enable-assert), one gets:
      vasprintf.c:1908: MPFR assertion failed: threshold >= 1
+   for the 2nd mpfr_snprintf below (the other calls with %.2147483648Rg
+   have the same issue).
 
    This case should either succeed or fail as reaching an environmental limit
    like with glibc (note that the precision does not fit in an int).
+   For MPFR, once this bug is fixed, this case should actually succeed,
+   unless mpfr_intmax_t is a 32-bit type[*] (because 2147483648 is not
+   representable in mpfr_intmax_t and in an int), so let's assume that
+   in the tests below.
+   [*] can be tested with
+       -std=c90 -Werror -pedantic -Wformat -Wno-error=overlength-strings
+       (this is a way to disable intmax_t).
 */
 static void
 large_prec_for_g (void)
 {
   mpfr_t x;
+  char buf1[4] = "xxx", buf2[4] = "xxx", buf3[4] = "xxx", buf4[4] = "xxx";
+  int allow_fail = (mpfr_uintmax_t) -1 == 0xffffffff;
   int r;
 
   mpfr_init2 (x, 128);
   mpfr_set_ui (x, 1, MPFR_RNDN);
+
   r = mpfr_snprintf (NULL, 0, "%.2147483647Rg\n", x);
   MPFR_ASSERTN (r == 2);
+
   r = mpfr_snprintf (NULL, 0, "%.2147483648Rg\n", x);
-  MPFR_ASSERTN (r == 2 || r < 0);
+  MPFR_ASSERTN (r == 2 || (allow_fail && r < 0));
+
+  r = mpfr_snprintf (buf1, sizeof(buf1), "%.2147483647Rg\n", x);
+  MPFR_ASSERTN (r == 2);
+  MPFR_ASSERTN (buf1[0] == '1' && buf1[1] == '\n' && buf1[2] == 0);
+
+  r = mpfr_snprintf (buf2, sizeof(buf2), "%.2147483648Rg\n", x);
+  if (r < 0)
+    MPFR_ASSERTN (allow_fail);
+  else
+    {
+      MPFR_ASSERTN (r == 2);
+      MPFR_ASSERTN (buf2[0] == '1' && buf2[1] == '\n' && buf2[2] == 0);
+    }
+
+  r = mpfr_sprintf (buf3, "%.2147483647Rg\n", x);
+  MPFR_ASSERTN (r == 2);
+  MPFR_ASSERTN (buf3[0] == '1' && buf3[1] == '\n' && buf3[2] == 0);
+
+  r = mpfr_sprintf (buf4, "%.2147483648Rg\n", x);
+  if (r < 0)
+    MPFR_ASSERTN (allow_fail);
+  else
+    {
+      MPFR_ASSERTN (r == 2);
+      MPFR_ASSERTN (buf4[0] == '1' && buf4[1] == '\n' && buf4[2] == 0);
+    }
+
   mpfr_clear (x);
 }
 

@@ -20,6 +20,25 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+/* FIXME: MPFR_SADD_OVERFLOW is sometimes called with
+     MPFR_EXP_MIN+2, MPFR_EXP_MAX-2
+   which is not supported by the current implementation (if an argument
+   is >= 0 and the other one is < 0, a simple addition is done, so that
+   it is not guaranteed that the result is between these two values).
+   It is not clear whether one can find failing cases in practice, as
+   previous MPFR_SADD_OVERFLOW calls exclude some underflow/overflow
+   cases. One would need to analyze the full code and do a case-by-case
+   study.
+   Moreover, mpfr_check_range() is called with an exponent field that
+   may be far from the MPFR_EMIN_MIN and MPFR_EMAX_MAX limits (which is
+   discouraged), and if the exponent field happens to be equal to one of
+   the special values, erratic behavior will occur. It happens that this
+   is probably not possible with the current code, due to the
+     MPFR_SADD_OVERFLOW (exp, exp, ysize_bits, [...])
+   where ysize_bits >= GMP_NUMB_BITS > 4, but this could silently be
+   broken with future code.
+*/
+
 #include <ctype.h>  /* For isspace */
 
 #define MPFR_NEED_LONGLONG_H
@@ -425,7 +444,8 @@ parse_string (mpfr_ptr x, struct parsed_string *pstr,
   /* Remove 0's at the beginning and end of mantissa[0..prec-1] */
   mant = pstr->mantissa;
   for ( ; (pstr->prec > 0) && (*mant == 0) ; mant++, pstr->prec--)
-    pstr->exp_base--;
+    if (MPFR_LIKELY (pstr->exp_base != MPFR_EXP_MIN))
+      pstr->exp_base--;
   for ( ; (pstr->prec > 0) && (mant[pstr->prec - 1] == 0); pstr->prec--);
   pstr->mant = mant;
 
@@ -539,6 +559,7 @@ parsed_string_to_mpfr (mpfr_ptr x, struct parsed_string *pstr, mpfr_rnd_t rnd)
         pstr_size = (ysize_bits / Den) * Num
           + ((unsigned long) (ysize_bits % Den) * Num + Den - 1) / Den
           + 1;
+        MPFR_ASSERTD (pstr_size <= 1 + ysize_bits);
       }
 
       /* Since pstr_size corresponds to at least ysize_bits bits,
@@ -549,6 +570,8 @@ parsed_string_to_mpfr (mpfr_ptr x, struct parsed_string *pstr, mpfr_rnd_t rnd)
          in pstr->mant, i.e. pstr->prec, reduce it to pstr->prec. */
       if (pstr_size > pstr->prec)
         pstr_size = pstr->prec;
+
+      MPFR_ASSERTD (pstr_size >= 0);
 
       /* Convert str (potentially truncated to pstr_size) into binary.
          Note that pstr->mant is big endian, thus no offset is needed. */
@@ -624,7 +647,7 @@ parsed_string_to_mpfr (mpfr_ptr x, struct parsed_string *pstr, mpfr_rnd_t rnd)
             }
           /* exp = shift count */
           /* TODO: add some explanations about what exp means exactly. */
-          exp = GMP_NUMB_BITS * (- diff_ysize) - count;
+          exp = GMP_NUMB_BITS * (- (mpfr_exp_t) diff_ysize) - count;
         }
 
       /* compute base^(exp_base - pstr_size) on n limbs */
@@ -642,7 +665,7 @@ parsed_string_to_mpfr (mpfr_ptr x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           /* exp += pow2 * (pstr->exp_base - pstr_size) + pstr->exp_bin
              with overflow checking
              and check that we can add/subtract 2 to exp without overflow */
-          MPFR_SADD_OVERFLOW (tmp, pstr->exp_base, -(mpfr_exp_t) pstr_size,
+          MPFR_SADD_OVERFLOW (tmp, pstr->exp_base, -pstr_size,
                               mpfr_exp_t, mpfr_uexp_t,
                               MPFR_EXP_MIN, MPFR_EXP_MAX,
                               goto overflow, goto underflow);
@@ -664,11 +687,12 @@ parsed_string_to_mpfr (mpfr_ptr x, struct parsed_string *pstr, mpfr_rnd_t rnd)
                               mpfr_exp_t, mpfr_uexp_t,
                               MPFR_EXP_MIN+2, MPFR_EXP_MAX-2,
                               goto overflow, goto underflow);
+
           result = y;
           err = 0;
         }
       /* case non-power-of-two-base, and pstr->exp_base > pstr_size */
-      else if (pstr->exp_base > (mpfr_exp_t) pstr_size)
+      else if (pstr->exp_base > pstr_size)
         {
           mp_limb_t *z;
           mpfr_exp_t exp_z;
@@ -677,7 +701,7 @@ parsed_string_to_mpfr (mpfr_ptr x, struct parsed_string *pstr, mpfr_rnd_t rnd)
 
           result = MPFR_TMP_LIMBS_ALLOC (2 * ysize + 1);
 
-          /* z = base^(exp_base-sptr_size) using space allocated at y-ysize */
+          /* z = base^(exp_base-pstr_size) using space allocated at y-ysize */
           z = y0;
           /* NOTE: exp_base-pstr_size can't overflow since pstr_size > 0 */
           err = mpfr_mpn_exp (z, &exp_z, pstr->base,
@@ -729,7 +753,7 @@ parsed_string_to_mpfr (mpfr_ptr x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           result += ysize;
         }
       /* case exp_base < pstr_size */
-      else if (pstr->exp_base < (mpfr_exp_t) pstr_size)
+      else if (pstr->exp_base < pstr_size)
         {
           mp_limb_t *z;
           mpfr_exp_t exp_z;
@@ -742,7 +766,9 @@ parsed_string_to_mpfr (mpfr_ptr x, struct parsed_string *pstr, mpfr_rnd_t rnd)
           MPN_ZERO (y0, ysize);
 
           /* pstr_size - pstr->exp_base can overflow */
-          MPFR_SADD_OVERFLOW (exp_z, (mpfr_exp_t) pstr_size, -pstr->exp_base,
+          exp_z = pstr->exp_base == MPFR_EXP_MIN ?
+            MPFR_EXP_MAX : -pstr->exp_base;  /* avoid integer overflow */
+          MPFR_SADD_OVERFLOW (exp_z, pstr_size, exp_z,
                               mpfr_exp_t, mpfr_uexp_t,
                               MPFR_EXP_MIN, MPFR_EXP_MAX,
                               goto underflow, goto overflow);

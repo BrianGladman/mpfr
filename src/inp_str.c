@@ -43,6 +43,13 @@ mpfr_inp_str (mpfr_ptr rop, FILE *stream, int base, mpfr_rnd_t rnd_mode)
   nread = 0;
 
   /* Skip whitespace. EOF will be detected later. */
+  /* FIXME: Should we explicitly stop at a null character?
+     (For non-"C" locales, the ISO C standard allows isspace(0)
+     to return true.) Also check other parts of the MPFR code.
+     BTW, this really seems to occur in practice, as Mutt's lib.h has
+     a comment "this macro must check for *c == 0 since isspace(0) has
+     unreliable behavior on some systems" (but "non-portable" would be
+     better than "unreliable"). */
   do
     {
       c = getc (stream);
