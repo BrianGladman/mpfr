@@ -64,7 +64,7 @@ mpfr_pow_is_exact (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y,
   MPFR_ASSERTD (d < 0);
 
   /* Compute a,b such that x=a*2^b.
-     Since a comes from a regular MPFR number, due to the constrainst on the
+     Since a comes from a regular MPFR number, due to the constraints on the
      exponent and the precision, there can be no integer overflow below. */
   mpz_init (a);
   b = mpfr_get_z_2exp (a, x);
