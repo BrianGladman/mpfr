@@ -277,7 +277,10 @@ check_bad (void)
 
   for (i = 0; i < BAD; i++)
     {
-      mpfr_exp_t emax;
+      mpfr_exp_t INITIALIZED(emax);
+      /* The INITIALIZED() is a workaround for GCC bug 106155:
+         https://gcc.gnu.org/bugzilla/show_bug.cgi?id=106155 */
+
       /* For i == 6, mpfr_prec_t needs at least a 65-bit precision
          (64 value bits + 1 sign bit) to avoid a failure. */
       if (i == 6 && MPFR_PREC_BITS > 64)
