@@ -43,28 +43,26 @@ main (int argc, char *argv[])
       exit (1);
     }
   i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
-  if (i == 0 || mpfr_cmp_si (x, -1700))
+  if (i != 5 || mpfr_cmp_si0 (x, -1700))
     {
       printf ("Error in reading 1st line from file inp_str.dat (%d)\n", i);
       mpfr_dump (x);
       exit (1);
     }
   i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
-  if (i == 0 || mpfr_cmp_ui (x, 31415))
+  if (i != 10 || mpfr_cmp_ui0 (x, 31415))
     {
       printf ("Error in reading 2nd line from file inp_str.dat (%d)\n", i);
       mpfr_dump (x);
       exit (1);
     }
-  getc (f);
   i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
-  if (i == 0 || mpfr_cmp_ui (x, 31416))
+  if (i != 111 || mpfr_cmp_ui0 (x, 31416))
     {
       printf ("Error in reading 3rd line from file inp_str.dat (%d)\n", i);
       mpfr_dump (x);
       exit (1);
     }
-  getc (f);
   i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
   if (i != 0)
     {
@@ -79,7 +77,6 @@ main (int argc, char *argv[])
                 2, MPFR_RNDN);
   for (n = 2; n < 63; n++)
     {
-      getc (f);
       i = mpfr_inp_str (x, f, n, MPFR_RNDN);
       if (i == 0 || !mpfr_equal_p (x, y))
         {
