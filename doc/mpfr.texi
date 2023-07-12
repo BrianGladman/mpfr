@@ -2775,8 +2775,10 @@ read float in @var{rop}.
 @c written in decimal for the specified base, and in base 16, @samp{B} is the
 @c binary exponent written in decimal (i.e., it indicates the power of 2 by
 @c which the significand is to be scaled).
-This function reads a word (defined as a sequence of characters between
-whitespace) and parses it using @code{mpfr_set_str}.
+After skipping optional whitespace (as defined by @code{isspace}, which
+depends on the current locale), this function reads a word, defined as
+the longest sequence of non-whitespace characters, and parses it using
+@code{mpfr_set_str}.
 See the documentation of @code{mpfr_strtofr} for a detailed description
 of the valid string formats.
 @c Special values can be read as follows (the case does not matter):
