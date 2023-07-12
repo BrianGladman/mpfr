@@ -2787,7 +2787,9 @@ of the valid string formats.
 @c or equal to 16, the following strings are accepted too: @samp{NaN},
 @c @samp{Inf}, @samp{+Inf} and @samp{-Inf}.
 
-Return the number of bytes read, or if an error occurred, return 0.
+Return the number of bytes read (including the leading whitespace,
+if any), or if the string format is invalid or an error occurred,
+return 0.
 @end deftypefun
 
 @c @deftypefun void mpfr_inp_raw (mpfr_t @var{float}, FILE *@var{stream})
