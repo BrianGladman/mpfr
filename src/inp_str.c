@@ -82,11 +82,12 @@ mpfr_inp_str (mpfr_ptr rop, FILE *stream, int base, mpfr_rnd_t rnd_mode)
         break;
       c = getc (stream);
     }
-  /* FIXME: The use of ungetc has been deprecated since C99 when it
-     occurs at the beginning of a binary stream, and this may happen
-     on /dev/null. One could add a "if (c != EOF)" test, but let's
-     wait for some discussion in comp.std.c first... */
-  ungetc (c, stream);
+  /* The use of ungetc has been deprecated since C99 when it occurs at the
+     beginning of a binary stream, and this may happen on /dev/null. Here,
+     this is possible only for c == EOF. The condition "if (c != EOF)" below
+     is just there to handle this case. */
+  if (c != EOF)
+    ungetc (c, stream);
 
   if (MPFR_UNLIKELY (str_size == (size_t) -1 || str_size == 0 ||
                      (c == EOF && ! feof (stream))))
