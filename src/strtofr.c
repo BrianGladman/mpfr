@@ -261,7 +261,10 @@ parse_string (mpfr_ptr x, struct parsed_string *pstr,
   pstr->mantissa = NULL;
 
   /* Optional leading whitespace */
-  while (isspace((unsigned char) *str)) str++;
+  /* For non-"C" locales, the ISO C standard allows isspace(0) to
+     return true. So we need to stop explicitly on '\0'. */
+  while (*str != '\0' && isspace ((unsigned char) *str))
+    str++;
 
   /* An optional sign `+' or `-' */
   pstr->negative = (*str == '-');
