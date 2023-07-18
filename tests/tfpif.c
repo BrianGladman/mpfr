@@ -262,7 +262,6 @@ check_bad (void)
       perror ("check_bad");
       fprintf (stderr, "Failed to open \"%s\" for writing\n",
               filenameCompressed);
-      fclose (fh);
       remove (filenameCompressed);
       exit (1);
     }
