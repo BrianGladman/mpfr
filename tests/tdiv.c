@@ -1107,6 +1107,9 @@ test_20070628 (void)
     }
   mpfr_clears (x, y, (mpfr_ptr) 0);
   set_emax (old_emax);
+
+  if (err)
+    exit (1);
 }
 
 /* Bug in mpfr_divhigh_n_basecase when all limbs of q (except the most
