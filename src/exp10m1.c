@@ -60,7 +60,7 @@ mpfr_exp10m1_small (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode,
 int
 mpfr_exp10m1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
-  int inexact, nloop;
+  int inexact;
   mpfr_t t;
   mpfr_prec_t Ny = MPFR_PREC(y);   /* target precision */
   mpfr_prec_t Nt;                  /* working precision */
@@ -105,7 +105,7 @@ mpfr_exp10m1 (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpfr_init2 (t, Nt);
 
   MPFR_ZIV_INIT (loop, Nt);
-  for (nloop = 0;; nloop++)
+  for (;;)
     {
       int inex1;
 
