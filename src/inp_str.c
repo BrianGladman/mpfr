@@ -43,13 +43,6 @@ mpfr_inp_str (mpfr_ptr rop, FILE *stream, int base, mpfr_rnd_t rnd_mode)
   nread = 0;
 
   /* Skip whitespace. EOF will be detected later. */
-  /* FIXME: Should we explicitly stop at a null character?
-     (For non-"C" locales, the ISO C standard allows isspace(0)
-     to return true.) Also check other parts of the MPFR code.
-     BTW, this really seems to occur in practice, as Mutt's lib.h has
-     a comment "this macro must check for *c == 0 since isspace(0) has
-     unreliable behavior on some systems" (but "non-portable" would be
-     better than "unreliable"). */
   do
     {
       c = getc (stream);
@@ -76,15 +69,25 @@ mpfr_inp_str (mpfr_ptr rop, FILE *stream, int base, mpfr_rnd_t rnd_mode)
       if (c == EOF || isspace (c))
         break;
       str[str_size++] = (unsigned char) c;
+      /* If c is '\0' (while not being a whitespace character), the word will
+         not have a valid format. But in the context of a string in memory,
+         '\0' is a terminating null character. So, to avoid ending with a
+         valid string format (like "1" with ignored characters after the
+         terminating null character), we need to make sure that the string
+         does not have a valid format; so let's start it with '*'. Note
+         that we should read the full word, so we cannot break. */
+      if (MPFR_UNLIKELY (c == '\0'))
+        str[0] = '*';
       if (str_size == (size_t) -1)
         break;
       c = getc (stream);
     }
-  /* FIXME: The use of ungetc has been deprecated since C99 when it
-     occurs at the beginning of a binary stream, and this may happen
-     on /dev/null. One could add a "if (c != EOF)" test, but let's
-     wait for some discussion in comp.std.c first... */
-  ungetc (c, stream);
+  /* The use of ungetc has been deprecated since C99 when it occurs at the
+     beginning of a binary stream, and this may happen on /dev/null. Here,
+     this is possible only for c == EOF. The condition "if (c != EOF)" below
+     is just there to handle this case. */
+  if (c != EOF)
+    ungetc (c, stream);
 
   if (MPFR_UNLIKELY (str_size == (size_t) -1 || str_size == 0 ||
                      (c == EOF && ! feof (stream))))
