@@ -315,6 +315,11 @@ typedef int (*F2)(mpfr_ptr, mpfr_srcptr);
    also be needed to compare the pointers: "g == (F2) &mpfr_rint", and that's
    all. */
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-function-type"
+#endif
+
 static void
 test_fct (double (*f)(double), F2 g, const char *s, mpfr_rnd_t r)
 {
@@ -371,6 +376,10 @@ test_against_libc (void)
       test_fct (&nearbyint, (F2) &mpfr_rint, "rint", (mpfr_rnd_t) r);
 #endif
 }
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 #endif
 
