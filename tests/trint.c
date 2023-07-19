@@ -317,7 +317,9 @@ typedef int (*F2)(mpfr_ptr, mpfr_srcptr);
 
 #if defined(__GNUC__)
 #pragma GCC diagnostic push
+#if __GNUC__ >= 8 || __clang_major__ >= 13
 #pragma GCC diagnostic ignored "-Wcast-function-type"
+#endif
 #endif
 
 static void
