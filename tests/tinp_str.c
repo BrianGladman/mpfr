@@ -69,6 +69,9 @@ main (int argc, char *argv[])
       mpfr_dump (x);
       exit (1);
     }
+  /* The 4th line is "12_this_is_an_invalid_float" (between the quotes).
+     Though the prefix 12 is a valid float, the full word is not, hence
+     the expected error. */
   i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
   if (i != 0)
     {
