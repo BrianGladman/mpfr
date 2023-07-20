@@ -38,7 +38,9 @@ main (int argc, char *argv[])
 
   /* Since some needed characters like '-' and '.' may be whitespace
      characters in non-"C" locales, do the test in the "C" locale
-     (this is the default). */
+     (this is the default). But the ISO C specification might change
+     as this would also be an issue for functions like strtod or
+     strtol (the latter is used by MPFR). */
   tests_locale_enabled = 0;
 
   tests_start_mpfr ();
