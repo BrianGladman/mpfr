@@ -307,6 +307,7 @@ mpfr_print_raw (mpfr_srcptr x)
 #endif
 
 extern char *locale;
+extern int tests_locale_enabled;
 
 /* Random */
 extern char             mpfr_rands_initialized;

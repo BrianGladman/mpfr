@@ -36,6 +36,11 @@ main (int argc, char *argv[])
   FILE *f;
   int i, n;
 
+  /* Since some needed characters like '-' and '.' may be whitespace
+     characters in non-"C" locales, do the test in the "C" locale
+     (this is the default). */
+  tests_locale_enabled = 0;
+
   tests_start_mpfr ();
 
   mpfr_init (x);
@@ -97,28 +102,19 @@ main (int argc, char *argv[])
       mpfr_set_ui (x, 0, MPFR_RNDN);
     }
 
-  /* This last test assumes that isspace(0) is false.
-     If it isn't, set the locale to "C" in order to ensure that;
-     but we check isspace(0) again, just in case. */
-  if (! isspace (0)
-#if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)
-      || (setlocale (LC_ALL, "C"), ! isspace (0))
-#endif
-      )
+  /* In the "C" locale, isspace(0) is false. */
+  i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
+  if (i != 0)
     {
-      i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
-      if (i != 0)
-        {
-          printf ("Error in the '\\0' test (%d)\n", i);
-          exit (1);
-        }
-      i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
-      if (i != 3 || mpfr_cmp_ui0 (x, 17))
-        {
-          printf ("Error following the '\\0' test (%d)\n", i);
-          mpfr_dump (x);
-          exit (1);
-        }
+      printf ("Error in the '\\0' test (%d)\n", i);
+      exit (1);
+    }
+  i = mpfr_inp_str (x, f, 10, MPFR_RNDN);
+  if (i != 3 || mpfr_cmp_ui0 (x, 17))
+    {
+      printf ("Error following the '\\0' test (%d)\n", i);
+      mpfr_dump (x);
+      exit (1);
     }
 
   fclose (f);

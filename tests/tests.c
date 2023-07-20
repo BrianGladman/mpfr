@@ -109,6 +109,7 @@ char             mpfr_rands_initialized = 0;
 gmp_randstate_t  mpfr_rands;
 
 char *locale = NULL;
+int tests_locale_enabled = 1;
 
 /* Programs that test GMP's mp_set_memory_functions() need to set
    tests_memory_disabled = 2 before calling tests_start_mpfr(). */
@@ -276,7 +277,8 @@ tests_start_mpfr (void)
   /* Added on 2005-07-09. This allows one to test MPFR under various
      locales. New bugs will probably be found, in particular with
      LC_ALL="tr_TR.ISO8859-9" because of the i/I character... */
-  locale = setlocale (LC_ALL, "");
+  if (tests_locale_enabled)
+    locale = setlocale (LC_ALL, "");
 #endif
 
 #ifdef MPFR_FPU_PREC
