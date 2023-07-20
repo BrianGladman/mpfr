@@ -768,6 +768,12 @@ Table of contents:
   their significand. Check that potentially problematic cases are tested
   in the testsuite.
 
+- In each concerned function, add a precondition on the allowed values
+  of the mpfr_rnd_t argument(s). There could be 2 modes: one where the
+  precondition is checked (for safety), and one where it can be used
+  by the compiler to optimize. This could be independent on the
+  MPFR_ASSERTD mode (MPFR_ASSERTN vs MPFR_ASSUME).
+
 
 ##############################################################################
 7. Portability
