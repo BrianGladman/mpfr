@@ -67,7 +67,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #include "mpfr-test.h"
 
 #ifdef MPFR_FPU_PREC
-/* This option allows to test MPFR on x86 processors when the FPU
+/* This option allows one to test MPFR on x86 processors when the FPU
  * rounding precision has been changed. As MPFR is a library, this can
  * occur in practice, either by the calling software or by some other
  * library or plug-in used by the calling software. This option is
@@ -273,7 +273,7 @@ tests_start_mpfr (void)
   test_version ();
 
 #if defined HAVE_LOCALE_H && defined HAVE_SETLOCALE
-  /* Added on 2005-07-09. This allows to test MPFR under various
+  /* Added on 2005-07-09. This allows one to test MPFR under various
      locales. New bugs will probably be found, in particular with
      LC_ALL="tr_TR.ISO8859-9" because of the i/I character... */
   locale = setlocale (LC_ALL, "");
