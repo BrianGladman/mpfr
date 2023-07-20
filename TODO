@@ -773,6 +773,8 @@ Table of contents:
   precondition is checked (for safety), and one where it can be used
   by the compiler to optimize. This could be independent on the
   MPFR_ASSERTD mode (MPFR_ASSERTN vs MPFR_ASSUME).
+  Since the precondition is normally the same for all functions,
+  this could be just a macro, e.g. "ALLOWED_RND (rnd_mode);".
 
 
 ##############################################################################
