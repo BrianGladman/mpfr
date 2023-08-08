@@ -65,6 +65,13 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #else
 
+/* MPFR_ASSERTN is defined in mpfr-impl.h, so that except in configure tests
+   where MPFR_USE_STATIC_ASSERT is set to 1 (because static assertions are
+   needed), mpfr-sassert.h must not be used directly. */
+#ifndef __MPFR_IMPL_H__
+# error "Do not use mpfr-sassert.h directly; include mpfr-impl.h instead."
+#endif
+
 /* No support: default to classic assertions */
 # define MPFR_STAT_STATIC_ASSERT(c) MPFR_ASSERTN(c)
 
