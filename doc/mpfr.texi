@@ -1667,6 +1667,11 @@ in base 17.
 @c of "I" is a dotless "i". We do not follow these rules here.
 @c See README.dev for additional information.
 
+Warning concerning the optional leading whitespace! The ISO C standard
+allows non-C locales to regard any non-alphanumeric character (i.e.,
+for which @code{isalnum} is false) as a whitespace character. While
+this will probably never be the case for @samp{+}, @samp{-} and the
+decimal-point character, there is no guarantee at all for @samp{@@}.
 @end deftypefun
 
 @deftypefun void mpfr_set_nan (mpfr_t @var{x})
@@ -2790,6 +2795,12 @@ of the valid string formats.
 Return the number of bytes read (including the leading whitespace,
 if any), or if the string format is invalid or an error occurred,
 return 0.
+
+Warning! The ISO C standard allows non-C locales to regard any
+non-alphanumeric character (i.e., for which @code{isalnum} is false) as
+a whitespace character. While this will probably never be the case for
+@samp{+}, @samp{-} and the decimal-point character, there is no guarantee
+at all for @samp{@@} and @samp{_}.
 @end deftypefun
 
 @c @deftypefun void mpfr_inp_raw (mpfr_t @var{float}, FILE *@var{stream})
