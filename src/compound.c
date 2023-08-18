@@ -206,10 +206,6 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
           inexact = mpfr_compound_near_one (y, MPFR_SIGN (u), rnd_mode);
           goto end;
         }
-      /* FIXME: mpfr_exp2 could underflow to the smallest positive number
-         since MPFR_RNDA is used, and this case will not be detected by
-         MPFR_CAN_ROUND (see BUGS). Either fix that, or do early underflow
-         detection (which may be necessary). */
       /* round 2^u toward 1 */
       rnd2 = MPFR_IS_POS (u) ? MPFR_RNDD : MPFR_RNDU;
       inex |= mpfr_exp2 (t, u, rnd2) != 0;
