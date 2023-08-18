@@ -566,9 +566,16 @@ dnl
 dnl We need to check whether --disable-new-dtags is supported as alternate
 dnl linkers may be used (e.g., with tcc: CC=tcc LD=tcc).
 dnl
+dnl [2023-08]
+dnl On Android/Termux, -Wl,--disable-new-dtags is supported by clang, but
+dnl the DT_RPATH directories are stripped away when running the program.
+dnl Moreover, config.guess identifies the host as GNU/Linux (*-*-linux-gnu)
+dnl instead of Android (linux*android*), so that we need to explicitly
+dnl exclude Termux.
+dnl
 case $host in
-  *-*-linux*)
-    if test -n "$LD_LIBRARY_PATH"; then
+  *-*-linux-gnu)
+    if test -n "$LD_LIBRARY_PATH" && test -z "$TERMUX_VERSION"; then
       saved_LDFLAGS="$LDFLAGS"
       LDFLAGS="$LDFLAGS -Wl,--disable-new-dtags"
       AC_MSG_CHECKING(whether --disable-new-dtags is supported by the linker)
