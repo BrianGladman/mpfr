@@ -344,7 +344,7 @@ sub git_dir_option($)
         {
           $rest =~ s/^\s*Conflicts:\n.*//sm;
           $rest =~ s/^\s*\(cherry picked from commit.*?\)\n//smg;
-          $rest =~ s/^Cherry picked from commits(\s+[\da-f]{40})*\n//m;
+          $rest =~ s/^Cherry picked from commits(\s+[\da-f]{40}( \([^)]*\))?)*\n*//m;
         }
 
       my @line = split /[ \t]*\n/, $rest;

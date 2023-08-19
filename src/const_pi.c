@@ -48,7 +48,8 @@ int
 mpfr_const_pi_internal (mpfr_ptr x, mpfr_rnd_t rnd_mode)
 {
   mpfr_t a, A, B, D, S;
-  mpfr_prec_t px, p, cancel, k, kmax;
+  mpfr_prec_t px, p, k, kmax;
+  mpfr_exp_t cancel;
   MPFR_GROUP_DECL (group);
   MPFR_ZIV_DECL (loop);
   int inex;
@@ -90,7 +91,7 @@ mpfr_const_pi_internal (mpfr_ptr x, mpfr_rnd_t rnd_mode)
         mpfr_mul_2ui (Bp, Bp, 1, MPFR_RNDN); /* -1/2 <= Bp <= 3/2 */
         mpfr_sub (S, Ap, Bp, MPFR_RNDN);
         MPFR_ASSERTD (mpfr_cmp_ui (S, 1) < 0);
-        cancel = MPFR_NOTZERO (S) ? (mpfr_uexp_t) -mpfr_get_exp(S) : p;
+        cancel = MPFR_NOTZERO (S) ? - mpfr_get_exp (S) : p;
         /* MPFR_ASSERTN (cancel >= px || cancel >= 9 * (1 << k) - 4); */
         mpfr_mul_2ui (S, S, k, MPFR_RNDN);
         mpfr_sub (D, D, S, MPFR_RNDN);
