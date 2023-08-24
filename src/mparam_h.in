@@ -38,6 +38,10 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    -march=... and -mtune=...).
    See https://gcc.gnu.org/pipermail/gcc-help/2021-September/140720.html */
 
+#elif defined (__tune_skylake__)
+#define MPFR_TUNE_CASE "src/x86_64/skylake/mparam.h"
+#include "x86_64/skylake/mparam.h"
+
 #elif (defined (__tune_core2__) || defined (__tune_nocona__)) && defined (__x86_64) /* 64-bit Core 2 or Xeon */
 #define MPFR_TUNE_CASE "src/x86_64/core2/mparam.h"
 #include "x86_64/core2/mparam.h"

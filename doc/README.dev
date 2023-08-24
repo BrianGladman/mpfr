@@ -180,7 +180,7 @@ To make a release (for the MPFR team):
      c) configure MPFR with
           --disable-shared --with-gmp-build=/path/to/gmp-x.y.z
      d) go into the "tune" directory and run "make tune"
-     e) put the resulting mparam.h file into mparam_h.in (please include
+     e) put the resulting ../src/mparam.h file into mparam_h.in (please include
         the version of GMP and the compiler used)
 
      You can produce time graphs to check the thresholds are correct (and
