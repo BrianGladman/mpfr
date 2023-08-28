@@ -854,7 +854,12 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
 
 /* Warning! This macro doesn't work with K&R C (e.g., compare the "gcc -E"
    output with and without -traditional) and shouldn't be used internally.
-   For public use only, but see the MPFR manual. */
+   For public use only, but see the MPFR manual.
+   This macro may not work either in ISO C90. For instance,
+   "gcc -std=c90 -pedantic" gives the warning
+     warning: initializer element is not computable at load time
+   concerning __gmpfr_local_tab_##_x.
+*/
 #define MPFR_DECL_INIT(_x, _p)                                        \
   MPFR_EXTENSION mp_limb_t __gmpfr_local_tab_##_x[((_p)-1)/GMP_NUMB_BITS+1]; \
   MPFR_EXTENSION mpfr_t _x = {{(_p),1,__MPFR_EXP_NAN,__gmpfr_local_tab_##_x}}
