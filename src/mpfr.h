@@ -55,6 +55,15 @@ MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
 #include <mini-gmp.h>
 #endif
 
+/* Define MPFR_USE_EXTENSION to avoid "gcc -pedantic" warnings. */
+#ifndef MPFR_EXTENSION
+# if defined(MPFR_USE_EXTENSION) && defined(__GNUC__)
+#  define MPFR_EXTENSION __extension__
+# else
+#  define MPFR_EXTENSION
+# endif
+#endif
+
 /* Avoid some problems with macro expansion if the user defines macros
    with the same name as keywords. By convention, identifiers and macro
    names starting with mpfr_ are reserved by MPFR. */
@@ -471,12 +480,16 @@ __MPFR_DECLSPEC int mpfr_set_flt (mpfr_ptr, float, mpfr_rnd_t);
 #ifdef MPFR_WANT_DECIMAL_FLOATS
 /* _Decimal64 is not defined in C++,
    cf https://gcc.gnu.org/bugzilla/show_bug.cgi?id=51364 */
+MPFR_EXTENSION
 __MPFR_DECLSPEC int mpfr_set_decimal64 (mpfr_ptr, _Decimal64, mpfr_rnd_t);
+MPFR_EXTENSION
 __MPFR_DECLSPEC int mpfr_set_decimal128 (mpfr_ptr, _Decimal128, mpfr_rnd_t);
 #endif
 __MPFR_DECLSPEC int mpfr_set_ld (mpfr_ptr, long double, mpfr_rnd_t);
 #ifdef MPFR_WANT_FLOAT128
+MPFR_EXTENSION
 __MPFR_DECLSPEC int mpfr_set_float128 (mpfr_ptr, _Float128, mpfr_rnd_t);
+MPFR_EXTENSION
 __MPFR_DECLSPEC _Float128 mpfr_get_float128 (mpfr_srcptr, mpfr_rnd_t);
 #endif
 __MPFR_DECLSPEC int mpfr_set_z (mpfr_ptr, mpz_srcptr, mpfr_rnd_t);
@@ -523,7 +536,9 @@ __MPFR_DECLSPEC mpfr_exp_t mpfr_get_z_2exp (mpz_ptr, mpfr_srcptr);
 __MPFR_DECLSPEC float mpfr_get_flt (mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC double mpfr_get_d (mpfr_srcptr, mpfr_rnd_t);
 #ifdef MPFR_WANT_DECIMAL_FLOATS
+MPFR_EXTENSION
 __MPFR_DECLSPEC _Decimal64 mpfr_get_decimal64 (mpfr_srcptr, mpfr_rnd_t);
+MPFR_EXTENSION
 __MPFR_DECLSPEC _Decimal128 mpfr_get_decimal128 (mpfr_srcptr, mpfr_rnd_t);
 #endif
 __MPFR_DECLSPEC long double mpfr_get_ld (mpfr_srcptr, mpfr_rnd_t);
@@ -835,15 +850,6 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
 
 #if defined (__cplusplus)
 }
-#endif
-
-/* Define MPFR_USE_EXTENSION to avoid "gcc -pedantic" warnings. */
-#ifndef MPFR_EXTENSION
-# if defined(MPFR_USE_EXTENSION)
-#  define MPFR_EXTENSION __extension__
-# else
-#  define MPFR_EXTENSION
-# endif
 #endif
 
 /* Warning! This macro doesn't work with K&R C (e.g., compare the "gcc -E"

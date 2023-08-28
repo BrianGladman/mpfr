@@ -892,6 +892,7 @@ typedef union {
 
 /* TODO: The following is ugly and possibly wrong on some platforms.
    Do something like union ieee_decimal128. */
+MPFR_EXTENSION
 union ieee_double_decimal64 { double d; _Decimal64 d64; };
 
 /* FIXME: There's no reason to make the _Decimal128 code depend on
@@ -902,6 +903,7 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
    where the t* bit-fields correspond to the declets. And to avoid
    confusion and detect coding errors, these bit-fields should have
    different names for BID and DPD. */
+MPFR_EXTENSION
 union ieee_decimal128
 {
   struct
