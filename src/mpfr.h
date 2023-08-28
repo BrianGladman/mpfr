@@ -856,8 +856,8 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
    output with and without -traditional) and shouldn't be used internally.
    For public use only, but see the MPFR manual. */
 #define MPFR_DECL_INIT(_x, _p)                                        \
-  mp_limb_t __gmpfr_local_tab_##_x[((_p)-1)/GMP_NUMB_BITS+1];         \
-  mpfr_t _x = {{ (_p), 1, __MPFR_EXP_NAN, __gmpfr_local_tab_##_x }}
+  MPFR_EXTENSION mp_limb_t __gmpfr_local_tab_##_x[((_p)-1)/GMP_NUMB_BITS+1]; \
+  MPFR_EXTENSION mpfr_t _x = {{(_p),1,__MPFR_EXP_NAN,__gmpfr_local_tab_##_x}}
 
 #if MPFR_USE_C99_FEATURE
 /* C99 & C11 version: functions with multiple inputs supported */
