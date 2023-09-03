@@ -3070,6 +3070,14 @@ yield the original value.
 @item With @samp{f}, @samp{F}, @samp{g}, and @samp{G}, it is 6.
 @end itemize
 
+For a given number with @samp{a}/@samp{A}, 4 exponent values allow the
+first hexadecimal digit to be non-zero as required, and the choice is
+unspecified in ISO C99 and later. In MPFR, the choice currently depends
+on the value of the precision field (zero or non-zero) and on the input
+value. This may change in the future in order to have a more consistent
+behavior. Details and discussion:
+@url{https://sympa.inria.fr/sympa/arc/mpfr/2021-05/msg00002.html}
+
 @c For the record, concerning the choice for 'e'/'E':
 @c   https://sympa.inria.fr/sympa/arc/mpfr/2019-12/msg00000.html
 @c   https://sympa.inria.fr/sympa/arc/mpfr/2020-01/msg00000.html
