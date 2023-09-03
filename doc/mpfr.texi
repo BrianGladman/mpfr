@@ -3009,7 +3009,7 @@ The output @samp{conv} specifiers allowed with @code{mpfr_t} parameter are:
 
 @quotation
 @multitable {(space)} {MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM}
-@item @samp{a} @samp{A} @tab hex float, C99 style, with exponent multiple of 4
+@item @samp{a} @samp{A} @tab hex float, C99 style
 @item @samp{b}          @tab binary output
 @item @samp{e} @samp{E} @tab scientific-format float
 @item @samp{f} @samp{F} @tab fixed-point float
