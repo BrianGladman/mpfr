@@ -110,6 +110,14 @@ Table of contents:
     see the -mfpu GCC option for ARM and
     https://en.wikipedia.org/wiki/Denormal_number#Disabling_denormal_floats_at_the_code_level
 
+- formatted output functions (mpfr_printf...): add support for output
+  in an arbitrary base by using a second period followed by the base
+  (syntax similar to ksh93 with %d).
+  Note: a sequence ".." (without an explicit precision between the periods)
+  would mean that the precision is missing (while it is 0 when there is a
+  single period without an explicit precision); this would be more useful
+  for the user and would behave like ksh93.
+
 
 ##############################################################################
 4. New functions to implement
