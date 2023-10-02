@@ -1551,6 +1551,10 @@ a .POSIX special target to ensure POSIX behavior. However, Automake
 this target in the generated Makefile files; it is not clear whether
 this matters for any "make" implementation, though. About this issue,
 see <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=55025>.
+Note: It is not known whether this .POSIX special target changes anything
+in practice, in the particular case of MPFR. It might make some rules
+behave correctly, but it might also break them (e.g. if "make" redefines
+variables when it reaches the .POSIX special target).
 
 Be careful with "make" bugs related to errors in shell commands:
   https://debbugs.gnu.org/cgi/bugreport.cgi?bug=55025#24
