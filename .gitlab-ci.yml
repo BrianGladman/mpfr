@@ -1,0 +1,9 @@
+linux_gmp:
+  stage: build
+  script:
+    - autoreconf -i
+    - ./configure
+    - make
+    - make check
+  tags:
+    - linux
