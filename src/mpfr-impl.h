@@ -1679,7 +1679,12 @@ do {                                                                  \
      decimal_point = U+066B ARABIC DECIMAL SEPARATOR (d9 ab)
      thousands_sep = U+066C ARABIC THOUSANDS SEPARATOR (d9 ac)
    In the mean time, in case of non-single-byte character, revert to the
-   default value. */
+   default value. Note that the GNU C Library doesn't handle a multibyte
+   decimal_point or thousands_sep correctly (with the specification of
+   ISO C for decimal_point and POSIX for both):
+     https://sourceware.org/bugzilla/show_bug.cgi?id=30883
+     https://sourceware.org/bugzilla/show_bug.cgi?id=28943
+*/
 #if MPFR_LCONV_DPTS
 #include <locale.h>
 /* Warning! In case of signed char, the value of MPFR_DECIMAL_POINT may
