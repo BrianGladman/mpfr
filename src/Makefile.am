@@ -22,10 +22,9 @@
 
 EXTRA_DIST = round_raw_generic.c jyn_asympt.c                           \
         add1sp1_extracted.c mul_1_extracted.c sub1sp1_extracted.c       \
-        amd/mparam.h arm/mparam.h                                       \
-        generic/coverage/mparam.h generic/mparam.h                      \
+        arm/mparam.h generic/coverage/mparam.h generic/mparam.h         \
         mips/mparam.h powerpc64/mparam.h sparc64/mparam.h               \
-        x86/mparam.h x86_64/core2/mparam.h x86_64/mparam.h
+        x86/mparam.h x86_64/mparam.h
 
 include_HEADERS = mpfr.h mpf2mpfr.h
 nodist_include_HEADERS =
