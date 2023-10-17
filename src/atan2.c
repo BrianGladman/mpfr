@@ -67,7 +67,7 @@ mpfr_atan2 (mpfr_ptr dest, mpfr_srcptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       /* atan2(0, 0) does not raise the "invalid" floating-point
          exception, nor does atan2(y, 0) raise the "divide-by-zero"
          floating-point exception.
-         -- atan2(±0, -0) returns ±pi.313)
+         -- atan2(±0, -0) returns ±pi.
          -- atan2(±0, +0) returns ±0.
          -- atan2(±0, x) returns ±pi, for x < 0.
          -- atan2(±0, x) returns ±0, for x > 0.
