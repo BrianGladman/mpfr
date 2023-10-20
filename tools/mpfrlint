@@ -607,7 +607,8 @@ if which codespell > /dev/null 2> /dev/null; then
   cscmd()
   {
     codespell ${term:+--enable-colors} \
-      -q3 -I codespell.ignore -x codespell.exclude $files 2> /dev/null
+      -q3 --ignore-regex 'https://[-./0-9A-Z_a-z]*' \
+      -I codespell.ignore -x codespell.exclude $files 2> /dev/null
   }
   err-if-output "codespell" cscmd
 else
