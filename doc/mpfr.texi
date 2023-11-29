@@ -3333,29 +3333,32 @@ with @code{MPFR_DECL_INIT} or with @code{mpfr_custom_init_set}
 (@pxref{Custom Interface}).
 @end deftypefun
 
-@deftypefun int mpfr_can_round (mpfr_t @var{b}, mpfr_exp_t @var{correct_bits}, mpfr_rnd_t @var{rnd1}, mpfr_rnd_t @var{rnd2}, mpfr_prec_t @var{prec})
+@c Note about "correctbits": due to PDF generation with pdfTeX, it is not
+@c possible to have an underscore in variable names (texinfo.tex doesn't
+@c escape this special character in @var in math mode).
+@deftypefun int mpfr_can_round (mpfr_t @var{b}, mpfr_exp_t @var{correctbits}, mpfr_rnd_t @var{rnd1}, mpfr_rnd_t @var{rnd2}, mpfr_prec_t @var{prec})
 Assuming @var{b} is an approximation of an unknown number
 @var{x} in the direction @var{rnd1} with error at most two to the power
-@tm{@EXP{}(@var{b}) @minus{} @var{correct_bits}} where @tm{@EXP{}(@var{b})}
+@tm{@EXP{}(@var{b}) @minus{} @var{correctbits}} where @tm{@EXP{}(@var{b})}
 is the exponent of @var{b},
 return a non-zero value if one is able to round correctly @var{x} to
 precision @var{prec} with the direction @var{rnd2} assuming an unbounded
 exponent range, and 0 otherwise (including for NaN and Inf).
 In other words, if the error on @var{b} is bounded by two to the power
 @var{k}@tie{}ulps, and @var{b} has precision @var{prec},
-you should give @tm{@var{correct_bits} = @var{prec} @minus{} @var{k}}.
+you should give @tm{@var{correctbits} = @var{prec} @minus{} @var{k}}.
 This function @strong{does not modify} its arguments.
 
 If @var{rnd1} is @code{MPFR_RNDN} or @code{MPFR_RNDF},
 the error is considered to be either
 positive or negative, thus the possible range
 is twice as large as with a directed rounding for @var{rnd1} (with the
-same value of @var{correct_bits}).
+same value of @var{correctbits}).
 
 When @var{rnd2} is @code{MPFR_RNDF}, let @var{rnd3} be the opposite direction
 if @var{rnd1} is a directed rounding, and @code{MPFR_RNDN}
 if @var{rnd1} is @code{MPFR_RNDN} or @code{MPFR_RNDF}.
-The returned value of @code{mpfr_can_round (b, correct_bits, rnd1, MPFR_RNDF, prec)}
+The returned value of @code{mpfr_can_round (b, correctbits, rnd1, MPFR_RNDF, prec)}
 is non-zero iff after
 the call @code{mpfr_set (y, b, rnd3)} with @var{y} of precision @var{prec},
 @var{y} is guaranteed to be a faithful rounding of @var{x}.
@@ -3391,7 +3394,7 @@ trick to determine the (non-zero) ternary value in any rounding mode
 @var{rnd2} (note that @code{MPFR_RNDZ} below can be replaced by any
 directed rounding mode):
 @example
-if (mpfr_can_round (b, correct_bits, MPFR_RNDN, MPFR_RNDZ,
+if (mpfr_can_round (b, correctbits, MPFR_RNDN, MPFR_RNDZ,
                     prec + (rnd2 == MPFR_RNDN)))
   @{
     /* round the approximation b to the result r of prec bits
