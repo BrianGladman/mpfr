@@ -1970,9 +1970,10 @@ typedef struct {
 /* Return TRUE if b is non singular and we can round it to precision 'prec'
    and determine the ternary value, with rounding mode 'rnd', and with
    error at most 2^(EXP(b)-correct_bits). */
-#define MPFR_CAN_ROUND(b,correct_bits,prec,rnd)                         \
- (!MPFR_IS_SINGULAR (b) && mpfr_round_p (MPFR_MANT (b), MPFR_LIMB_SIZE (b),  \
-                                  (correct_bits), (prec) + ((rnd)==MPFR_RNDN)))
+#define MPFR_CAN_ROUND(b,correct_bits,prec,rnd)                 \
+  (!MPFR_IS_SINGULAR (b) &&                                     \
+   mpfr_round_p (MPFR_MANT (b), MPFR_LIMB_SIZE (b),             \
+                 (correct_bits), (prec) + ((rnd)==MPFR_RNDN)))
 
 /* Copy the sign and the significand, and handle the exponent in exp. */
 #define MPFR_SETRAW(inexact,dest,src,exp,rnd)                           \
