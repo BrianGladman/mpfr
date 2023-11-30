@@ -540,6 +540,11 @@ typedef wint_t mpfr_va_wint;
    FIXME: If buf.size = 0 or size != 0, gmp_vsnprintf should be called
    instead of gmp_vasprintf, outputting data directly to the buffer
    when applicable.
+   FIXME: The use of strncpy is suspicious: Why should fmt_copy be
+   null-padded? And what is the possible effect of truncation? This macro
+   should be better documented. Also note that strncpy is a C99+ function
+   (while we currently assume C90+); there isn't even a configure test.
+   Ditto for the occurrences.
 */
 #define FLUSH(flag, start, end, ap, buf_ptr)                            \
   do {                                                                  \

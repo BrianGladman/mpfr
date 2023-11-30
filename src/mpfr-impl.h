@@ -892,6 +892,7 @@ typedef union {
 
 /* TODO: The following is ugly and possibly wrong on some platforms.
    Do something like union ieee_decimal128. */
+MPFR_EXTENSION
 union ieee_double_decimal64 { double d; _Decimal64 d64; };
 
 /* FIXME: There's no reason to make the _Decimal128 code depend on
@@ -902,6 +903,7 @@ union ieee_double_decimal64 { double d; _Decimal64 d64; };
    where the t* bit-fields correspond to the declets. And to avoid
    confusion and detect coding errors, these bit-fields should have
    different names for BID and DPD. */
+MPFR_EXTENSION
 union ieee_decimal128
 {
   struct
@@ -1677,7 +1679,12 @@ do {                                                                  \
      decimal_point = U+066B ARABIC DECIMAL SEPARATOR (d9 ab)
      thousands_sep = U+066C ARABIC THOUSANDS SEPARATOR (d9 ac)
    In the mean time, in case of non-single-byte character, revert to the
-   default value. */
+   default value. Note that the GNU C Library doesn't handle a multibyte
+   decimal_point or thousands_sep correctly (with the specification of
+   ISO C for decimal_point and POSIX for both):
+     https://sourceware.org/bugzilla/show_bug.cgi?id=30883
+     https://sourceware.org/bugzilla/show_bug.cgi?id=28943
+*/
 #if MPFR_LCONV_DPTS
 #include <locale.h>
 /* Warning! In case of signed char, the value of MPFR_DECIMAL_POINT may
@@ -1962,10 +1969,11 @@ typedef struct {
 
 /* Return TRUE if b is non singular and we can round it to precision 'prec'
    and determine the ternary value, with rounding mode 'rnd', and with
-   error at most 'error' */
-#define MPFR_CAN_ROUND(b,err,prec,rnd)                                       \
- (!MPFR_IS_SINGULAR (b) && mpfr_round_p (MPFR_MANT (b), MPFR_LIMB_SIZE (b),  \
-                                         (err), (prec) + ((rnd)==MPFR_RNDN)))
+   error at most 2^(EXP(b)-correct_bits). */
+#define MPFR_CAN_ROUND(b,correct_bits,prec,rnd)                 \
+  (!MPFR_IS_SINGULAR (b) &&                                     \
+   mpfr_round_p (MPFR_MANT (b), MPFR_LIMB_SIZE (b),             \
+                 (correct_bits), (prec) + ((rnd)==MPFR_RNDN)))
 
 /* Copy the sign and the significand, and handle the exponent in exp. */
 #define MPFR_SETRAW(inexact,dest,src,exp,rnd)                           \

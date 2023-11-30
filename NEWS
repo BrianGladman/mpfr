@@ -20,6 +20,9 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 ##############################################################################
 
+Changes from versions 4.2.* to version 4.3.0:
+- The "" release.
+
 Changes from versions 4.1.* to version 4.2.0:
 - The "fondue savoyarde" release.
 - Binary compatible with MPFR 4.0.* and 4.1.*, though some minor changes in

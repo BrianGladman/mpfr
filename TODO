@@ -110,6 +110,14 @@ Table of contents:
     see the -mfpu GCC option for ARM and
     https://en.wikipedia.org/wiki/Denormal_number#Disabling_denormal_floats_at_the_code_level
 
+- formatted output functions (mpfr_printf...): add support for output
+  in an arbitrary base by using a second period followed by the base
+  (syntax similar to ksh93 with %d).
+  Note: a sequence ".." (without an explicit precision between the periods)
+  would mean that the precision is missing (while it is 0 when there is a
+  single period without an explicit precision); this would be more useful
+  for the user and would behave like ksh93.
+
 
 ##############################################################################
 4. New functions to implement
@@ -572,13 +580,18 @@ Table of contents:
 - add other prototypes for round to nearest-away (mpfr_round_nearest_away
   only deals with the prototypes of say mpfr_sin) or implement it as a native
   rounding mode
-- add a new roundind mode: round to odd. If the result is not exactly
-        representable, then round to the odd mantissa. This rounding
-        has the nice property that for k > 1, if:
+- add a new rounding mode: round to odd, a.k.a. Von Neumann rounding or
+  sticky rounding. If the result is not exactly representable, then round
+  to the odd mantissa. This rounding has the nice property that for k > 1,
+  if:
         y = round(x, p+k, TO_ODD)
         z = round(y, p, TO_NEAREST_EVEN), then
         z = round(x, p, TO_NEAREST_EVEN)
   so it avoids the double-rounding problem.
+  Alternatively, a macro like mpfr_round_nearest_away could be added,
+  since one could use MPFR_RNDZ, then correct the value if the ternary
+  value is non-zero. Also consider what should be done in case of
+  overflow and underflow.
   VL: I prefer the (original?) term "sticky rounding", as used in
     J Strother Moore, Tom Lynch, Matt Kaufmann. A Mechanically Checked
     Proof of the Correctness of the Kernel of the AMD5K86 Floating-Point

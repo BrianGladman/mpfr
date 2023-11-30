@@ -165,4 +165,16 @@ TESTS_ENVIRONMENT = env DISPLAY='' MPFR_QUIET=1 $(VALGRIND)
 #
 AM_LDFLAGS = -no-install -L$(top_builddir)/src/.libs
 
-.PHONY: tversion_special
+# Test for "make" conformance. "GNU make" needs the .POSIX special target.
+failuretest1:
+	@echo "This should be the only output line; failure expected."; \
+	false; \
+	echo "This line should not be output."
+
+# Test for "make" conformance.
+failuretest2:
+	@echo "This should be the only output line; failure expected."
+	@false
+	@echo "This line should not be output."
+
+.PHONY: tversion_special failuretest1 failuretest2

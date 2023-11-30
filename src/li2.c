@@ -28,7 +28,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    with 0 < z <= log(2) to the precision of s rounded in the direction
    rnd_mode.
    Return the maximum index of the truncature which is useful
-   for determinating the relative error.
+   for determining the relative error.
 */
 static int
 li2_series (mpfr_ptr sum, mpfr_srcptr z, mpfr_rnd_t rnd_mode)

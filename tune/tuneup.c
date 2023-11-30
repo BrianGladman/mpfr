@@ -375,7 +375,7 @@ domeasure (mpfr_prec_t *threshold,
   s.align_xp = s.align_yp = s.align_wp = 64;
   s.size = p;
   size = (p - 1)/GMP_NUMB_BITS+1;
-  s.xp = malloc (2*size*sizeof (mp_limb_t));
+  s.xp = (mp_ptr) malloc (2*size*sizeof (mp_limb_t));
   if (s.xp == NULL)
     {
       fprintf (stderr, "Can't allocate memory.\n");
@@ -478,7 +478,7 @@ tune_simple_func (mpfr_prec_t *threshold,
   double measure[THRESHOLD_FINAL_WINDOW+1];
   double d = -1.0;
   mpfr_prec_t pstep;
-  int i, numpos, numneg, try;
+  int i, numpos, numneg, tries;
   mpfr_prec_t pmin, pmax, p;
 
   /* first look for a lower bound within 10% */
@@ -522,7 +522,7 @@ tune_simple_func (mpfr_prec_t *threshold,
     }
 
   /* The threshold is between pmin and pmax. Affine them */
-  try = 0;
+  tries = 0;
   while ((pmax-pmin) >= THRESHOLD_FINAL_WINDOW)
     {
       pstep = MAX(MIN(GMP_NUMB_BITS/2,(pmax-pmin)/(2*THRESHOLD_WINDOW)),1);
@@ -545,7 +545,7 @@ tune_simple_func (mpfr_prec_t *threshold,
         pmax = p + THRESHOLD_WINDOW/2*pstep;
       else
         /* numpos == numneg ... */
-        if (++ try > 2)
+        if (++ tries > 2)
           {
             *threshold = p;
             if (verbose)
@@ -587,7 +587,7 @@ tune_simple_func_in_some_direction (long int *threshold1,
   double measure[THRESHOLD_FINAL_WINDOW+1];
   double d;
   mpfr_prec_t pstep;
-  int i, numpos, numneg, try;
+  int i, numpos, numneg, tries;
   mpfr_prec_t pmin, pmax, p;
   mpfr_t xmin, xmax, x;
   mpfr_t ratio;
@@ -651,7 +651,7 @@ tune_simple_func_in_some_direction (long int *threshold1,
     }
 
   /* The threshold is between pmin and pmax. Affine them */
-  try = 0;
+  tries = 0;
   while ((pmax-pmin) >= THRESHOLD_FINAL_WINDOW)
     {
       pstep = MAX(MIN(GMP_NUMB_BITS/2,(pmax-pmin)/(2*THRESHOLD_WINDOW)),1);
@@ -683,7 +683,7 @@ tune_simple_func_in_some_direction (long int *threshold1,
         }
       else
         /* numpos == numneg ... */
-        if (++ try > 2)
+        if (++ tries > 2)
           {
             *pres = p;
             mpfr_mul_ui (xres, ratio, (unsigned int)*pres, MPFR_RNDN);
@@ -768,8 +768,8 @@ tune_mul_mulders_upto (mp_size_t n)
   MPFR_TMP_MARK (marker);
   s.align_xp = s.align_yp = s.align_wp = 64;
   s.size = n;
-  s.xp   = MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
-  s.yp   = MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
+  s.xp   = (mp_ptr) MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
+  s.yp   = (mp_ptr) MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
   mpn_random (s.xp, n);
   mpn_random (s.yp, n);
 
@@ -816,7 +816,7 @@ tune_sqr_mulders_upto (mp_size_t n)
   MPFR_TMP_MARK (marker);
   s.align_xp = s.align_wp = 64;
   s.size = n;
-  s.xp   = MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
+  s.xp   = (mp_ptr) MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
   mpn_random (s.xp, n);
 
   /* Check k == -1, mpn_sqr_basecase */
@@ -867,8 +867,8 @@ tune_div_mulders_upto (mp_size_t n)
   MPFR_TMP_MARK (marker);
   s.align_xp = s.align_yp = s.align_wp = s.align_wp2 = 64;
   s.size = n;
-  s.xp   = MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
-  s.yp   = MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
+  s.xp   = (mp_ptr) MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
+  s.yp   = (mp_ptr) MPFR_TMP_ALLOC (n * sizeof (mp_limb_t));
   mpn_random (s.xp, n);
   mpn_random (s.yp, n);
 

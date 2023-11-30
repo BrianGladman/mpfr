@@ -35,6 +35,12 @@ bidimensional_sample_LDADD = -lspeed $(top_builddir)/src/libmpfr.la $(TUNE_LIBS)
 bidimensional_sample_LDFLAGS = -static
 
 AM_CPPFLAGS = -I$(top_srcdir)/src -I$(top_builddir)/src
+# we could add -Wno-pedantic to avoid warnings with _Decimal64 and _Float128
+# but since AM_CFLAGS is used before CFLAGS it won't work.
+# We therefore activate the MPFR extension to reduce warnings.
+# we add -Wno-unused-but-set-variable a warning with dinv set but not used
+#        in GMP's SPEED_ROUTINE_MPN_DC_DIVREM_CALL (speed.h)
+AM_CFLAGS   = -Wno-unused-but-set-variable -DMPFR_USE_EXTENSION
 
 tune:
 	$(MAKE) $(AM_MAKEFLAGS) tuneup$(EXEEXT)

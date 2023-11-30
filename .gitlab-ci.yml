@@ -1,0 +1,12 @@
+linux_gmp:
+  stage: build
+  script:
+    - echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+    - env DEBIAN_FRONTEND=noninteractive apt-get -y update
+    - env DEBIAN_FRONTEND=noninteractive apt-get -y install texinfo
+    - autoreconf -i
+    - ./configure
+    - make
+    - make check
+  tags:
+    - linux

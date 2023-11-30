@@ -131,7 +131,7 @@ static const unsigned int RedInvLog2Table[MPFR_MAX_BASE-1][2] = {
   {3515, 20929} };
 #if 0
 #define N 8
-int main ()
+int main (void)
 {
   unsigned long tab[N];
   int i, n, base;

@@ -38,23 +38,12 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    -march=... and -mtune=...).
    See https://gcc.gnu.org/pipermail/gcc-help/2021-September/140720.html */
 
-#elif (defined (__tune_core2__) || defined (__tune_nocona__)) && defined (__x86_64) /* 64-bit Core 2 or Xeon */
-#define MPFR_TUNE_CASE "src/x86_64/core2/mparam.h"
-#include "x86_64/core2/mparam.h"
-
-/* Put that before __x86_64__ since __x86_64__ is also defined on AMD 64,
-   We also have to define __tune_k8__ since __amd64__ is also defined on
-   Intel x86_64! Ignore Clang as it defines both of these macros even on
-   Intel x86_64, and it does not seem to be possible to provide tuning
-   information when compiling with Clang, so that it is better to select
-   generic parameters for x86_64. */
-#elif defined (__amd64__) && (defined (__tune_k8__) || defined (__tune_znver1__)) && ! defined (__clang__) /* AMD 64 */
-#define MPFR_TUNE_CASE "src/amd/mparam.h"
-#include "amd/mparam.h"
-
-/* _M_X64 is for the Microsoft compiler, see
+/* We have only one parameter file for all x86_64 flavours (Intel or AMD),
+   since current compilers define both __x86_64__ and __amd64__ on
+   both Intel and AMD processors.
+   _M_X64 is for the Microsoft compiler, see
    https://docs.microsoft.com/en-us/cpp/preprocessor/predefined-macros */
-#elif defined (__x86_64__) || defined (_M_X64)
+#elif defined (__x86_64__) || defined (__amd64__) || defined (_M_X64)
 /* generic parameters for x86_64 */
 #define MPFR_TUNE_CASE "src/x86_64/mparam.h"
 #include "x86_64/mparam.h"

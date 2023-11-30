@@ -180,8 +180,11 @@ To make a release (for the MPFR team):
      c) configure MPFR with
           --disable-shared --with-gmp-build=/path/to/gmp-x.y.z
      d) go into the "tune" directory and run "make tune"
-     e) put the resulting mparam.h file into mparam_h.in (please include
-        the version of GMP and the compiler used)
+     e) put the resulting ../src/mparam.h file in some subdirectory for the
+        concerned architecture (see src/*/mparam.h for the current ones);
+        please include the version of GMP and the compiler used
+     f) update mparam_h.in to conditionally include this mparam.h file
+        (see the existing architectures as examples)
 
      You can produce time graphs to check the thresholds are correct (and
      compare to the corresponding mpf functions) with mbench. For example
@@ -1548,6 +1551,13 @@ a .POSIX special target to ensure POSIX behavior. However, Automake
 this target in the generated Makefile files; it is not clear whether
 this matters for any "make" implementation, though. About this issue,
 see <https://debbugs.gnu.org/cgi/bugreport.cgi?bug=55025>.
+
+Note: This .POSIX special target is needed for "GNU make". But because of
+the Automake issue, it might also break rules (e.g. if "make" redefines
+variables when it reaches the .POSIX special target). The AIX "make"
+command outputs a warning
+  warning: .POSIX directive is not first non-comment line.
+but it behaves as wanted.
 
 Be careful with "make" bugs related to errors in shell commands:
   https://debbugs.gnu.org/cgi/bugreport.cgi?bug=55025#24
