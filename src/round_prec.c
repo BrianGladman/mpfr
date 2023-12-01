@@ -272,13 +272,14 @@ mpfr_can_round_raw (const mp_limb_t *bp, mp_size_t bn, int neg,
   if (MPFR_UNLIKELY (prec > (mpfr_prec_t) bn * GMP_NUMB_BITS))
     { /* Then prec > PREC(b): we can round
          (i) in rounding to the nearest as long as correct_bits >= prec + 2.
-             When correct_bits = prec + 1 and b is not a power
-             of two (so that a change of binade cannot occur), then one
-             can round to nearest thanks to the even rounding rule (in the
-             target precision prec, the significand of b ends with a 0).
-             When correct_bits = prec + 1 and b is a power of two, when
-             rnd1 = RNDZ one can round too.
-             FIXME: This doesn't match the condition below.
+             And when correct_bits = prec + 1:
+             * When b is not a power of two (so that a change of binade
+               cannot occur), then one can round to nearest thanks to
+               the even rounding rule (in the target precision prec,
+               the significand of b ends with a 0).
+             * When b is a power of two: if rnd1 = RNDZ, one can round too.
+             So, in short, one cannot round when: correct_bits = prec + 1
+             and b is a power of two and rnd1 != RNDZ.
          (ii) in directed rounding mode iff rnd1 is compatible with rnd2
               and correct_bits >= prec + 1, unless b = 2^k and
               rnd1 = RNDA or RNDN, in which case we need
