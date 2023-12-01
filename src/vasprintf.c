@@ -2551,6 +2551,10 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
     }
   else if (size != 0)  /* implement mpfr_vsnprintf */
     {
+      /* FIXME: The use of strncpy is buggy, with an incorrect output
+         (possibly a security issue) in case of a null character output
+         by %c.
+         TODO: before fixing the bug, add a test. */
       if (nbchar < size)
         {
           strncpy (Buf, buf.start, nbchar);
