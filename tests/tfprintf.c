@@ -405,6 +405,20 @@ bug_20090316 (FILE *fout)
   mpfr_clear (x);
 }
 
+/* See check_null test in tsprintf.c for details.
+   Fixed in commits
+     390e51ef8570da4e338e9806ecaf2d022210d951 (2023-12-03)
+     3babf029fe604c08ec517ca6945a5efb155f69d1 (2023-12-13)
+*/
+static void
+check_null (FILE *fout)
+{
+  int n;
+
+  check_vfprintf (fout, ".%c%c.%n", 0, 1, &n);
+  check_length (40, n, 4, d);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -442,6 +456,7 @@ main (int argc, char *argv[])
   check_random (fout, N);
 
   bug_20090316 (fout);
+  check_null (fout);
 
   fclose (fout);
   tests_end_mpfr ();
