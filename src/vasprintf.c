@@ -538,10 +538,11 @@ typedef wint_t mpfr_va_wint;
    Jump to external label 'error' if gmp_asprintf return -1.
    Note: start and end are pointers to the format string, so that
    size_t is the best type to express the difference.
-   Warning! Since the output from gmp_vasprintf may contain null characters
-   (if %c is used with the value 0), the mpfr_free_str function must not be
-   used to free the allocated memory, because the size may matter with some
-   custom allocation functions.
+   Warning! Since the output from gmp_vasprintf may contain non-terminating
+   null characters (if %c is used with the value 0), the mpfr_free_str
+   function must not be used to free the allocated memory, because the size
+   may matter with some custom allocation functions. Anyway, mpfr_free_func
+   is more efficient here, as the size does not need to be recomputed.
    FIXME: If buf.size = 0 or size != 0, gmp_vsnprintf should be called
    instead of gmp_vasprintf, outputting data directly to the buffer
    when applicable.
@@ -2180,7 +2181,10 @@ sprnt_fp (struct string_buffer *buf, mpfr_srcptr p,
    (b) or ptr = NULL, and it implements mpfr_vsnprintf (Buf, size, fmt, ap)
    It returns the number of characters that would have been written had 'size'
    been sufficiently large, not counting the terminating null character, or -1
-   if this number is too large for the return type 'int' (overflow).
+   if this number is too large for the return type 'int' (overflow), in which
+   case, if ptr <> NULL, the memory is deallocated (otherwise, there is no way
+   to deallocate it later, since the actual size, needed by mpfr_free_func, is
+   unknown as there may be non-terminating null characters).
 */
 int
 mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
