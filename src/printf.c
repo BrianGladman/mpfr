@@ -66,12 +66,12 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
         return -1;                              \
     } while (0)
 
-#define MPFR_FPRINTF_END(ret, fp)               \
+#define MPFR_FPRINTF_END(ret, str, fp)          \
   do                                            \
     {                                           \
       int status;                               \
-      status = fwrite (str, (ret), 1, (fp));    \
-      mpfr_free_func (str, (ret) + 1);          \
+      status = fwrite ((str), (ret), 1, (fp));  \
+      mpfr_free_func ((str), (ret) + 1);        \
       return status == 1 ? (ret) : -1;          \
     } while (0)
 
@@ -82,7 +82,7 @@ mpfr_printf (const char *fmt, ...)
   int ret;
 
   GET_STR (ret, str, fmt);
-  MPFR_FPRINTF_END (ret, stdout);
+  MPFR_FPRINTF_END (ret, str, stdout);
 }
 
 int
@@ -92,7 +92,7 @@ mpfr_vprintf (const char *fmt, va_list ap)
   int ret;
 
   GET_STR_VA (ret, str, fmt, ap);
-  MPFR_FPRINTF_END (ret, stdout);
+  MPFR_FPRINTF_END (ret, str, stdout);
 }
 
 
@@ -103,7 +103,7 @@ mpfr_fprintf (FILE *fp, const char *fmt, ...)
   int ret;
 
   GET_STR (ret, str, fmt);
-  MPFR_FPRINTF_END (ret, fp);
+  MPFR_FPRINTF_END (ret, str, fp);
 }
 
 int
@@ -113,7 +113,7 @@ mpfr_vfprintf (FILE *fp, const char *fmt, va_list ap)
   int ret;
 
   GET_STR_VA (ret, str, fmt, ap);
-  MPFR_FPRINTF_END (ret, fp);
+  MPFR_FPRINTF_END (ret, str, fp);
 }
 
 #endif /* _MPFR_H_HAVE_FILE */
