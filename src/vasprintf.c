@@ -533,18 +533,18 @@ typedef wint_t mpfr_va_wint;
       }                                         \
   } while (0)
 
-/* Process the format part which does not deal with mpfr types,
+/* Process the format part that does not deal with mpfr types,
+   from start to end (not included).
    Jump to external label 'error' if gmp_asprintf return -1.
    Note: start and end are pointers to the format string, so that
    size_t is the best type to express the difference.
+   Warning! Since the output from gmp_vasprintf may contain null characters
+   (if %c is used with the value 0), the mpfr_free_str function must not be
+   used to free the allocated memory, because the size may matter with some
+   custom allocation functions.
    FIXME: If buf.size = 0 or size != 0, gmp_vsnprintf should be called
    instead of gmp_vasprintf, outputting data directly to the buffer
    when applicable.
-   FIXME: The use of strncpy is suspicious: Why should fmt_copy be
-   null-padded? And what is the possible effect of truncation? This macro
-   should be better documented. Also note that strncpy is a C99+ function
-   (while we currently assume C90+); there isn't even a configure test.
-   Ditto for the occurrences.
 */
 #define FLUSH(flag, start, end, ap, buf_ptr)                            \
   do {                                                                  \
@@ -558,7 +558,7 @@ typedef wint_t mpfr_va_wint;
                                                                         \
         MPFR_TMP_MARK (marker);                                         \
         fmt_copy = (char *) MPFR_TMP_ALLOC (n + 1);                     \
-        strncpy (fmt_copy, (start), n);                                 \
+        memcpy (fmt_copy, (start), n);                                  \
         fmt_copy[n] = '\0';                                             \
         length = gmp_vasprintf (&s, fmt_copy, (ap));                    \
         if (length < 0)                                                 \
@@ -567,7 +567,7 @@ typedef wint_t mpfr_va_wint;
             goto error;                                                 \
           }                                                             \
         buffer_cat ((buf_ptr), s, length);                              \
-        mpfr_free_str (s);                                              \
+        mpfr_free_func (s, length + 1);                                 \
         (flag) = 0;                                                     \
         MPFR_TMP_FREE (marker);                                         \
       }                                                                 \
@@ -655,8 +655,11 @@ buffer_widen (struct string_buffer *b, size_t len)
   MPFR_ASSERTD (*b->curr == '\0');
 }
 
-/* Concatenate the first len characters of the string s to the buffer b and
-   expand it if needed. Return non-zero if overflow. */
+/* Concatenate the first len characters of the array s to the buffer b,
+   and expand it if needed. Return non-zero if overflow.
+   Warning! The array s may contain null characters in addition to the
+   terminating one, in case %c has been used with the value 0.
+ */
 static int
 buffer_cat (struct string_buffer *b, const char *s, size_t len)
 {
@@ -666,8 +669,6 @@ buffer_cat (struct string_buffer *b, const char *s, size_t len)
      valid for len == 0, but this is safer, just in case. */
   if (len == 0)
     return 0;
-
-  MPFR_ASSERTD (len <= strlen (s));
 
   if (buffer_incr_len (b, len))
     return 1;
@@ -679,13 +680,11 @@ buffer_cat (struct string_buffer *b, const char *s, size_t len)
       if (MPFR_UNLIKELY (b->curr + len >= b->start + b->size))
         buffer_widen (b, len);
 
-      /* strncat is similar to strncpy here, except that strncat ensures
-         that the buffer will be null-terminated. */
-      strncat (b->curr, s, len);
-      b->curr += len;
-
-      MPFR_ASSERTD (b->curr < b->start + b->size);
       MPFR_ASSERTD (*b->curr == '\0');
+      memcpy (b->curr, s, len);
+      b->curr += len;
+      MPFR_ASSERTD (b->curr < b->start + b->size);
+      *b->curr = '\0';
     }
 
   return 0;
@@ -2544,23 +2543,21 @@ mpfr_vasnprintf_aux (char **ptr, char *Buf, size_t size, const char *fmt,
   nbchar = buf.len;
   MPFR_ASSERTD (nbchar >= 0);
 
+  /* Warning! Be careful that the buffer may contain null characters
+     in addition to the terminating one, in case %c has been used with
+     the value 0. */
+
   if (ptr != NULL)  /* implement mpfr_vasprintf */
     {
-      MPFR_ASSERTD (nbchar == strlen (buf.start));
       *ptr = (char *) mpfr_reallocate_func (buf.start, buf.size, nbchar + 1);
     }
   else if (size != 0)  /* implement mpfr_vsnprintf */
     {
-      if (nbchar < size)
-        {
-          strncpy (Buf, buf.start, nbchar);
-          Buf[nbchar] = '\0';
-        }
-      else
-        {
-          strncpy (Buf, buf.start, size - 1);
-          Buf[size-1] = '\0';
-        }
+      /* The size is limited to int (see above). */
+      int len = nbchar < size ? nbchar : size - 1;
+
+      memcpy (Buf, buf.start, len);
+      Buf[len] = '\0';
       mpfr_free_func (buf.start, buf.size);
     }
 
