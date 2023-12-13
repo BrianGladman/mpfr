@@ -39,7 +39,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    - returns -1 and sets the erange flag if this number exceeds INT_MAX
      (in that case, also sets errno to EOVERFLOW on POSIX systems).
 
-   Moreover, since the the output may contain non-terminating null characters
+   Moreover, since the output may contain non-terminating null characters
    (if %c is used with the value 0), the mpfr_free_str function must not be
    used to free the allocated memory, because the size may matter with some
    custom allocation functions. Anyway, mpfr_free_func is more efficient
