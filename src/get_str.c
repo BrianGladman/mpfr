@@ -2919,7 +2919,8 @@ mpfr_get_str (char *s, mpfr_exp_t *e, int b, size_t m, mpfr_srcptr x,
   return s0;
 }
 
-void mpfr_free_str (char *str)
+void
+mpfr_free_str (char *str)
 {
   mpfr_free_func (str, strlen (str) + 1);
 }
