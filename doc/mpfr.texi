@@ -1936,6 +1936,11 @@ Like in usual functions, the inexact flag is set iff the result is inexact.
 Free a string allocated by @code{mpfr_get_str} using the unallocation
 function (@pxref{Memory Handling}).
 The block is assumed to be @code{strlen(@var{str})+1} bytes.
+
+Note: It is allowed to modify the string allocated by @code{mpfr_get_str};
+but when @code{mpfr_free_str} is called, its length must be the same as
+the original one (unless it is guaranteed that the unallocation function
+ignores its size parameter).
 @end deftypefun
 
 @deftypefun int mpfr_fits_ulong_p (mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
