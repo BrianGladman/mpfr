@@ -3112,7 +3112,7 @@ occurred.
 
 @deftypefun int mpfr_sprintf (char *@var{buf}, const char *@var{template}, @dots{})
 @deftypefunx int mpfr_vsprintf (char *@var{buf}, const char *@var{template}, va_list @var{ap})
-Form a null-terminated string corresponding to the optional arguments under
+Form a null-terminated array corresponding to the optional arguments under
 the control of the template string @var{template}, and print it in
 @var{buf}. No overlap is permitted between
 @var{buf} and the other arguments.
@@ -3123,7 +3123,7 @@ the terminating null character or a negative value if an error occurred.
 
 @deftypefun int mpfr_snprintf (char *@var{buf}, size_t @var{n}, const char *@var{template}, @dots{})
 @deftypefunx int mpfr_vsnprintf (char *@var{buf}, size_t @var{n}, const char *@var{template}, va_list @var{ap})
-Form a null-terminated string corresponding to the optional arguments under
+Form a null-terminated array corresponding to the optional arguments under
 the control of the template string @var{template}, and print it in
 @var{buf}. If @var{n} is zero, nothing is
 written and @var{buf} may be a null pointer, otherwise, the first
@@ -3136,13 +3136,18 @@ the terminating null character, or a negative value if an error occurred.
 
 @deftypefun int mpfr_asprintf (char **@var{str}, const char *@var{template}, @dots{})
 @deftypefunx int mpfr_vasprintf (char **@var{str}, const char *@var{template}, va_list @var{ap})
-Write their output as a null terminated string in a block of memory allocated
+Write their output as a null-terminated array in a block of memory allocated
 using the allocation function (@pxref{Memory Handling}). A pointer to the
-block is stored in
-@var{str}. The block of memory must be freed using @code{mpfr_free_str}.
-The return value is the number of characters written in the string, excluding
+block is stored in @var{str}. The block of memory must be freed using
+@code{mpfr_free_str}, but you must first make sure that it does not contain
+non-terminating null characters or that the unallocation function does not
+use its size argument.
+The return value is the number of characters written in the array, excluding
 the null-terminator, or a negative value if an error occurred, in which case
 the contents of @var{str} are undefined.
+Note that this return value may be used to know how many bytes may need to
+be set to a non-zero value (in case @samp{%c} was used with the value 0)
+before the call to @code{mpfr_free_str}.
 @end deftypefun
 
 @node Integer and Remainder Related Functions, Rounding-Related Functions, Formatted Output Functions, MPFR Interface
