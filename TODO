@@ -821,3 +821,6 @@ Table of contents:
   https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2764.pdf
   Once this is implemented in compilers, consider it as an alternative
   (concerned files: acinclude.m4, doc/README.dev and src/mpfr-impl.h).
+
+- count_leading_zeros may be replaced by the corresponding function in
+  <stdbit.h> (from ISO C23) in the future.
