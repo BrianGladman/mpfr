@@ -108,7 +108,7 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       MPFR_RET_NAN;
     }
 
-  /* compound(x,0) gives 1 for x >= 1 */
+  /* compound(x,0) gives 1 for x >= -1 */
   if (n == 0)
     return mpfr_set_ui (y, 1, rnd_mode);
 
