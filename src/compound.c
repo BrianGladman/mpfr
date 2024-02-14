@@ -57,7 +57,6 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
   int inexact, compared, k, nloop;
   mpfr_t t, u;
   mpfr_prec_t py, prec, extra;
-  mpfr_rnd_t rnd1;
   MPFR_ZIV_DECL (loop);
   MPFR_SAVE_EXPO_DECL (expo);
 
@@ -147,7 +146,6 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
   /* We compute u=log2p1(x) with prec+extra bits, since we lose some bits
      in 2^u. */
   extra = 0;
-  rnd1 = VSIGN (n) == MPFR_SIGN (x) ? MPFR_RNDD : MPFR_RNDU;
 
   MPFR_ZIV_INIT (loop, prec);
   for (nloop = 0; ; nloop++)
@@ -160,9 +158,8 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
 
       /* We compute (1+x)^n as 2^(n*log2p1(x)),
          and we round toward 1, thus we round n*log2p1(x) toward 0,
-         thus for x*n > 0 we round log2p1(x) toward -Inf, and for x*n < 0
-         we round log2p1(x) toward +Inf. */
-      inex = mpfr_log2p1 (u, x, rnd1) != 0;
+         which implies we round log2p1(x) toward 0. */
+      inex = mpfr_log2p1 (u, x, MPFR_RNDZ) != 0;
       e = MPFR_GET_EXP (u);
       /* |u - log2(1+x)| <= ulp(t) = 2^(e-precu) */
       inex |= mpfr_mul_si (u, u, n, MPFR_RNDZ) != 0;
