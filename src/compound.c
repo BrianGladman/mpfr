@@ -1,4 +1,5 @@
-/* mpfr_compound_si --- compound(x,n) = (1+x)^n
+/* mpfr_compound, mpfr_compound_si --- compound(x,n) = (1+x)^n
+
 
 Copyright 2021-2023 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
@@ -108,7 +109,7 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       MPFR_RET_NAN;
     }
 
-  /* compound(x,0) gives 1 for x >= 1 */
+  /* compound(x,0) gives 1 for x >= -1 */
   if (n == 0)
     return mpfr_set_ui (y, 1, rnd_mode);
 
@@ -341,4 +342,334 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
 
   MPFR_SAVE_EXPO_FREE (expo);
   return mpfr_check_range (y, inexact, rnd_mode);
+}
+
+int
+mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
+{
+  int inexact, compared, k, nloop;
+  mpfr_t t, u;
+  mpfr_prec_t pz, prec, extra;
+  MPFR_ZIV_DECL (loop);
+  MPFR_SAVE_EXPO_DECL (expo);
+
+  MPFR_LOG_FUNC
+    (("x[%Pd]=%.*Rg y[%Pd]=%.*Rg rnd=%d",
+      mpfr_get_prec(x), mpfr_log_prec, x,
+      mpfr_get_prec (y), mpfr_log_prec, y, rnd_mode),
+     ("z[%Pd]=%.*Rg inexact=%d", mpfr_get_prec (z), mpfr_log_prec, z, inexact));
+
+  /* Special cases (copied from mpfr_compound_si) */
+  if (MPFR_IS_SINGULAR (x))
+    {
+      if (MPFR_IS_INF (x) && MPFR_IS_NEG (x))
+        {
+          /* compound(-Inf,y) is NaN */
+          MPFR_SET_NAN (z);
+          MPFR_RET_NAN;
+        }
+      else if (mpfr_zero_p (y) || MPFR_IS_ZERO (x))
+        {
+          /* compound(x,0) = 1 for x >= -1 or NaN (the only special value
+             of x that is not concerned is -Inf, already handled);
+             compound(0,y) = 1 */
+          return mpfr_set_ui (z, 1, rnd_mode);
+        }
+      else if (MPFR_IS_NAN (x))
+        {
+          /* compound(NaN,y) is NaN, except for y = 0, already handled. */
+          MPFR_SET_NAN (z);
+          MPFR_RET_NAN;
+        }
+      else if (MPFR_IS_INF (x)) /* x = +Inf */
+        {
+          MPFR_ASSERTD (MPFR_IS_POS (x));
+          if (mpfr_cmp_ui (y, 0) < 0) /* (1+Inf)^y = +0 for y < 0 */
+            MPFR_SET_ZERO (z);
+          else /* y > 0: (1+Inf)^y = +Inf */
+            MPFR_SET_INF (z);
+          MPFR_SET_POS (z);
+          MPFR_RET (0); /* exact 0 or infinity */
+        }
+    }
+
+  compared = mpfr_cmp_si (x, -1);
+  /* (1+x)^y = NaN for x < -1 */
+  if (compared < 0)
+    {
+      MPFR_SET_NAN (z);
+      MPFR_RET_NAN;
+    }
+
+  /* compound(x,0) gives 1 for x >= -1 */
+  if (MPFR_IS_ZERO (y))
+    return mpfr_set_ui (z, 1, rnd_mode);
+
+  if (compared == 0)
+    {
+      if (MPFR_IS_NEG (y))
+        {
+          /* compound(-1,y) = +Inf with divide-by-zero exception */
+          MPFR_SET_INF (z);
+          MPFR_SET_POS (z);
+          MPFR_SET_DIVBY0 ();
+          MPFR_RET (0);
+        }
+      else
+        {
+          /* compound(-1,y) = +0 */
+          MPFR_SET_ZERO (z);
+          MPFR_SET_POS (z);
+          MPFR_RET (0);
+        }
+    }
+
+  // now x > -1
+  if (MPFR_IS_SINGULAR (y))
+    {
+      if (MPFR_IS_NAN (y))
+        {
+          /* compound(x,NaN) is NaN */
+          MPFR_SET_NAN (z);
+          MPFR_RET_NAN;
+        }
+      else if (MPFR_IS_INF (y) && MPFR_IS_POS (y)) // y = +Inf
+        {
+          int cmp = mpfr_cmp_ui (x, 0);
+          if (cmp > 0) // (1+x)^+Inf = +Inf for x > 0
+            {
+              MPFR_SET_INF (z);
+              MPFR_SET_POS (z);
+              MPFR_RET (0);
+            }
+          else if (cmp == 0) // 1^+Inf = 1
+            return mpfr_set_ui (z, 1, rnd_mode);
+          else // (1+x)^+Inf = 0 for -1 < x < 0
+            return mpfr_set_ui (z, 0, rnd_mode);
+        }
+      else // y = -Inf
+        {
+          int cmp = mpfr_cmp_ui (x, 0);
+          if (cmp > 0) // (1+x)^-Inf = +0 for x > 0
+            {
+              MPFR_SET_ZERO (z);
+              MPFR_SET_POS (z);
+              MPFR_RET (0);
+            }
+          else if (cmp == 0) // 1^-Inf = 1
+            return mpfr_set_ui (z, 1, rnd_mode);
+          else // (1+x)^-Inf = +Inf for -1 < x < 0
+            {
+              MPFR_SET_INF (z);
+              MPFR_SET_POS (z);
+              MPFR_RET (0);
+            }
+        }
+    }
+
+  MPFR_SAVE_EXPO_MARK (expo);
+  pz = MPFR_GET_PREC (z);
+  prec = pz + MPFR_INT_CEIL_LOG2 (pz) + 6;
+
+  mpfr_init2 (t, prec);
+  mpfr_init2 (u, prec);
+
+  k = mpfr_get_exp (y) <= 0 ? 0 : MPFR_INT_CEIL_LOG2(mpfr_get_exp (y));
+
+  /* We compute u=log2p1(x) with prec+extra bits, since we lose some bits
+     in 2^u. */
+  extra = 0;
+
+  MPFR_ZIV_INIT (loop, prec);
+  for (nloop = 0; ; nloop++)
+    {
+      unsigned int inex;
+      mpfr_exp_t e, e2, e3, e4, ex;
+      mpfr_prec_t precu = MPFR_ADD_PREC (prec, extra);
+      mpfr_prec_t new_extra;
+      mpfr_rnd_t rnd2;
+
+      /* We compute (1+x)^y as 2^(y*log2p1(x)),
+         and we round toward 1, thus we round y*log2p1(x) toward 0. */
+      inex = mpfr_log2p1 (u, x, MPFR_RNDZ) != 0;
+      e = MPFR_GET_EXP (u);
+      /* |u - log2(1+x)| <= ulp(t) = 2^(e-precu) */
+      inex |= mpfr_mul (u, u, y, MPFR_RNDZ) != 0;
+      e2 = MPFR_GET_EXP (u);
+      /* |u - y*log2(1+x)| <= 2^(e2-precu) + |y|*2^(e-precu)
+                           <= 2^(e2-precu) + 2^(e+k-precu) <= 2^(e3-precu) */
+      e3 = (e2 >= e + k) ? e2 + 1 : e + k + 1;
+      MPFR_ASSERTN (e2 <= MPFR_PREC_MAX);
+      new_extra = e2 > 0 ? e2 : 0;
+      /* |u - y*log2(1+x)| <= 2^(e3-precu) */
+      /* detect overflow: since we rounded y*log2p1(x) toward 0,
+         if y*log2p1(x) >= __gmpfr_emax, we are sure there is overflow. */
+      if (mpfr_cmp_si (u, __gmpfr_emax) >= 0)
+        {
+          MPFR_ZIV_FREE (loop);
+          mpfr_clear (t);
+          mpfr_clear (u);
+          MPFR_SAVE_EXPO_FREE (expo);
+          return mpfr_overflow (z, rnd_mode, 1);
+        }
+      /* detect underflow: similarly, since we rounded y*log2p1(x) toward 0,
+         if y*log2p1(x) < __gmpfr_emin-1, we are sure there is underflow. */
+      if (mpfr_cmp_si (u, __gmpfr_emin - 1) < 0)
+        {
+          MPFR_ZIV_FREE (loop);
+          mpfr_clear (t);
+          mpfr_clear (u);
+          MPFR_SAVE_EXPO_FREE (expo);
+          return mpfr_underflow (z,
+                            rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode, 1);
+        }
+      /* Detect cases where result is 1 or 1+ulp(1) or 1-1/2*ulp(1):
+         |2^u - 1| = |exp(u*log(2)) - 1| <= |u|*log(2) < |u| */
+      if (nloop == 0 && MPFR_GET_EXP(u) < - pz)
+        {
+          /* since ulp(1) = 2^(1-pz), we have |u| < 1/4*ulp(1) */
+          /* mpfr_compound_near_one must be called in the extended
+             exponent range, so that 1 is representable. */
+          inexact = mpfr_compound_near_one (z, MPFR_SIGN (u), rnd_mode);
+          goto end2;
+        }
+      /* round 2^u toward 1 */
+      rnd2 = MPFR_IS_POS (u) ? MPFR_RNDD : MPFR_RNDU;
+      inex |= mpfr_exp2 (t, u, rnd2) != 0;
+      /* we had |u - y*log2(1+x)| < 2^(e3-precu)
+         thus u = y*log2(1+x) + delta with |delta| < 2^(e3-precu)
+         then 2^u = (1+x)^y * 2^delta with |delta| < 2^(e3-precu).
+         For e3-precu <= -1, |delta| < 0.5, |2^delta - 1| <= |delta| thus
+         |t - (1+x)^y| <= ulp(t) + |t|*2^(e3-precu)
+                       < 2^(EXP(t)-prec) + 2^(EXP(t)+e3-precu) */
+      if (e3 > precu - 1) // condition e3-precu <= -1 not fulfilled
+        {
+          new_extra += e3 - (precu - 1);
+          goto next_loop;
+        }
+      MPFR_ASSERTD (e3 <= precu - 1);
+      e4 = (precu - prec >= e3) ? 1 : e3 + 1 - (precu - prec);
+      /* now |t - (1+x)^y| < 2^(EXP(t)+e4-prec) */
+
+      if (MPFR_LIKELY (!inex || MPFR_CAN_ROUND (t, prec - e4, pz, rnd_mode)))
+        break;
+
+      /* If t fits in the target precision (or with 1 more bit), then we can
+         round, assuming the working precision is large enough, but the above
+         MPFR_CAN_ROUND() will fail because we cannot determine the ternary
+         value. However since we rounded t toward 1, we can determine it.
+         Since the error in the approximation t is at most 2^e ulp(t),
+         this error should be less than 1/2 ulp(y), thus we should have
+         prec - pz >= e + 1. */
+      if (mpfr_min_prec (t) <= pz + 1 && prec - pz >= e4 + 1)
+        {
+          /* we add/subtract one ulp to get the correct rounding */
+          if (rnd2 == MPFR_RNDD) /* t was rounded downwards */
+            mpfr_nextabove (t);
+          else
+            mpfr_nextbelow (t);
+          break;
+        }
+
+      /* Detect particular cases where Ziv's strategy may take too much
+         memory and be too long, i.e. when x^y fits in the target precision
+         (+ 1 additional bit for rounding to nearest) and the exact result
+         (1+x)^y is very close to x^y.
+         Necessarily, x is a large even integer and y > 0 (thus y > 1).
+         Since this does not depend on the working precision, we only
+         check this at the first iteration (nloop == 0).
+         Hence the first "if" below and the kx < ex test of the second "if"
+         (x is an even integer iff its least bit 1 has exponent >= 1).
+         The second test of the second "if" corresponds to another simple
+         condition that implies that x^y fits in the target precision.
+         Here are the details:
+         Let k be the minimum length of the significand of x, and x' the odd
+         (integer) significand of x. This means  that 2^(k-1) <= x' < 2^k.
+         Thus 2^(y*(k-1)) <= (x')^y < 2^(k*y), and x^y has between y*(k-1)+1
+         and k*y bits. So x^y can fit into p bits only if p >= y*(k-1)+1,
+         i.e. y*(k-1) <= p-1.
+         Note that x >= 2^k, so that x^y >= 2^(k*y). Since raw overflow
+         has already been detected, k*y cannot overflow if computed with
+         the mpfr_exp_t type. Hence the second test of the second "if",
+         which cannot overflow. */
+      MPFR_ASSERTD (mpfr_cmp_ui (y, 0) < 0 || mpfr_cmp_ui (y, 1) > 1);
+      if (nloop == 0 && mpfr_cmp_ui (y, 1) > 1 && (ex = MPFR_GET_EXP (x)) >= 17)
+        {
+          mpfr_prec_t p = pz + (rnd_mode == MPFR_RNDN);
+
+          MPFR_LOG_MSG (("Check if x^y fits... p=%Pd\n", p));
+          {
+              mpfr_t v;
+
+              /* Check whether x^y really fits into p bits. */
+              mpfr_init2 (v, p);
+              inexact = mpfr_pow (v, x, y, MPFR_RNDZ);
+              if (inexact == 0)
+                {
+                  MPFR_LOG_MSG (("x^y fits into p bits\n", 0));
+                  /* (x+1)^y = x^y * (1 + 1/x)^y
+                     For directed rounding, we can round when (1 + 1/x)^y
+                     < 1 + 2^-p, and then the result is x^y,
+                     except for rounding up. Indeed, if (1 + 1/x)^y < 1 + 2^-p,
+                     1 <= (x+1)^y < x^y * (1 + 2^-p) = x^y + x^y/2^p
+                     < x^y + ulp(x^y).
+                     For rounding to nearest, we can round when (1 + 1/x)^y
+                     < 1 + 2^-p, and then the result is x^y when x^y fits
+                     into p-1 bits, and nextabove(x^y) otherwise. */
+                  mpfr_ui_div (t, 1, x, MPFR_RNDU);
+                  mpfr_add_ui (t, t, 1, MPFR_RNDU);
+                  mpfr_pow (t, t, y, MPFR_RNDU);
+                  mpfr_sub_ui (t, t, 1, MPFR_RNDU);
+                  /* t cannot be zero */
+                  if (MPFR_GET_EXP(t) < - pz)
+                    {
+                      mpfr_set (z, v, MPFR_RNDZ);
+                      if ((rnd_mode == MPFR_RNDN && mpfr_min_prec (v) == p)
+                          || rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA)
+                        {
+                          /* round up */
+                          mpfr_nextabove (z);
+                          inexact = 1;
+                        }
+                      else
+                        inexact = -1;
+                      mpfr_clear (v);
+                      goto end2;
+                    }
+                }
+              mpfr_clear (v);
+            }
+        }
+
+      /* Exact cases like compound(0.5,2) = 9/4 must be detected, since
+         except for 1+x power of 2, the log2p1 above will be inexact,
+         so that in the Ziv test, inexact != 0 and MPFR_CAN_ROUND will
+         fail (even for RNDN, as the ternary value cannot be determined),
+         yielding an infinite loop.
+         For an exact case in precision prec(y), 1+x will necessarily
+         be exact in precision prec(y), thus also in prec(t), where
+         prec(t) >= prec(y), and we can use mpfr_pow under this
+         condition (which will also evaluate some non-exact cases). */
+      if (mpfr_add_ui (t, x, 1, MPFR_RNDZ) == 0)
+        {
+          inexact = mpfr_pow (z, t, y, rnd_mode);
+          goto end2;
+        }
+
+    next_loop:
+      MPFR_ZIV_NEXT (loop, prec);
+      mpfr_set_prec (t, prec);
+      extra = new_extra;
+      mpfr_set_prec (u, MPFR_ADD_PREC (prec, extra));
+    }
+
+  inexact = mpfr_set (z, t, rnd_mode);
+
+ end2:
+  MPFR_ZIV_FREE (loop);
+  mpfr_clear (t);
+  mpfr_clear (u);
+
+  MPFR_SAVE_EXPO_FREE (expo);
+  return mpfr_check_range (z, inexact, rnd_mode);
 }

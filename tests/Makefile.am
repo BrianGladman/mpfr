@@ -55,8 +55,8 @@ TESTS_NO_TVERSION = tabort_prec_max tassert tabort_defalloc1            \
      tabs tacos tacosh tacosu tadd tadd1sp tadd_d tadd_ui tagm tai      \
      talloc-cache tasin tasinh tasinu tatan tatanh tatanu tatan2u taway \
      tbeta tbuildopt tcan_round tcbrt tcmp tcmp2 tcmp_d tcmp_ld tcmp_ui \
-     tcmpabs tcomparisons tcompound tconst_catalan tconst_euler         \
-     tconst_log2 tconst_pi                                              \
+     tcmpabs tcomparisons tcompound tcompound_si tconst_catalan         \
+     tconst_euler tconst_log2 tconst_pi                                 \
      tcopysign tcos tcosh tcosu tcot tcoth tcsc tcsch td_div td_sub     \
      tdigamma tdim tdiv tdiv_d tdiv_ui tdot teint teq terandom          \
      terandom_chisq terf texp texp10 texp2 texpm1 texp10m1 texp2m1      \
