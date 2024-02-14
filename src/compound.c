@@ -219,15 +219,11 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
                        < 2^(EXP(t)-prec) + 2^(EXP(t)+e-precu).
          If e-precu >= 0, then the rounding error on u2 is too large,
          and we have to loop again. */
-      /* FIXME: With d390bf2b2ff645ff129da8b977331b23d91a0f5a, the value
-         of e is modified only in the branch. This seems incorrect as e
-         would have 2 different meanings whether e < precu or not.
-         Comments also need to be added about the meaning of e. */
       if (e < precu)
         {
-          e = (precu - prec >= e) ? 1 : e + 1 - (precu - prec);
-          /* now |t - (1+x)^n| < 2^(EXP(t)+e-prec) */
-          if (MPFR_LIKELY (!inex || MPFR_CAN_ROUND (t, prec - e, py, rnd_mode)))
+          mpfr_prec_t e3 = (precu - prec >= e) ? 1 : e + 1 - (precu - prec);
+          /* now |t - (1+x)^n| < 2^(EXP(t)+e3-prec) */
+          if (MPFR_LIKELY (!inex || MPFR_CAN_ROUND (t, prec - e3, py, rnd_mode)))
             break;
         }
 
