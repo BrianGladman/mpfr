@@ -547,28 +547,28 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
                        < 2^(EXP(t)-prec) + 2^(EXP(t)+e-precu) */
       if (e < precu)
         {
-          mpfr_exp_t e3 = (precu - prec >= e) ? 1 : e + 1 - (precu - prec);
-          /* now |t - (1+x)^y| < 2^(EXP(t)+e3-prec) */
+          e = (precu - prec >= e) ? 1 : e + 1 - (precu - prec);
+          /* now |t - (1+x)^y| < 2^(EXP(t)+e-prec) */
 
-          if (MPFR_LIKELY (!inex || MPFR_CAN_ROUND (t, prec - e3, pz, rnd_mode)))
+          if (MPFR_LIKELY (!inex || MPFR_CAN_ROUND (t, prec - e, pz, rnd_mode)))
             break;
-        }
 
-      /* If t fits in the target precision (or with 1 more bit), then we can
-         round, assuming the working precision is large enough, but the above
-         MPFR_CAN_ROUND() will fail because we cannot determine the ternary
-         value. However since we rounded t toward 1, we can determine it.
-         Since the error in the approximation t is at most 2^e ulp(t),
-         this error should be less than 1/2 ulp(y), thus we should have
-         prec - pz >= e + 1. */
-      if (mpfr_min_prec (t) <= pz + 1 && prec - pz >= e + 1)
-        {
-          /* we add/subtract one ulp to get the correct rounding */
-          if (rnd2 == MPFR_RNDD) /* t was rounded downwards */
-            mpfr_nextabove (t);
-          else
-            mpfr_nextbelow (t);
-          break;
+          /* If t fits in the target precision (or with 1 more bit), then we can
+             round, assuming the working precision is large enough, but the above
+             MPFR_CAN_ROUND() will fail because we cannot determine the ternary
+             value. However since we rounded t toward 1, we can determine it.
+             Since the error in the approximation t is at most 2^e ulp(t),
+             this error should be less than 1/2 ulp(y), thus we should have
+             prec - pz >= e + 1. */
+          if (mpfr_min_prec (t) <= pz + 1 && prec - pz >= e + 1)
+            {
+              /* we add/subtract one ulp to get the correct rounding */
+              if (rnd2 == MPFR_RNDD) /* t was rounded downwards */
+                mpfr_nextabove (t);
+              else
+                mpfr_nextbelow (t);
+              break;
+            }
         }
 
       /* Detect particular cases where Ziv's strategy may take too much
