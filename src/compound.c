@@ -153,29 +153,27 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       unsigned int inex;
       mpfr_exp_t e, e2, ex;
       mpfr_prec_t precu = MPFR_ADD_PREC (prec, extra);
-      mpfr_prec_t new_extra;
       mpfr_rnd_t rnd2;
 
       /* We compute (1+x)^n as 2^(n*log2p1(x)),
          and we round toward 1, thus we round n*log2p1(x) toward 0,
          which implies we round log2p1(x) toward 0. */
-      inex = mpfr_log2p1 (u, x, MPFR_RNDZ) != 0;
+      inex = mpfr_log2p1 (u, x, MPFR_RNDZ) != 0;  /* denoted u1 */
       e = MPFR_GET_EXP (u);
-      /* |u - log2(1+x)| <= ulp(u) = 2^(e-precu) */
-      inex |= mpfr_mul_si (u, u, n, MPFR_RNDZ) != 0;
+      /* |u1 - log2(1+x)| <= ulp(u1) = 2^(e-precu) */
+      inex |= mpfr_mul_si (u, u, n, MPFR_RNDZ) != 0;  /* denoted u2 */
       e2 = MPFR_GET_EXP (u);
-      /* |u - n*log2(1+x)| <= 2^(e2-precu) + |n|*2^(e-precu)
-                           <= 2^(e2-precu) + 2^(e+k-precu)
-                          where |n| <= 2^k, and e2 is the new exponent of u.
-                          Since |u| < 2^e before mpfr_mul_si() and |n| <= 2^k,
-                          we have now |u| < 2^(e+k) thus e2 <= e+k, and
-                          |u - n*log2(1+x)| <= 2^(e+k+1-precu). */
+      /* |u2 - n*log2(1+x)| <= 2^(e2-precu) + |n|*2^(e-precu)
+                            <= 2^(e2-precu) + 2^(e+k-precu)
+         where |n| <= 2^k, and e2 is the exponent of u2.
+         Since MPFR_RNDZ was used for u2, |u1| < 2^e and |n| <= 2^k,
+         we have |u2| < 2^(e+k), thus e2 <= e+k, and
+         |u2 - n*log2(1+x)| <= 2^(e+k+1-precu). */
       MPFR_ASSERTD (e2 <= e + k);
       e += k + 1;
-      MPFR_ASSERTN (e2 <= MPFR_PREC_MAX);
-      new_extra = e2 > 0 ? e2 : 0;
-      /* |u - n*log2(1+x)| <= 2^(e-precu) */
-      /* detect overflow: since we rounded n*log2p1(x) toward 0,
+      /* With this new e, |u2 - n*log2(1+x)| <= 2^(e-precu). */
+
+      /* Detect overflow: since we rounded n*log2p1(x) toward 0,
          if n*log2p1(x) >= __gmpfr_emax, we are sure there is overflow. */
       if (mpfr_cmp_si (u, __gmpfr_emax) >= 0)
         {
@@ -185,7 +183,8 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
           MPFR_SAVE_EXPO_FREE (expo);
           return mpfr_overflow (y, rnd_mode, 1);
         }
-      /* detect underflow: similarly, since we rounded n*log2p1(x) toward 0,
+
+      /* Detect underflow: similarly, since we rounded n*log2p1(x) toward 0,
          if n*log2p1(x) < __gmpfr_emin-1, we are sure there is underflow. */
       if (mpfr_cmp_si (u, __gmpfr_emin - 1) < 0)
         {
@@ -196,32 +195,35 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
           return mpfr_underflow (y,
                             rnd_mode == MPFR_RNDN ? MPFR_RNDZ : rnd_mode, 1);
         }
+
       /* Detect cases where result is 1 or 1+ulp(1) or 1-1/2*ulp(1):
          |2^u - 1| = |exp(u*log(2)) - 1| <= |u|*log(2) < |u| */
       if (nloop == 0 && MPFR_GET_EXP(u) < - py)
         {
-          /* since ulp(1) = 2^(1-py), we have |u| < 1/4*ulp(1) */
+          /* Since ulp(1) = 2^(1-py), we have |u| < 1/4*ulp(1). */
           /* mpfr_compound_near_one must be called in the extended
              exponent range, so that 1 is representable. */
           inexact = mpfr_compound_near_one (y, MPFR_SIGN (u), rnd_mode);
           goto end;
         }
+
       /* round 2^u toward 1 */
       rnd2 = MPFR_IS_POS (u) ? MPFR_RNDD : MPFR_RNDU;
       inex |= mpfr_exp2 (t, u, rnd2) != 0;
-      /* we had |u - n*log2(1+x)| < 2^(e-precu)
-         thus u = n*log2(1+x) + delta with |delta| < 2^(e-precu)
-         then 2^u = (1+x)^n * 2^delta with |delta| < 2^(e-precu).
-         When e-precu <= -1, we have |delta| < 0.5, |2^delta - 1| <= |delta| thus
+      /* We had |u2 - n*log2(1+x)| < 2^(e-precu)
+         thus u2 = n*log2(1+x) + delta with |delta| < 2^(e-precu)
+         then 2^u2 = (1+x)^n * 2^delta with |delta| < 2^(e-precu).
+         When e-precu <= -1, we have |delta| < 0.5,
+         |2^delta - 1| <= |delta|, thus
          |t - (1+x)^n| <= ulp(t) + |t|*2^(e-precu)
                        < 2^(EXP(t)-prec) + 2^(EXP(t)+e-precu).
-         If e-precu >= 0, then the rounding error on u is too large, and we have to
-         loop again. */
+         If e-precu >= 0, then the rounding error on u2 is too large,
+         and we have to loop again. */
       if (e < precu)
         {
-          e = (precu - prec >= e) ? 1 : e + 1 - (precu - prec);
-          /* now |t - (1+x)^n| < 2^(EXP(t)+e-prec) */
-          if (MPFR_LIKELY (!inex || MPFR_CAN_ROUND (t, prec - e, py, rnd_mode)))
+          mpfr_exp_t e3 = (precu - prec >= e) ? 1 : e + 1 - (precu - prec);
+          /* now |t - (1+x)^n| < 2^(EXP(t)+e3-prec) */
+          if (MPFR_LIKELY (!inex || MPFR_CAN_ROUND (t, prec - e3, py, rnd_mode)))
             break;
 
           /* If t fits in the target precision (or with 1 more bit), then we can
@@ -332,7 +334,8 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
 
       MPFR_ZIV_NEXT (loop, prec);
       mpfr_set_prec (t, prec);
-      extra = new_extra;
+      MPFR_ASSERTN (e2 <= MPFR_PREC_MAX);
+      extra = e2 > 0 ? e2 : 0;
       mpfr_set_prec (u, MPFR_ADD_PREC (prec, extra));
     }
 
