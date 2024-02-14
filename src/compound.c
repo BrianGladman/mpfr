@@ -161,12 +161,15 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
          which implies we round log2p1(x) toward 0. */
       inex = mpfr_log2p1 (u, x, MPFR_RNDZ) != 0;
       e = MPFR_GET_EXP (u);
-      /* |u - log2(1+x)| <= ulp(t) = 2^(e-precu) */
+      /* |u - log2(1+x)| <= ulp(u) = 2^(e-precu) */
       inex |= mpfr_mul_si (u, u, n, MPFR_RNDZ) != 0;
       e2 = MPFR_GET_EXP (u);
       /* |u - n*log2(1+x)| <= 2^(e2-precu) + |n|*2^(e-precu)
-                           <= 2^(e2-precu) + 2^(e+k-precu) <= 2^(e+k+1-precu)
-                          where |n| <= 2^k, and e2 is the new exponent of u. */
+                           <= 2^(e2-precu) + 2^(e+k-precu)
+                          where |n| <= 2^k, and e2 is the new exponent of u.
+                          Since |u| < 2^e before mpfr_mul_si() and |n| <= 2^k,
+                          we have now |u| < 2^(e+k) thus e2 <= e+k, and
+                          |u - n*log2(1+x)| <= 2^(e+k+1-precu). */
       MPFR_ASSERTD (e2 <= e + k);
       e += k + 1;
       MPFR_ASSERTN (e2 <= MPFR_PREC_MAX);
@@ -209,14 +212,18 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       /* we had |u - n*log2(1+x)| < 2^(e-precu)
          thus u = n*log2(1+x) + delta with |delta| < 2^(e-precu)
          then 2^u = (1+x)^n * 2^delta with |delta| < 2^(e-precu).
-         For |delta| < 0.5, |2^delta - 1| <= |delta| thus
+         When e-precu <= -1, we have |delta| < 0.5, |2^delta - 1| <= |delta| thus
          |t - (1+x)^n| <= ulp(t) + |t|*2^(e-precu)
-                       < 2^(EXP(t)-prec) + 2^(EXP(t)+e-precu) */
-      e = (precu - prec >= e) ? 1 : e + 1 - (precu - prec);
-      /* now |t - (1+x)^n| < 2^(EXP(t)+e-prec) */
-
-      if (MPFR_LIKELY (!inex || MPFR_CAN_ROUND (t, prec - e, py, rnd_mode)))
-        break;
+                       < 2^(EXP(t)-prec) + 2^(EXP(t)+e-precu).
+         If e-precu >= 0, then the rounding error on u is too large, and we have to
+         loop again. */
+      if (e < precu)
+        {
+          e = (precu - prec >= e) ? 1 : e + 1 - (precu - prec);
+          /* now |t - (1+x)^n| < 2^(EXP(t)+e-prec) */
+          if (MPFR_LIKELY (!inex || MPFR_CAN_ROUND (t, prec - e, py, rnd_mode)))
+            break;
+        }
 
       /* If t fits in the target precision (or with 1 more bit), then we can
          round, assuming the working precision is large enough, but the above
