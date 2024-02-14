@@ -221,7 +221,7 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
          and we have to loop again. */
       if (e < precu)
         {
-          mpfr_prec_t e3 = (precu - prec >= e) ? 1 : e + 1 - (precu - prec);
+          mpfr_exp_t e3 = (precu - prec >= e) ? 1 : e + 1 - (precu - prec);
           /* now |t - (1+x)^n| < 2^(EXP(t)+e3-prec) */
           if (MPFR_LIKELY (!inex || MPFR_CAN_ROUND (t, prec - e3, py, rnd_mode)))
             break;
