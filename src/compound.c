@@ -547,10 +547,10 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
                        < 2^(EXP(t)-prec) + 2^(EXP(t)+e-precu) */
       if (e < precu)
         {
-          e = (precu - prec >= e) ? 1 : e + 1 - (precu - prec);
-          /* now |t - (1+x)^y| < 2^(EXP(t)+e-prec) */
+          mpfr_exp_t e3 = (precu - prec >= e) ? 1 : e + 1 - (precu - prec);
+          /* now |t - (1+x)^y| < 2^(EXP(t)+e3-prec) */
 
-          if (MPFR_LIKELY (!inex || MPFR_CAN_ROUND (t, prec - e, pz, rnd_mode)))
+          if (MPFR_LIKELY (!inex || MPFR_CAN_ROUND (t, prec - e3, pz, rnd_mode)))
             break;
         }
 
@@ -656,7 +656,6 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
           goto end2;
         }
 
-    next_loop:
       MPFR_ZIV_NEXT (loop, prec);
       mpfr_set_prec (t, prec);
       extra = new_extra;
