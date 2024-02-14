@@ -474,7 +474,7 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
   mpfr_init2 (t, prec);
   mpfr_init2 (u, prec);
 
-  k = mpfr_get_exp (y) <= 0 ? 0 : MPFR_INT_CEIL_LOG2(mpfr_get_exp (y));
+  k = mpfr_get_exp (y) <= 0 ? 0 : mpfr_get_exp (y);
 
   /* We compute u=log2p1(x) with prec+extra bits, since we lose some bits
      in 2^u. */
@@ -484,7 +484,7 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
   for (nloop = 0; ; nloop++)
     {
       unsigned int inex;
-      mpfr_exp_t e, e2, e3, e4, ex;
+      mpfr_exp_t e, e2, ex;
       mpfr_prec_t precu = MPFR_ADD_PREC (prec, extra);
       mpfr_prec_t new_extra;
       mpfr_rnd_t rnd2;
@@ -493,15 +493,18 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
          and we round toward 1, thus we round y*log2p1(x) toward 0. */
       inex = mpfr_log2p1 (u, x, MPFR_RNDZ) != 0;
       e = MPFR_GET_EXP (u);
-      /* |u - log2(1+x)| <= ulp(t) = 2^(e-precu) */
+      /* |u - log2(1+x)| <= ulp(u) = 2^(e-precu) */
       inex |= mpfr_mul (u, u, y, MPFR_RNDZ) != 0;
       e2 = MPFR_GET_EXP (u);
       /* |u - y*log2(1+x)| <= 2^(e2-precu) + |y|*2^(e-precu)
-                           <= 2^(e2-precu) + 2^(e+k-precu) <= 2^(e3-precu) */
-      e3 = (e2 >= e + k) ? e2 + 1 : e + k + 1;
+                           <= 2^(e2-precu) + 2^(e+k-precu).
+         Since |u_old| < 2^e and |y| < 2^k, we have |u| < 2^(e+k)
+         thus e2 <= e + k and 2^(e2-precu) + 2^(e+k-precu) <= 2^(e+k+1-precu). */
+      MPFR_ASSERTD (e2 <= e + k);
+      e += k + 1;
       MPFR_ASSERTN (e2 <= MPFR_PREC_MAX);
       new_extra = e2 > 0 ? e2 : 0;
-      /* |u - y*log2(1+x)| <= 2^(e3-precu) */
+      /* |u - y*log2(1+x)| <= 2^(e-precu) */
       /* detect overflow: since we rounded y*log2p1(x) toward 0,
          if y*log2p1(x) >= __gmpfr_emax, we are sure there is overflow. */
       if (mpfr_cmp_si (u, __gmpfr_emax) >= 0)
@@ -536,23 +539,20 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
       /* round 2^u toward 1 */
       rnd2 = MPFR_IS_POS (u) ? MPFR_RNDD : MPFR_RNDU;
       inex |= mpfr_exp2 (t, u, rnd2) != 0;
-      /* we had |u - y*log2(1+x)| < 2^(e3-precu)
-         thus u = y*log2(1+x) + delta with |delta| < 2^(e3-precu)
-         then 2^u = (1+x)^y * 2^delta with |delta| < 2^(e3-precu).
-         For e3-precu <= -1, |delta| < 0.5, |2^delta - 1| <= |delta| thus
-         |t - (1+x)^y| <= ulp(t) + |t|*2^(e3-precu)
-                       < 2^(EXP(t)-prec) + 2^(EXP(t)+e3-precu) */
-      if (e3 > precu - 1) // condition e3-precu <= -1 not fulfilled
+      /* we had |u - y*log2(1+x)| < 2^(e-precu)
+         thus u = y*log2(1+x) + delta with |delta| < 2^(e-precu)
+         then 2^u = (1+x)^y * 2^delta with |delta| < 2^(e-precu).
+         When e-precu <= -1, |delta| < 0.5, |2^delta - 1| <= |delta| thus
+         |t - (1+x)^y| <= ulp(t) + |t|*2^(e-precu)
+                       < 2^(EXP(t)-prec) + 2^(EXP(t)+e-precu) */
+      if (e < precu)
         {
-          new_extra += e3 - (precu - 1);
-          goto next_loop;
-        }
-      MPFR_ASSERTD (e3 <= precu - 1);
-      e4 = (precu - prec >= e3) ? 1 : e3 + 1 - (precu - prec);
-      /* now |t - (1+x)^y| < 2^(EXP(t)+e4-prec) */
+          e = (precu - prec >= e) ? 1 : e + 1 - (precu - prec);
+          /* now |t - (1+x)^y| < 2^(EXP(t)+e-prec) */
 
-      if (MPFR_LIKELY (!inex || MPFR_CAN_ROUND (t, prec - e4, pz, rnd_mode)))
-        break;
+          if (MPFR_LIKELY (!inex || MPFR_CAN_ROUND (t, prec - e, pz, rnd_mode)))
+            break;
+        }
 
       /* If t fits in the target precision (or with 1 more bit), then we can
          round, assuming the working precision is large enough, but the above
@@ -561,7 +561,7 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
          Since the error in the approximation t is at most 2^e ulp(t),
          this error should be less than 1/2 ulp(y), thus we should have
          prec - pz >= e + 1. */
-      if (mpfr_min_prec (t) <= pz + 1 && prec - pz >= e4 + 1)
+      if (mpfr_min_prec (t) <= pz + 1 && prec - pz >= e + 1)
         {
           /* we add/subtract one ulp to get the correct rounding */
           if (rnd2 == MPFR_RNDD) /* t was rounded downwards */
