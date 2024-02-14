@@ -2413,13 +2413,14 @@ We do not use the usual limit rules in this case, as these rules are not
 used for @code{pow}.
 @end deftypefun
 
-@deftypefun int mpfr_compound_si (mpfr_t @var{rop}, mpfr_t @var{op}, long int @var{n}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to the power @var{n} of one plus @var{op},
+@deftypefun int mpfr_compound (mpfr_t @var{rop}, mpfr_t @var{op1}, mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})
+@deftypefunx int mpfr_compound_si (mpfr_t @var{rop}, mpfr_t @var{op1}, long int @var{op2}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to the power @var{op2} of one plus @var{op1},
 following IEEE@tie{}754 for the special cases and exceptions. In particular:
 @itemize @bullet
-@item When @tm{@var{op} < @minus{}1}, @var{rop} is set to NaN@.
-@item When @var{n} is zero and @var{op} is NaN (like any value greater or equal to @minus{}1), @var{rop} is set to 1.
-@item When @tm{@var{op} = @minus{}1}, @var{rop} is set to @mm{+}Inf for @tm{@var{n} < 0}, and to @mm{+}0 for @tm{@var{n} > 0}.
+@item When @tm{@var{op1} < @minus{}1}, @var{rop} is set to NaN@.
+@item When @var{op2} is zero and @var{op1} is NaN (like any value greater or equal to @minus{}1), @var{rop} is set to 1.
+@item When @tm{@var{op1} = @minus{}1}, @var{rop} is set to @mm{+}Inf for @tm{@var{op2} < 0}, and to @mm{+}0 for @tm{@var{op2} > 0}.
 @end itemize
 The other special cases follow the usual rules.
 @end deftypefun
@@ -4392,6 +4393,8 @@ that were added after MPFR@tie{}2.2, and in which MPFR version.
 (new divide-by-zero exception).
 
 @item @code{mpfr_cmpabs_ui} in MPFR@tie{}4.1.
+
+@item @code{mpfr_compound} in MPFR@tie{}4.3.
 
 @item @code{mpfr_compound_si} in MPFR@tie{}4.2.
 
