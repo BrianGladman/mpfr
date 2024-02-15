@@ -368,23 +368,26 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
           MPFR_SET_NAN (z);
           MPFR_RET_NAN;
         }
-      else if (mpfr_zero_p (y) || MPFR_IS_ZERO (x))
+      else if (MPFR_IS_ZERO (x) || MPFR_IS_ZERO (y))
         {
-          /* compound(x,0) = 1 for x >= -1 or NaN (the only special value
-             of x that is not concerned is -Inf, already handled);
-             compound(0,y) = 1 */
+          /* compound(0,y) = 1 even when y is NaN;
+             compound(x,0) = 1 for x >= -1 or NaN (the only special value
+             of x that is not concerned is -Inf, already handled). */
           return mpfr_set_ui (z, 1, rnd_mode);
         }
-      else if (MPFR_IS_NAN (x))
+      else if (MPFR_IS_NAN (x) || MPFR_IS_NAN (y))
         {
-          /* compound(NaN,y) is NaN, except for y = 0, already handled. */
+          /* compound(NaN,y) is NaN, except for y = 0, already handled.
+             compound(x,NaN) is NaN, except for x = 0, already handled. */
           MPFR_SET_NAN (z);
           MPFR_RET_NAN;
         }
       else if (MPFR_IS_INF (x)) /* x = +Inf */
         {
-          MPFR_ASSERTD (MPFR_IS_POS (x));
-          if (mpfr_cmp_ui (y, 0) < 0) /* (1+Inf)^y = +0 for y < 0 */
+          MPFR_ASSERTD (MPFR_IS_POS (x) &&
+                        !MPFR_IS_NAN (y) &&
+                        MPFR_NOTZERO (y));
+          if (MPFR_IS_NEG (y)) /* (1+Inf)^y = +0 for y < 0 */
             MPFR_SET_ZERO (z);
           else /* y > 0: (1+Inf)^y = +Inf */
             MPFR_SET_INF (z);
@@ -411,59 +414,41 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
         {
           /* compound(-1,y) = +Inf with divide-by-zero exception */
           MPFR_SET_INF (z);
-          MPFR_SET_POS (z);
           MPFR_SET_DIVBY0 ();
-          MPFR_RET (0);
         }
       else
         {
           /* compound(-1,y) = +0 */
           MPFR_SET_ZERO (z);
-          MPFR_SET_POS (z);
-          MPFR_RET (0);
         }
+      MPFR_SET_POS (z);
+      MPFR_RET (0);
     }
 
-  // now x > -1
+  /* now x > -1 and it cannot be zero */
   if (MPFR_IS_SINGULAR (y))
     {
+      MPFR_ASSERTD (MPFR_NOTZERO (x) && MPFR_NOTZERO (y));
       if (MPFR_IS_NAN (y))
         {
-          /* compound(x,NaN) is NaN */
+          /* compound(x,NaN) is NaN, except for x = 0, already handled. */
           MPFR_SET_NAN (z);
           MPFR_RET_NAN;
         }
-      else if (MPFR_IS_INF (y) && MPFR_IS_POS (y)) // y = +Inf
+      else
         {
-          int cmp = mpfr_cmp_ui (x, 0);
-          if (cmp > 0) // (1+x)^+Inf = +Inf for x > 0
-            {
-              MPFR_SET_INF (z);
-              MPFR_SET_POS (z);
-              MPFR_RET (0);
-            }
-          else if (cmp == 0) // 1^+Inf = 1
-            return mpfr_set_ui (z, 1, rnd_mode);
-          else // (1+x)^+Inf = 0 for -1 < x < 0
-            return mpfr_set_ui (z, 0, rnd_mode);
-        }
-      else // y = -Inf
-        {
-          int cmp = mpfr_cmp_ui (x, 0);
-          if (cmp > 0) // (1+x)^-Inf = +0 for x > 0
-            {
-              MPFR_SET_ZERO (z);
-              MPFR_SET_POS (z);
-              MPFR_RET (0);
-            }
-          else if (cmp == 0) // 1^-Inf = 1
-            return mpfr_set_ui (z, 1, rnd_mode);
-          else // (1+x)^-Inf = +Inf for -1 < x < 0
-            {
-              MPFR_SET_INF (z);
-              MPFR_SET_POS (z);
-              MPFR_RET (0);
-            }
+          MPFR_ASSERTD (MPFR_IS_INF (y));
+          /* (1+x)^+Inf = +0 for -1 < x < 0
+           * (1+x)^-Inf = +0 for x > 0
+           * (1+x)^+Inf = +Inf for x > 0
+           * (1+x)^-Inf = +Inf for -1 < x < 0
+           */
+          if (MPFR_IS_POS (x) ^ MPFR_IS_POS (y))
+            MPFR_SET_ZERO (z);
+          else
+            MPFR_SET_INF (z);
+          MPFR_SET_POS (z);
+          MPFR_RET (0);
         }
     }
 
@@ -592,7 +577,6 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
          has already been detected, k*y cannot overflow if computed with
          the mpfr_exp_t type. Hence the second test of the second "if",
          which cannot overflow. */
-      MPFR_ASSERTD (mpfr_cmp_ui (y, 0) < 0 || mpfr_cmp_ui (y, 1) > 1);
       if (nloop == 0 && mpfr_cmp_ui (y, 1) > 1 && (ex = MPFR_GET_EXP (x)) >= 17)
         {
           mpfr_prec_t p = pz + (rnd_mode == MPFR_RNDN);
