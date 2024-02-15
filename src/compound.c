@@ -347,7 +347,8 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
 int
 mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
 {
-  int inexact, compared, k, nloop;
+  int inexact, compared, nloop;
+  mpfr_exp_t k;
   mpfr_t t, u;
   mpfr_prec_t pz, prec, extra;
   MPFR_ZIV_DECL (loop);
@@ -480,6 +481,10 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
       e = MPFR_GET_EXP (u);
       /* |u - log2(1+x)| <= ulp(u) = 2^(e-precu) */
       inex |= mpfr_mul (u, u, y, MPFR_RNDZ) != 0;
+      /* If u=0, it means |u| < 2^(__gmpfr_emin-1) modulo rounding errors,
+         thus surely the "near_one" condition is satisfied. */
+      if (MPFR_IS_ZERO (u))
+        goto near_one;
       e2 = MPFR_GET_EXP (u);
       /* |u - y*log2(1+x)| <= 2^(e2-precu) + |y|*2^(e-precu)
                            <= 2^(e2-precu) + 2^(e+k-precu).
@@ -513,8 +518,9 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
         }
       /* Detect cases where result is 1 or 1+ulp(1) or 1-1/2*ulp(1):
          |2^u - 1| = |exp(u*log(2)) - 1| <= |u|*log(2) < |u| */
-      if (nloop == 0 && MPFR_GET_EXP(u) < - pz)
+      if (nloop == 0 && e2 < - pz) /* e2 = EXP (u) */
         {
+        near_one:
           /* since ulp(1) = 2^(1-pz), we have |u| < 1/4*ulp(1) */
           /* mpfr_compound_near_one must be called in the extended
              exponent range, so that 1 is representable. */
