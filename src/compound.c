@@ -117,17 +117,15 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
         {
           /* compound(-1,n) = +Inf with divide-by-zero exception */
           MPFR_SET_INF (y);
-          MPFR_SET_POS (y);
           MPFR_SET_DIVBY0 ();
-          MPFR_RET (0);
         }
       else
         {
           /* compound(-1,n) = +0 */
           MPFR_SET_ZERO (y);
-          MPFR_SET_POS (y);
-          MPFR_RET (0);
         }
+      MPFR_SET_POS (y);
+      MPFR_RET (0);
     }
 
   if (n == 1)
@@ -147,6 +145,7 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
      in 2^u. */
   extra = 0;
 
+  /* Now, x > -1 and it cannot be zero. And n < 0 or n > 1. */
   MPFR_ZIV_INIT (loop, prec);
   for (nloop = 0; ; nloop++)
     {
@@ -157,10 +156,15 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
 
       /* We compute (1+x)^n as 2^(n*log2p1(x)),
          and we round toward 1, thus we round n*log2p1(x) toward 0,
-         which implies we round log2p1(x) toward 0. */
+         which implies we round log2p1(x) toward 0.
+         Around 0, log2p1(x)/x ~= 1/log(2) ~= 1.44, so that log2p1(x)
+         will not underflow, and overflow is not possible either. */
       inex = mpfr_log2p1 (u, x, MPFR_RNDZ) != 0;  /* denoted u1 */
       e = MPFR_GET_EXP (u);
       /* |u1 - log2(1+x)| <= ulp(u1) = 2^(e-precu) */
+      /* The following multiplication cannot underflow. And it cannot
+         overflow either since u comes from a log and n cannot be a
+         huge integer in practice. */
       inex |= mpfr_mul_si (u, u, n, MPFR_RNDZ) != 0;  /* denoted u2 */
       e2 = MPFR_GET_EXP (u);
       /* |u2 - n*log2(1+x)| <= 2^(e2-precu) + |n|*2^(e-precu)
