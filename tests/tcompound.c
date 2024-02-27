@@ -41,6 +41,7 @@ check_ieee754 (void)
   mpfr_t x, y, z;
   long i;
   long t[] = { 0, 1, 2, 3, 17, LONG_MAX-1, LONG_MAX };
+  double t2[] = { -1.5, -0.5, 0.5, 1.5 };
   int j;
   mpfr_prec_t prec = 2; /* we need at least 2 so that 3/4 is exact */
 
@@ -81,6 +82,39 @@ check_ieee754 (void)
           }
       }
 
+  /* compound(x,y) = NaN for x < -1, and set invalid exception */
+  for (i = 0; i < numberof(t2); i++)
+    for (j = 0; j < 2; j++)
+      {
+        const char *s;
+
+        mpfr_clear_nanflag ();
+        if (j == 0)
+          {
+            mpfr_set_si (x, -2, MPFR_RNDN);
+            s = "-2";
+          }
+        else
+          {
+            mpfr_set_inf (x, -1);
+            s = "-Inf";
+          }
+        mpfr_set_d (y, t2[i], MPFR_RNDN);
+        mpfr_compound (z, x, y, MPFR_RNDN);
+        if (!mpfr_nan_p (z))
+          {
+            printf ("Error, compound(%s,%la) should give NaN\n", s, t2[i]);
+            printf ("got "); mpfr_dump (z);
+            exit (1);
+          }
+        if (!mpfr_nanflag_p ())
+          {
+            printf ("Error, compound(%s,%la) should raise invalid flag\n",
+                    s, t2[i]);
+            exit (1);
+          }
+      }
+
   /* compound(x,0) = 1 for x >= -1 or x = NaN */
   for (i = -2; i <= 2; i++)
     {
@@ -101,96 +135,96 @@ check_ieee754 (void)
         }
     }
 
-  /* compound(-1,n) = +Inf for n < 0, and raise divide-by-zero flag */
+  /* compound(-1,y) = +Inf for y < 0, and raise divide-by-zero flag */
   mpfr_clear_divby0 ();
   mpfr_set_si (x, -1, MPFR_RNDN);
-  mpfr_set_si (y, -1, MPFR_RNDN);
+  mpfr_set_d (y, -1.5, MPFR_RNDN);
   mpfr_compound (z, x, y, MPFR_RNDN);
   if (!mpfr_inf_p (z) || MPFR_SIGN(z) < 0)
     {
-      printf ("Error, compound(-1,-1) should give +Inf\n");
+      printf ("Error, compound(-1,-1.5) should give +Inf\n");
       printf ("got "); mpfr_dump (z);
       exit (1);
     }
   if (!mpfr_divby0_p ())
     {
-      printf ("Error, compound(-1,-1) should raise divide-by-zero flag\n");
+      printf ("Error, compound(-1,-1.5) should raise divide-by-zero flag\n");
       exit (1);
     }
 
-  /* compound(-1,n) = +0 for n > 0 */
+  /* compound(-1,y) = +0 for y > 0 */
   mpfr_set_si (x, -1, MPFR_RNDN);
-  mpfr_set_si (y, 1, MPFR_RNDN);
+  mpfr_set_d (y, 1.5, MPFR_RNDN);
   mpfr_compound (z, x, y, MPFR_RNDN);
   if (!mpfr_zero_p (z) || MPFR_SIGN(z) < 0)
     {
-      printf ("Error, compound(-1,1) should give +0\n");
+      printf ("Error, compound(-1,1.5) should give +0\n");
       printf ("got "); mpfr_dump (z);
       exit (1);
     }
 
-  /* compound(+/-0,n) = 1 */
-  for (i = -1; i <= 1; i++)
+  /* compound(+/-0,y) = 1 */
+  for (i = -3; i <= 3; i++)
     {
       mpfr_set_zero (x, -1);
-      mpfr_set_si (y, i, MPFR_RNDN);
+      mpfr_set_si_2exp (y, i, -1, MPFR_RNDN);
       mpfr_compound (z, x, y, MPFR_RNDN);
       if (mpfr_cmp_ui (z, 1) != 0)
         {
-          printf ("Error1, compound(x,%ld) should give 1\non x = ", i);
+          printf ("Error1, compound(x,%ld/2) should give 1\non x = ", i);
           mpfr_dump (x);
           printf ("got "); mpfr_dump (z);
           exit (1);
         }
       mpfr_set_zero (x, +1);
-      mpfr_set_si (y, i, MPFR_RNDN);
+      mpfr_set_si_2exp (y, i, -1, MPFR_RNDN);
       mpfr_compound (z, x, y, MPFR_RNDN);
       if (mpfr_cmp_ui (z, 1) != 0)
         {
-          printf ("Error, compound(x,%ld) should give 1\non x = ", i);
+          printf ("Error, compound(x,%ld/2) should give 1\non x = ", i);
           mpfr_dump (x);
           printf ("got "); mpfr_dump (z);
           exit (1);
         }
     }
 
-  /* compound(+Inf,n) = +Inf for n > 0 */
+  /* compound(+Inf,y) = +Inf for y > 0 */
   mpfr_set_inf (x, 1);
-  mpfr_set_si (y, 1, MPFR_RNDN);
+  mpfr_set_d (y, 1.5, MPFR_RNDN);
   mpfr_compound (z, x, y, MPFR_RNDN);
   if (!mpfr_inf_p (z) || MPFR_SIGN(z) < 0)
     {
-      printf ("Error, compound(+Inf,1) should give +Inf\n");
+      printf ("Error, compound(+Inf,1.5) should give +Inf\n");
       printf ("got "); mpfr_dump (z);
       exit (1);
     }
 
-  /* compound(+Inf,n) = +0 for n < 0 */
+  /* compound(+Inf,y) = +0 for y < 0 */
   mpfr_set_inf (x, 1);
-  mpfr_set_si (y, -1, MPFR_RNDN);
+  mpfr_set_d (y, -1.5, MPFR_RNDN);
   mpfr_compound (z, x, y, MPFR_RNDN);
   if (!mpfr_zero_p (z) || MPFR_SIGN(z) < 0)
     {
-      printf ("Error, compound(+Inf,-1) should give +0\n");
+      printf ("Error, compound(+Inf,-1.5) should give +0\n");
       printf ("got "); mpfr_dump (z);
       exit (1);
     }
 
-  /* compound(NaN,n) = NaN for n <> 0 */
+  /* compound(NaN,y) = NaN for y <> 0 */
   mpfr_set_nan (x);
-  mpfr_set_si (y, -1, MPFR_RNDN);
+  mpfr_set_d (y, -1.5, MPFR_RNDN);
   mpfr_compound (z, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (z))
     {
-      printf ("Error, compound(NaN,-1) should give NaN\n");
+      printf ("Error, compound(NaN,-1.5) should give NaN\n");
       printf ("got "); mpfr_dump (z);
       exit (1);
     }
-  mpfr_set_si (y, +1, MPFR_RNDN);
+  mpfr_set_d (y, +1.5, MPFR_RNDN);
   mpfr_compound (z, x, y, MPFR_RNDN);
   if (!mpfr_nan_p (z))
     {
-      printf ("Error, compound(NaN,+1) should give NaN\n");
+      printf ("Error, compound(NaN,+1.5) should give NaN\n");
       printf ("got "); mpfr_dump (z);
       exit (1);
     }
@@ -210,7 +244,7 @@ check_ieee754 (void)
       exit (1);
     }
 
-  /* test for negative n */
+  /* test for negative integer y */
   i = -1;
   mpfr_set_prec (y, 32);
   while (1)
@@ -237,6 +271,7 @@ check_ieee754 (void)
      representable in a long (this would not be the case with 32-bit
      unsigned long and 64-bit limb). */
 #if GMP_NUMB_BITS >= 64 || MPFR_PREC_BITS >= 64
+  /* another test for large negative integer y */
   if (4994322635099777669 <= LONG_MAX)
     {
       i = -4994322635099777669;
