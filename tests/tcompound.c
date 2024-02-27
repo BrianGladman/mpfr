@@ -271,7 +271,9 @@ bug_20230206 (void)
       mpfr_t x, y1, y2, z;
       int inex1, inex2;
       mpfr_flags_t flags1, flags2;
+#if MPFR_PREC_BITS >= 64
       mpfr_exp_t emin;
+#endif
 
       mpfr_inits2 (1, x, y1, y2, (mpfr_ptr) 0);
       mpfr_init2 (z, 63);
