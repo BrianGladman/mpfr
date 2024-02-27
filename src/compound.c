@@ -475,7 +475,9 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
   mpfr_init2 (t, prec);
   mpfr_init2 (u, prec);
 
-  k = mpfr_get_exp (y) <= 0 ? 0 : mpfr_get_exp (y);
+  k = MPFR_GET_EXP (y);
+  if (k <= 0)
+    k = 0;
 
   /* We compute u=log2p1(x) with prec+extra bits, since we lose some bits
      in 2^u. */
@@ -504,7 +506,8 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
       /* |u - y*log2(1+x)| <= 2^(e2-precu) + |y|*2^(e-precu)
                            <= 2^(e2-precu) + 2^(e+k-precu).
          Since |u_old| < 2^e and |y| < 2^k, we have |u| < 2^(e+k)
-         thus e2 <= e + k and 2^(e2-precu) + 2^(e+k-precu) <= 2^(e+k+1-precu). */
+         thus e2 <= e + k and 2^(e2-precu) + 2^(e+k-precu) <= 2^(e+k+1-precu).
+      */
       MPFR_ASSERTD (e2 <= e + k);
       e += k + 1;
       MPFR_ASSERTN (e2 <= MPFR_PREC_MAX);
@@ -559,13 +562,13 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
           if (MPFR_LIKELY (!inex || MPFR_CAN_ROUND (t, prec - e, pz, rnd_mode)))
             break;
 
-          /* If t fits in the target precision (or with 1 more bit), then we can
-             round, assuming the working precision is large enough, but the above
-             MPFR_CAN_ROUND() will fail because we cannot determine the ternary
-             value. However since we rounded t toward 1, we can determine it.
-             Since the error in the approximation t is at most 2^e ulp(t),
-             this error should be less than 1/2 ulp(y), thus we should have
-             prec - pz >= e + 1. */
+          /* If t fits in the target precision (or with 1 more bit), then we
+             can round, assuming the working precision is large enough, but
+             the above MPFR_CAN_ROUND() will fail because we cannot determine
+             the ternary value. However, since we rounded t toward 1, we can
+             determine it. Since the error in the approximation t is at most
+             2^e ulp(t), this error should be less than 1/2 ulp(y), thus we
+             should have prec - pz >= e + 1. */
           if (mpfr_min_prec (t) <= pz + 1 && prec - pz >= e + 1)
             {
               /* we add/subtract one ulp to get the correct rounding */
@@ -598,52 +601,50 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
          has already been detected, k*y cannot overflow if computed with
          the mpfr_exp_t type. Hence the second test of the second "if",
          which cannot overflow. */
-      if (nloop == 0 && mpfr_cmp_ui (y, 1) > 1 && (ex = MPFR_GET_EXP (x)) >= 17)
+      if (nloop == 0 && mpfr_cmp_ui (y, 1) > 1 &&
+          (ex = MPFR_GET_EXP (x)) >= 17)
         {
           mpfr_prec_t p = pz + (rnd_mode == MPFR_RNDN);
+          mpfr_t v;
 
           MPFR_LOG_MSG (("Check if x^y fits... p=%Pd\n", p));
-          {
-              mpfr_t v;
-
-              /* Check whether x^y really fits into p bits. */
-              mpfr_init2 (v, p);
-              inexact = mpfr_pow (v, x, y, MPFR_RNDZ);
-              if (inexact == 0)
+          /* Check whether x^y really fits into p bits. */
+          mpfr_init2 (v, p);
+          inexact = mpfr_pow (v, x, y, MPFR_RNDZ);
+          if (inexact == 0)
+            {
+              MPFR_LOG_MSG (("x^y fits into p bits\n", 0));
+              /* (x+1)^y = x^y * (1 + 1/x)^y
+                 For directed rounding, we can round when
+                 (1 + 1/x)^y < 1 + 2^-p, and then the result is x^y,
+                 except for rounding up. Indeed, if (1 + 1/x)^y < 1 + 2^-p,
+                 1 <= (x+1)^y < x^y * (1 + 2^-p) = x^y + x^y/2^p
+                   < x^y + ulp(x^y).
+                 For rounding to nearest, we can round when
+                 (1 + 1/x)^y < 1 + 2^-p, and then the result is x^y when
+                 x^y fits into p-1 bits, and nextabove(x^y) otherwise. */
+              mpfr_ui_div (t, 1, x, MPFR_RNDU);
+              mpfr_add_ui (t, t, 1, MPFR_RNDU);
+              mpfr_pow (t, t, y, MPFR_RNDU);
+              mpfr_sub_ui (t, t, 1, MPFR_RNDU);
+              /* t cannot be zero */
+              if (MPFR_GET_EXP(t) < - pz)
                 {
-                  MPFR_LOG_MSG (("x^y fits into p bits\n", 0));
-                  /* (x+1)^y = x^y * (1 + 1/x)^y
-                     For directed rounding, we can round when (1 + 1/x)^y
-                     < 1 + 2^-p, and then the result is x^y,
-                     except for rounding up. Indeed, if (1 + 1/x)^y < 1 + 2^-p,
-                     1 <= (x+1)^y < x^y * (1 + 2^-p) = x^y + x^y/2^p
-                     < x^y + ulp(x^y).
-                     For rounding to nearest, we can round when (1 + 1/x)^y
-                     < 1 + 2^-p, and then the result is x^y when x^y fits
-                     into p-1 bits, and nextabove(x^y) otherwise. */
-                  mpfr_ui_div (t, 1, x, MPFR_RNDU);
-                  mpfr_add_ui (t, t, 1, MPFR_RNDU);
-                  mpfr_pow (t, t, y, MPFR_RNDU);
-                  mpfr_sub_ui (t, t, 1, MPFR_RNDU);
-                  /* t cannot be zero */
-                  if (MPFR_GET_EXP(t) < - pz)
+                  mpfr_set (z, v, MPFR_RNDZ);
+                  if ((rnd_mode == MPFR_RNDN && mpfr_min_prec (v) == p)
+                      || rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA)
                     {
-                      mpfr_set (z, v, MPFR_RNDZ);
-                      if ((rnd_mode == MPFR_RNDN && mpfr_min_prec (v) == p)
-                          || rnd_mode == MPFR_RNDU || rnd_mode == MPFR_RNDA)
-                        {
-                          /* round up */
-                          mpfr_nextabove (z);
-                          inexact = 1;
-                        }
-                      else
-                        inexact = -1;
-                      mpfr_clear (v);
-                      goto end2;
+                      /* round up */
+                      mpfr_nextabove (z);
+                      inexact = 1;
                     }
+                  else
+                    inexact = -1;
+                  mpfr_clear (v);
+                  goto end2;
                 }
-              mpfr_clear (v);
             }
+          mpfr_clear (v);
         }
 
       /* Exact cases like compound(0.5,2) = 9/4 must be detected, since
