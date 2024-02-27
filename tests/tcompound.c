@@ -42,6 +42,8 @@ check_ieee754 (void)
   long i;
   long t[] = { 0, 1, 2, 3, 17, LONG_MAX-1, LONG_MAX };
   double t2[] = { -1.5, -0.5, 0.5, 1.5 };
+  const char *sy[] = { "-1.5", "-1", "-0.5", "-0", "+0", "0.5", "1", "1.5",
+                       "-Inf", "+Inf", "NaN" };
   int j;
   mpfr_prec_t prec = 2; /* we need at least 2 so that 3/4 is exact */
 
@@ -164,27 +166,23 @@ check_ieee754 (void)
     }
 
   /* compound(+/-0,y) = 1 */
-  for (i = -3; i <= 3; i++)
+  for (i = 0; i < numberof (sy); i++)
     {
-      mpfr_set_zero (x, -1);
-      mpfr_set_si_2exp (y, i, -1, MPFR_RNDN);
-      mpfr_compound (z, x, y, MPFR_RNDN);
-      if (mpfr_cmp_ui (z, 1) != 0)
+      mpfr_set_str (y, sy[i], 10, MPFR_RNDN);
+      for (j = 0; j <= 1; j++)
         {
-          printf ("Error1, compound(x,%ld/2) should give 1\non x = ", i);
-          mpfr_dump (x);
-          printf ("got "); mpfr_dump (z);
-          exit (1);
-        }
-      mpfr_set_zero (x, +1);
-      mpfr_set_si_2exp (y, i, -1, MPFR_RNDN);
-      mpfr_compound (z, x, y, MPFR_RNDN);
-      if (mpfr_cmp_ui (z, 1) != 0)
-        {
-          printf ("Error, compound(x,%ld/2) should give 1\non x = ", i);
-          mpfr_dump (x);
-          printf ("got "); mpfr_dump (z);
-          exit (1);
+          mpfr_set_zero (x, j ? -1 : +1);
+          mpfr_compound (z, x, y, MPFR_RNDN);
+          if (mpfr_cmp_ui0 (z, 1) != 0)
+            {
+              printf ("Error, compound(x,y) should give 1 on\n  x = ");
+              mpfr_dump (x);
+              printf ("  y = ");
+              mpfr_dump (y);
+              printf ("got ");
+              mpfr_dump (z);
+              exit (1);
+            }
         }
     }
 
