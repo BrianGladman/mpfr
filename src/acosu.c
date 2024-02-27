@@ -1,7 +1,7 @@
 /* mpfr_acosu  -- acosu(x)  = acos(x)*u/(2*pi)
    mpfr_acospi -- acospi(x) = acos(x)/pi
 
-Copyright 2021-2023 Free Software Foundation, Inc.
+Copyright 2021-2024 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
