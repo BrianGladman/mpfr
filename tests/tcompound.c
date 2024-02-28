@@ -55,6 +55,7 @@ check_ieee754 (void)
       {
         const char *s;
         int inex;
+        mpfr_flags_t ex_flags = MPFR_FLAGS_NAN, flags;
 
         if (j == 0)
           {
@@ -67,24 +68,29 @@ check_ieee754 (void)
             s = "-Inf";
           }
         mpfr_set_str (y, sy[i], 10, MPFR_RNDN);
-        mpfr_clear_nanflag ();
+        mpfr_clear_flags ();
         inex = mpfr_compound (z, x, y, MPFR_RNDN);
+        flags = __gmpfr_flags;
         if (!mpfr_nan_p (z))
           {
             printf ("Error, compound(%s,%s) should give NaN.\n", s, sy[i]);
             printf ("Got "); mpfr_dump (z);
             exit (1);
           }
-        if (!mpfr_nanflag_p ())
-          {
-            printf ("Error, compound(%s,%s) should raise invalid flag.\n",
-                    s, sy[i]);
-            exit (1);
-          }
         if (inex != 0)
           {
             printf ("Error, compound(%s,%s) should be exact.\n", s, sy[i]);
             printf ("got inex = %d instead of 0.\n", inex);
+            exit (1);
+          }
+        if (flags != ex_flags)
+          {
+            printf ("Bad flags for compound(%s,%s).\n", s, sy[i]);
+            printf ("Expected flags:");
+            flags_out (ex_flags);
+            printf ("Got flags:     ");
+            flags_out (flags);
+            exit (1);
           }
       }
 
@@ -116,6 +122,7 @@ check_ieee754 (void)
           printf ("Error, compound(x,0) should be exact on x = ");
           mpfr_dump (x);
           printf ("got inex = %d instead of 0.\n", inex);
+          exit (1);
         }
       if (flags != ex_flags)
         {
@@ -149,6 +156,7 @@ check_ieee754 (void)
         {
           printf ("Error, compound(-1,y) should be exact.\n");
           printf ("got inex = %d instead of 0.\n", inex);
+          exit (1);
         }
       if (MPFR_IS_NAN (y))
         {
