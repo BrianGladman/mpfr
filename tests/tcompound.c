@@ -71,7 +71,7 @@ check_ieee754 (void)
         mpfr_clear_flags ();
         inex = mpfr_compound (z, x, y, MPFR_RNDN);
         flags = __gmpfr_flags;
-        if (!mpfr_nan_p (z))
+        if (! MPFR_IS_NAN (z))
           {
             printf ("Error, compound(%s,%s) should give NaN.\n", s, sy[i]);
             printf ("Got "); mpfr_dump (z);
@@ -314,23 +314,41 @@ check_ieee754 (void)
         }
     }
 
-  /* compound(NaN,y) = NaN for y <> 0 */
+  /* compound(NaN,y) gives NaN for y <> 0 */
   mpfr_set_nan (x);
-  mpfr_set_d (y, -1.5, MPFR_RNDN);
-  mpfr_compound (z, x, y, MPFR_RNDN);
-  if (!mpfr_nan_p (z))
+  for (i = 0; i < numberof (sy); i++)
     {
-      printf ("Error, compound(NaN,-1.5) should give NaN\n");
-      printf ("got "); mpfr_dump (z);
-      exit (1);
-    }
-  mpfr_set_d (y, +1.5, MPFR_RNDN);
-  mpfr_compound (z, x, y, MPFR_RNDN);
-  if (!mpfr_nan_p (z))
-    {
-      printf ("Error, compound(NaN,+1.5) should give NaN\n");
-      printf ("got "); mpfr_dump (z);
-      exit (1);
+      int inex;
+      mpfr_flags_t ex_flags = MPFR_FLAGS_NAN, flags;
+
+      mpfr_set_str (y, sy[i], 10, MPFR_RNDN);
+      if (MPFR_IS_ZERO (y))
+        continue;
+
+      mpfr_clear_flags ();
+      inex = mpfr_compound (z, x, y, MPFR_RNDN);
+      flags = __gmpfr_flags;
+      if (! MPFR_IS_NAN (z))
+        {
+          printf ("Error, compound(NaN,%s) should give NaN.\n", sy[i]);
+          printf ("Got "); mpfr_dump (z);
+          exit (1);
+        }
+      if (inex != 0)
+        {
+          printf ("Error, compound(NaN,%s) should be exact.\n", sy[i]);
+          printf ("Got inex = %d instead of 0.\n", inex);
+          exit (1);
+        }
+      if (flags != ex_flags)
+        {
+          printf ("Bad flags for compound(NaN,%s).\n", sy[i]);
+          printf ("Expected flags:");
+          flags_out (ex_flags);
+          printf ("Got flags:     ");
+          flags_out (flags);
+          exit (1);
+        }
     }
 
   /* hard-coded test: x is the 32-bit nearest approximation of 17/42 */
