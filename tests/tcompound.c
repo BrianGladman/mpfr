@@ -54,6 +54,7 @@ check_ieee754 (void)
     for (j = 0; j < 2; j++)
       {
         const char *s;
+        int inex;
 
         if (j == 0)
           {
@@ -67,51 +68,23 @@ check_ieee754 (void)
           }
         mpfr_set_str (y, sy[i], 10, MPFR_RNDN);
         mpfr_clear_nanflag ();
-        mpfr_compound (z, x, y, MPFR_RNDN);
+        inex = mpfr_compound (z, x, y, MPFR_RNDN);
         if (!mpfr_nan_p (z))
           {
-            printf ("Error, compound(%s,%s) should give NaN\n", s, sy[i]);
-            printf ("got "); mpfr_dump (z);
+            printf ("Error, compound(%s,%s) should give NaN.\n", s, sy[i]);
+            printf ("Got "); mpfr_dump (z);
             exit (1);
           }
         if (!mpfr_nanflag_p ())
           {
-            printf ("Error, compound(%s,%s) should raise invalid flag\n",
+            printf ("Error, compound(%s,%s) should raise invalid flag.\n",
                     s, sy[i]);
             exit (1);
           }
-      }
-
-  /* compound(x,y) = NaN for x < -1, and set invalid exception */
-  for (i = 0; i < numberof (sy); i++)
-    for (j = 0; j < 2; j++)
-      {
-        const char *s;
-
-        if (j == 0)
+        if (inex != 0)
           {
-            mpfr_set_si (x, -2, MPFR_RNDN);
-            s = "-2";
-          }
-        else
-          {
-            mpfr_set_inf (x, -1);
-            s = "-Inf";
-          }
-        mpfr_set_str (y, sy[i], 10, MPFR_RNDN);
-        mpfr_clear_nanflag ();
-        mpfr_compound (z, x, y, MPFR_RNDN);
-        if (!mpfr_nan_p (z))
-          {
-            printf ("Error, compound(%s,%s) should give NaN\n", s, sy[i]);
-            printf ("got "); mpfr_dump (z);
-            exit (1);
-          }
-        if (!mpfr_nanflag_p ())
-          {
-            printf ("Error, compound(%s,%s) should raise invalid flag\n",
-                    s, sy[i]);
-            exit (1);
+            printf ("Error, compound(%s,%s) should be exact.\n", s, sy[i]);
+            printf ("got inex = %d instead of 0.\n", inex);
           }
       }
 
