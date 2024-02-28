@@ -219,8 +219,13 @@ check_ieee754 (void)
       mpfr_set_str (y, sy[i], 10, MPFR_RNDN);
       for (j = 0; j <= 1; j++)
         {
+          int inex;
+          mpfr_flags_t ex_flags = 0, flags;
+
           mpfr_set_zero (x, j ? -1 : +1);
-          mpfr_compound (z, x, y, MPFR_RNDN);
+          mpfr_clear_flags ();
+          inex = mpfr_compound (z, x, y, MPFR_RNDN);
+          flags = __gmpfr_flags;
           if (mpfr_cmp_ui0 (z, 1) != 0)
             {
               printf ("Error, compound(x,y) should give 1 on\n  x = ");
@@ -229,6 +234,27 @@ check_ieee754 (void)
               mpfr_dump (y);
               printf ("got ");
               mpfr_dump (z);
+              exit (1);
+            }
+          if (inex != 0)
+            {
+              printf ("Error, compound(x,y) should be exact on\n  x = ");
+              mpfr_dump (x);
+              printf ("  y = ");
+              mpfr_dump (y);
+              printf ("got inex = %d instead of 0.\n", inex);
+              exit (1);
+            }
+          if (flags != ex_flags)
+            {
+              printf ("Bad flags for compound(x,y) on\n  x = ");
+              mpfr_dump (x);
+              printf ("  y = ");
+              mpfr_dump (y);
+              printf ("Expected flags:");
+              flags_out (ex_flags);
+              printf ("Got flags:     ");
+              flags_out (flags);
               exit (1);
             }
         }
