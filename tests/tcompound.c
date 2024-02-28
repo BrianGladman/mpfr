@@ -260,24 +260,40 @@ check_ieee754 (void)
         }
     }
 
-  /* compound(+Inf,y) = +Inf for y > 0 */
+  /* compound(+Inf,y) = +0 for y < 0
+   * compound(+Inf,y) = +Inf for y > 0
+   */
   mpfr_set_inf (x, 1);
   for (i = 0; i < numberof (sy); i++)
     {
       int inex;
       mpfr_flags_t ex_flags = 0, flags;
+      const char *s;
+      int bad_abs_val;
 
       mpfr_set_str (y, sy[i], 10, MPFR_RNDN);
-      if (MPFR_IS_NAN (y) || MPFR_IS_ZERO (y) || MPFR_IS_NEG (y))
+      if (MPFR_IS_NAN (y) || MPFR_IS_ZERO (y))
         continue;
-      /* Now, y > 0. */
+      /* Now, y < 0 or y > 0. */
 
       mpfr_clear_flags ();
       inex = mpfr_compound (z, x, y, MPFR_RNDN);
       flags = __gmpfr_flags;
-      if (! MPFR_IS_INF (z) || MPFR_IS_NEG (z))
+
+      if (MPFR_IS_NEG (y))
         {
-          printf ("Error, compound(+Inf,%s) should give +Inf.\n", sy[i]);
+          s = "0";
+          bad_abs_val = ! MPFR_IS_ZERO (z);
+        }
+      else
+        {
+          s = "Inf";
+          bad_abs_val = ! MPFR_IS_INF (z);
+        }
+
+      if (bad_abs_val || MPFR_IS_NEG (z))
+        {
+          printf ("Error, compound(+Inf,%s) should give +%s.\n", sy[i], s);
           printf ("Got "); mpfr_dump (z);
           exit (1);
         }
@@ -296,17 +312,6 @@ check_ieee754 (void)
           flags_out (flags);
           exit (1);
         }
-    }
-
-  /* compound(+Inf,y) = +0 for y < 0 */
-  mpfr_set_inf (x, 1);
-  mpfr_set_d (y, -1.5, MPFR_RNDN);
-  mpfr_compound (z, x, y, MPFR_RNDN);
-  if (!mpfr_zero_p (z) || MPFR_SIGN(z) < 0)
-    {
-      printf ("Error, compound(+Inf,-1.5) should give +0\n");
-      printf ("got "); mpfr_dump (z);
-      exit (1);
     }
 
   /* compound(NaN,y) = NaN for y <> 0 */
