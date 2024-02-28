@@ -127,7 +127,7 @@ check_ieee754 (void)
         mpfr_set_si (x, i, MPFR_RNDN);
       mpfr_set_si (y, 0, MPFR_RNDN);
       mpfr_compound (z, x, y, MPFR_RNDN);
-      if (mpfr_cmp_ui (z, 1) != 0)
+      if (mpfr_cmp_ui0 (z, 1) != 0)
         {
           printf ("Error, compound(x,0) should give 1 on\nx = ");
           mpfr_dump (x);
