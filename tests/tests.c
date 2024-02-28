@@ -1446,6 +1446,8 @@ flags_out (unsigned int flags)
     none = 0, printf (" inexact");
   if (flags & MPFR_FLAGS_ERANGE)
     none = 0, printf (" erange");
+  if (flags & MPFR_FLAGS_DIVBY0)
+    none = 0, printf (" divide-by-zero");
   if (none)
     printf (" none");
   printf (" (%u)\n", flags);
