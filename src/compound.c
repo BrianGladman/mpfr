@@ -412,6 +412,13 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
         }
     }
 
+  if (MPFR_IS_NAN (y))
+    {
+      /* compound(x,NaN) is NaN, except for x = 0, already handled. */
+      MPFR_SET_NAN (z);
+      MPFR_RET_NAN;
+    }
+
   compared = mpfr_cmp_si (x, -1);
   /* (1+x)^y = NaN for x < -1 */
   if (compared < 0)
@@ -446,31 +453,22 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
     }
 
   /* now x > -1 and it cannot be zero */
-  if (MPFR_IS_SINGULAR (y))
+  if (MPFR_IS_INF (y))
     {
-      MPFR_ASSERTD (MPFR_NOTZERO (x) && MPFR_NOTZERO (y));
-      if (MPFR_IS_NAN (y))
-        {
-          /* compound(x,NaN) is NaN, except for x = 0, already handled. */
-          MPFR_SET_NAN (z);
-          MPFR_RET_NAN;
-        }
+      /* (1+x)^+Inf = +0 for -1 < x < 0
+       * (1+x)^-Inf = +0 for x > 0
+       * (1+x)^+Inf = +Inf for x > 0
+       * (1+x)^-Inf = +Inf for -1 < x < 0
+       */
+      if (MPFR_IS_POS (x) ^ MPFR_IS_POS (y))
+        MPFR_SET_ZERO (z);
       else
-        {
-          MPFR_ASSERTD (MPFR_IS_INF (y));
-          /* (1+x)^+Inf = +0 for -1 < x < 0
-           * (1+x)^-Inf = +0 for x > 0
-           * (1+x)^+Inf = +Inf for x > 0
-           * (1+x)^-Inf = +Inf for -1 < x < 0
-           */
-          if (MPFR_IS_POS (x) ^ MPFR_IS_POS (y))
-            MPFR_SET_ZERO (z);
-          else
-            MPFR_SET_INF (z);
-          MPFR_SET_POS (z);
-          MPFR_RET (0);
-        }
+        MPFR_SET_INF (z);
+      MPFR_SET_POS (z);
+      MPFR_RET (0);
     }
+
+  MPFR_ASSERTD (MPFR_IS_PURE_FP (y));
 
   MPFR_SAVE_EXPO_MARK (expo);
   pz = MPFR_GET_PREC (z);
