@@ -428,9 +428,13 @@ mpfr_compound (mpfr_ptr z, mpfr_srcptr x, mpfr_srcptr y, mpfr_rnd_t rnd_mode)
     {
       if (MPFR_IS_NEG (y))
         {
-          /* compound(-1,y) = +Inf with divide-by-zero exception */
+          /* compound(-1,y) = +Inf, and if y is finite,
+             raise the divide-by-zero flag.
+             Warning! Testing y must be done before changing z,
+             in case y and z are the same object. */
+          if (! MPFR_IS_INF (y))
+            MPFR_SET_DIVBY0 ();
           MPFR_SET_INF (z);
-          MPFR_SET_DIVBY0 ();
         }
       else
         {
