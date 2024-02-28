@@ -91,6 +91,9 @@ check_ieee754 (void)
   /* compound(x,0) = 1 for x >= -1 or x = NaN */
   for (i = -2; i <= 2; i++)
     {
+      int inex;
+      mpfr_flags_t ex_flags = 0, flags;
+
       if (i == -2)
         mpfr_set_nan (x);
       else if (i == 2)
@@ -98,12 +101,30 @@ check_ieee754 (void)
       else
         mpfr_set_si (x, i, MPFR_RNDN);
       mpfr_set_si (y, 0, MPFR_RNDN);
-      mpfr_compound (z, x, y, MPFR_RNDN);
+      mpfr_clear_flags ();
+      inex = mpfr_compound (z, x, y, MPFR_RNDN);
+      flags = __gmpfr_flags;
       if (mpfr_cmp_ui0 (z, 1) != 0)
         {
-          printf ("Error, compound(x,0) should give 1 on\nx = ");
+          printf ("Error, compound(x,0) should give 1 on x = ");
           mpfr_dump (x);
           printf ("got "); mpfr_dump (z);
+          exit (1);
+        }
+      if (inex != 0)
+        {
+          printf ("Error, compound(x,0) should be exact on x = ");
+          mpfr_dump (x);
+          printf ("got inex = %d instead of 0.\n", inex);
+        }
+      if (flags != ex_flags)
+        {
+          printf ("Bad flags for compound(x,0) on x = ");
+          mpfr_dump (x);
+          printf ("Expected flags:");
+          flags_out (ex_flags);
+          printf ("Got flags:     ");
+          flags_out (flags);
           exit (1);
         }
     }
