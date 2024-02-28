@@ -80,7 +80,7 @@ check_ieee754 (void)
         if (inex != 0)
           {
             printf ("Error, compound(%s,%s) should be exact.\n", s, sy[i]);
-            printf ("got inex = %d instead of 0.\n", inex);
+            printf ("Got inex = %d instead of 0.\n", inex);
             exit (1);
           }
         if (flags != ex_flags)
@@ -262,13 +262,40 @@ check_ieee754 (void)
 
   /* compound(+Inf,y) = +Inf for y > 0 */
   mpfr_set_inf (x, 1);
-  mpfr_set_d (y, 1.5, MPFR_RNDN);
-  mpfr_compound (z, x, y, MPFR_RNDN);
-  if (!mpfr_inf_p (z) || MPFR_SIGN(z) < 0)
+  for (i = 0; i < numberof (sy); i++)
     {
-      printf ("Error, compound(+Inf,1.5) should give +Inf\n");
-      printf ("got "); mpfr_dump (z);
-      exit (1);
+      int inex;
+      mpfr_flags_t ex_flags = 0, flags;
+
+      mpfr_set_str (y, sy[i], 10, MPFR_RNDN);
+      if (MPFR_IS_NAN (y) || MPFR_IS_ZERO (y) || MPFR_IS_NEG (y))
+        continue;
+      /* Now, y > 0. */
+
+      mpfr_clear_flags ();
+      inex = mpfr_compound (z, x, y, MPFR_RNDN);
+      flags = __gmpfr_flags;
+      if (! MPFR_IS_INF (z) || MPFR_IS_NEG (z))
+        {
+          printf ("Error, compound(+Inf,%s) should give +Inf.\n", sy[i]);
+          printf ("Got "); mpfr_dump (z);
+          exit (1);
+        }
+      if (inex != 0)
+        {
+          printf ("Error, compound(+Inf,%s) should be exact.\n", sy[i]);
+          printf ("Got inex = %d instead of 0.\n", inex);
+          exit (1);
+        }
+      if (flags != ex_flags)
+        {
+          printf ("Bad flags for compound(+Inf,%s).\n", sy[i]);
+          printf ("Expected flags:");
+          flags_out (ex_flags);
+          printf ("Got flags:     ");
+          flags_out (flags);
+          exit (1);
+        }
     }
 
   /* compound(+Inf,y) = +0 for y < 0 */
