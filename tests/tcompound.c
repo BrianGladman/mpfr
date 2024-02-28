@@ -34,9 +34,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #define TEST_RANDOM_POS 16 /* the 2nd argument is negative with prob. 16/512 */
 #include "tgeneric.c"
 
-/* Special cases from IEEE 754-2019 */
 static void
-check_ieee754 (void)
+check_misc (void)
 {
   mpfr_t x, y, z;
   long i;
@@ -578,7 +577,7 @@ main (void)
 {
   tests_start_mpfr ();
 
-  check_ieee754 ();
+  check_misc ();
   bug_20230206 ();
   bug_20230211 ();
   bug_20230517 ();
