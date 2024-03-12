@@ -26,15 +26,26 @@ SED=${SED:-sed}
 # the commit; thus we exclude branches created after this commit, based
 # on <branch>-root tags (such a tag should be added by the user when
 # creating a branch, so that "git diff <branch>-root" shows commits done
-# in the branch since its creation, etc.). If $gitb contains multiple
-# branches, this means that something is probably wrong with the tags
-# or the branches (merged branches should be deleted).
+# in the branch since its creation, etc.).
 
 git tag --contains | $SED -n 's/-root$//p' > excluded-branches
 gitb=`git branch --format='%(refname:short)' --contains | \
         $SED 's,(HEAD detached at origin/\(.*\)),\1,' | \
         $GREP -v '^(' | $GREP -v -F -f excluded-branches -x || true`
 rm excluded-branches
+
+# If $gitb contains multiple branches (say, A and B), this may be caused
+# by a branch B that was merged into a branch A while it was in sync with
+# branch A, i.e. before additional commits to branch A. In such a case,
+# a merge commit isn't even generated, and the status is unfortunately
+# ambiguous. In order to avoid this issue, the user may want to delete
+# the local branch B (which is no longer needed). But we need to handle
+# this situation in case it occurs. In practice, branch A will probably
+# be the master branch, so let us handle only this case by assuming that
+# the expected branch is master: if "master" appears in $gitb, select it.
+
+[ "x`echo "$gitb" | $GREP '^master$'`" = x ] || gitb=master
+
 gitc=`git rev-list --count HEAD`
 gith=`git rev-parse --short HEAD`
 gitm=`git update-index -q --refresh; git diff-index --name-only HEAD`
