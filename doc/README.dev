@@ -1486,6 +1486,7 @@ a #if, e.g. in add1sp.c:
 
 which implies that the #define's in add1sp1_extracted.c
 
+#define int32_t int
 #define int64_t long
 #define uint32_t unsigned int
 #define uint64_t mp_limb_t
