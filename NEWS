@@ -1,4 +1,4 @@
-Copyright 2000-2023 Free Software Foundation, Inc.
+Copyright 2000-2024 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -22,6 +22,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 Changes from versions 4.2.* to version 4.3.0:
 - The "" release.
+- New function mpfr_compound.
 
 Changes from versions 4.1.* to version 4.2.0:
 - The "fondue savoyarde" release.

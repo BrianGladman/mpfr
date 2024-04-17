@@ -1,7 +1,7 @@
 /* mpfr_sub1sp -- internal function to perform a "real" subtraction
    All the op must have the same precision
 
-Copyright 2003-2023 Free Software Foundation, Inc.
+Copyright 2003-2024 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -118,7 +118,11 @@ int mpfr_sub1sp (mpfr_ptr a, mpfr_srcptr b, mpfr_srcptr c, mpfr_rnd_t rnd_mode)
 
 #if !defined(MPFR_GENERIC_ABI)
 
-/* the sub1sp1_extracted.c is not ready yet */
+/* Under "#if 0" as the sub1sp1_extracted.c is not ready yet.
+   Note: if this is enabled and __builtin_clzll is still used, the
+   documentation about MPFR_WANT_PROVEN_CODE / --enable-formally-proven-code
+   would have to be updated, because GCC (or compatible) would be needed,
+   not just a C99 compiler. */
 
 #if 0 && defined(MPFR_WANT_PROVEN_CODE) && GMP_NUMB_BITS == 64 && \
   UINT_MAX == 0xffffffff && MPFR_PREC_BITS == 64 && \

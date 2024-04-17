@@ -1,4 +1,4 @@
-Copyright 2002-2023 Free Software Foundation, Inc.
+Copyright 2002-2024 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
@@ -1486,6 +1486,7 @@ a #if, e.g. in add1sp.c:
 
 which implies that the #define's in add1sp1_extracted.c
 
+#define int32_t int
 #define int64_t long
 #define uint32_t unsigned int
 #define uint64_t mp_limb_t
@@ -1589,7 +1590,7 @@ of the tests/Makefile.am file.
 
 /* Test file for mpfr_func.
 
-Copyright 2023 Free Software Foundation, Inc.
+Copyright 2024 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
