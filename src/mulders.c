@@ -201,7 +201,7 @@ mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
           q2 --;
         }
       /* FIXME: when q2 is capped to MPFR_LIMB_MAX, it might be that
-         subtracting q2*{dp,n} to {np-1,n+1} does not make np[n-1] become
+         subtracting q2*{dp,n} from {np-1,n+1} does not make np[n-1] become
          zero, which is the invariant of this loop.
          This happens for n=10 with (example found by Juraj Sukop):
          {np,2n} = 0xffffffffffffffff0000000000000000ffffffffffffffffffffffffffffffff00000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
@@ -293,7 +293,7 @@ mpfr_divhigh_n (mpfr_limb_ptr qp, mpfr_limb_ptr np, mpfr_limb_ptr dp,
   cy = mpn_sub_n (np + n, np + n, tp + l, l);
   if (qh)
     cy += mpn_sub_n (np + n, np + n, dp, l);
-  while (cy > 0) /* Q1 was too large: subtract 1 to Q1 and add D to np+l */
+  while (cy > 0) /* Q1 was too large: subtract 1 from Q1 and add D to np+l */
     {
       qh -= mpn_sub_1 (qp + l, qp + l, k, MPFR_LIMB_ONE);
       cy -= mpn_add_n (np + l, np + l, dp, n);
