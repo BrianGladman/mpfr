@@ -149,6 +149,8 @@ static short divhigh_ktab[] = {MPFR_DIVHIGH_TAB};
    The approximate quotient Q satisfies - 2(n-1) < N/D - Q <= 4.
 
    Assumes n >= 2.
+
+   We define B = 2^mp_bits_per_limb.
 */
 static mp_limb_t
 mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
@@ -200,13 +202,13 @@ mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
           mpn_add_n (np - 1, np - 1, dp, n);
           q2 --;
         }
-      /* FIXME: when q2 is capped to MPFR_LIMB_MAX, it might be that
-         subtracting q2*{dp,n} from {np-1,n+1} does not make np[n-1] become
-         zero, which is the invariant of this loop.
-         This happens for n=10 with (example found by Juraj Sukop):
-         {np,2n} = 0xffffffffffffffff0000000000000000ffffffffffffffffffffffffffffffff00000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-         {dp,n} = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0000000000000000
-      */
+      if (MPFR_UNLIKELY(q0 < np[n - 1])) // q2 was too small
+      {
+        // set qp[n-1] to B
+        qp[--n] = ~ (mp_limb_t) 0;
+        mpn_zero (qp, n);
+        return qh + mpn_add_1 (qp + n, qp + n, n0 - n, 1);
+      }
       qp[--n] = q2;
       dp ++;
     }
