@@ -1540,6 +1540,25 @@ bug20171218 (void)
   mpfr_clear (c);
 }
 
+static void
+bug20240423 (void)
+{
+  mpfr_t q, u, v, r;
+  mpfr_init2 (q, 224);
+  mpfr_init2 (r, 224);
+  mpfr_init2 (u, 320);
+  mpfr_init2 (v, 320);
+  mpfr_set_str (u, "0xf.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffp-4", 16, MPFR_RNDN);
+  mpfr_set_str (v, "0xf.ffffffffffffffffffffffffffffffffffffffffffffffcp-4", 16, MPFR_RNDN);
+  mpfr_div (q, u, v, MPFR_RNDN);
+  mpfr_set_str (r, "0x1.000000000000000000000000000000000000000000000004p+0", 16, MPFR_RNDN);
+  MPFR_ASSERTN(mpfr_equal_p (q, r));
+  mpfr_clear (q);
+  mpfr_clear (r);
+  mpfr_clear (u);
+  mpfr_clear (v);
+}
+
 /* Extended test based on a bug found with flint-arb test suite with a
    32-bit ABI: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=888459
    Division of the form: (1 - 2^(-pa)) / (1 - 2^(-pb)).
@@ -1742,6 +1761,8 @@ int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
+
+  bug20240423 ();
 
   coverage (1024);
   coverage2 ();

@@ -24,6 +24,8 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    [1] Short Division of Long Integers, David Harvey and Paul Zimmermann,
        Proceedings of the 20th Symposium on Computer Arithmetic (ARITH-20),
        July 25-27, 2011, pages 7-14.
+   [2] Quadratic Short Division, Juraj Sukop and Paul Zimmermann,
+       preprint, https://inria.hal.science/hal-04557431, 2024.
 */
 
 #define MPFR_NEED_LONGLONG_H
@@ -148,6 +150,9 @@ static short divhigh_ktab[] = {MPFR_DIVHIGH_TAB};
 
    The approximate quotient Q satisfies - 2(n-1) < N/D - Q <= 4.
 
+   This implements Algorithm BasecaseShortDiv from [2], with a 3/2
+   quotient selection (Remark 5 from [2]).
+
    Assumes n >= 2.
 
    We define B = 2^mp_bits_per_limb.
@@ -175,64 +180,39 @@ mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
   d0 = dp[n - 2];
   invert_pi1 (dinv2, d1, d0);
   /* dinv2.inv32 = floor ((B^3 - 1) / (d0 + d1 B)) - B */
-  while (n > 1)
+  while (n > 0)
     {
-      /* Invariant: it remains to reduce n limbs from N (in addition to the
-         initial low n limbs).
-         Since n >= 2 here, necessarily we had n >= 2 initially, which means
-         that in addition to the limb np[n-1] to reduce, we have at least 2
-         extra limbs, thus accessing np[n-3] is valid. */
-
-      /* Warning: we can have np[n-1]>d1 or (np[n-1]=d1 and np[n-2]>=d0) here,
-         since we truncate the divisor at each step, but since {np,n} < D
-         originally, the largest possible partial quotient is B-1. */
       if (MPFR_UNLIKELY(np[n-1] > d1 || (np[n-1] == d1 && np[n-2] >= d0)))
         q2 = MPFR_LIMB_MAX;
       else
         udiv_qr_3by2 (q2, q1, q0, np[n - 1], np[n - 2], np[n - 3],
                       d1, d0, dinv2.inv32);
-      /* since q2 = floor((np[n-1]*B^2+np[n-2]*B+np[n-3])/(d1*B+d0)),
-         we have q2 <= (np[n-1]*B^2+np[n-2]*B+np[n-3])/(d1*B+d0),
-         thus np[n-1]*B^2+np[n-2]*B+np[n-3] >= q2*(d1*B+d0)
-         and {np-1, n} >= q2*D - q2*B^(n-2) >= q2*D - B^(n-1)
-         thus {np-1, n} - (q2-1)*D >= D - B^(n-1) >= 0
-         which proves that at most one correction is needed */
+
       q0 = mpn_submul_1 (np - 1, dp, n, q2);
-      if (MPFR_UNLIKELY(q0 > np[n - 1]))
+      /* q0 is the upper limb of the product {dp, n} * q2, minus the
+         potential borrow-out from the subtraction {np-1, n} - {dp, n} * q2,
+         thus it is the value we have to subtract (in theory) to np[n-1].
+         We want q0 = np[n-1] to make np[n-1] vanish, so that we can
+         proceed to the next limb np[n-2].
+         If q0 > np[n-1], the partial quotient q2 was too large.
+         If q0 < np[n-1], the partial quotient q2 was too small. */
+      if (MPFR_UNLIKELY(q0 > np[n - 1])) // q2 was too large
         {
-          mpn_add_n (np - 1, np - 1, dp, n);
+          q0 -= mpn_add_n (np - 1, np - 1, dp, n);
           q2 --;
         }
       if (MPFR_UNLIKELY(q0 < np[n - 1])) // q2 was too small
       {
-        // set qp[n-1] to B
+        /* this implements the "early exit" of Algorithm BasecaseShortDiv
+           from [2] (step 10) */
         qp[--n] = ~ (mp_limb_t) 0;
         mpn_zero (qp, n);
         return qh + mpn_add_1 (qp + n, qp + n, n0 - n, 1);
       }
+      MPFR_ASSERTN(q0 == np[n - 1]);
       qp[--n] = q2;
       dp ++;
     }
-
-  /* we have B+dinv2 = floor((B^3-1)/(d1*B+d0)) < B^2/d1
-     q1 = floor(np[0]*(B+dinv2)/B) <= floor(np[0]*B/d1)
-        <= floor((np[0]*B+np[1])/d1)
-     thus q1 is not larger than the true quotient.
-     q1 > np[0]*(B+dinv2)/B - 1 > np[0]*(B^3-1)/(d1*B+d0)/B - 2
-     For d1*B+d0 <> B^2/2, we have B+dinv2 = floor(B^3/(d1*B+d0))
-     thus q1 > np[0]*B^2/(d1*B+d0) - 2, i.e.,
-     (d1*B+d0)*q1 > np[0]*B^2 - 2*(d1*B+d0)
-     d1*B*q1 > np[0]*B^2 - 2*d1*B - 2*d0 - d0*q1 >= np[0]*B^2 - 2*d1*B - B^2
-     thus q1 > np[0]*B/d1 - 2 - B/d1 > np[0]*B/d1 - 4.
-
-     For d1*B+d0 = B^2/2, dinv2 = B-1 thus q1 > np[0]*(2B-1)/B - 1 >
-     np[0]*B/d1 - 2.
-
-     In all cases, if q = floor((np[0]*B+np[1])/d1), we have:
-     q - 4 <= q1 <= q
-  */
-  umul_ppmm (q1, q0, np[0], dinv2.inv32);
-  qp[0] = np[0] + q1;
 
   return qh;
 }
