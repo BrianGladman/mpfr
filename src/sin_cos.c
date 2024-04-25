@@ -265,7 +265,7 @@ reduce2 (mpz_t S, mpz_t C, mpfr_prec_t prec)
 }
 
 /* return in S0/Q0 a rational approximation of sin(X) with absolute error
-                     bounded by 9*2^(-prec), where 0 <= X=p/2^r <= 1/2,
+                     bounded by 9*2^(-prec), where 0 < X=p/2^r <= 1/2,
    and in    C0/Q0 a rational approximation of cos(X), with relative error
                      bounded by 9*2^(-prec) (and also absolute error, since
                      |cos(X)| <= 1).
@@ -297,20 +297,15 @@ sin_bs_aux (mpz_t Q0, mpz_t S0, mpz_t C0, mpz_srcptr p, mpfr_prec_t r,
   unsigned long i, j, m;
   int alloc, k, l;
 
-  if (MPFR_UNLIKELY(mpz_cmp_ui (p, 0) == 0)) /* sin(x)/x -> 1 */
-    {
-      mpz_set_ui (Q0, 1);
-      mpz_set_ui (S0, 1);
-      mpz_set_ui (C0, 1);
-      return 0;
-    }
+  /* check that X=p/2^r > 0 */
+  MPFR_ASSERTD (mpz_sgn (p) > 0);
 
   /* check that X=p/2^r <= 1/2 */
   MPFR_ASSERTN(mpz_sizeinbase (p, 2) - (mpfr_exp_t) r <= -1);
 
   mpz_init (pp);
 
-  /* normalize p (non-zero here) */
+  /* normalize p (non-zero) */
   h = mpz_scan1 (p, 0);
   mpz_fdiv_q_2exp (pp, p, h); /* p = pp * 2^h */
   mpz_mul (pp, pp, pp);
