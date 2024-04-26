@@ -1738,11 +1738,58 @@ coverage2 (void)
   mpfr_clear (w);
 }
 
+// perform K random tests of mpfr_divhigh_n_basecase for up to N limbs
+static void
+check_divhigh_basecase (mpfr_prec_t N, int K)
+{
+  mp_limb_t ones = ~ (mp_limb_t) 0;
+  for (mpfr_prec_t n = MPFR_PREC_MIN; n <= N; n++)
+    {
+      mpfr_t a, b, q, r;
+      mpfr_init2 (a, 2 * n * mp_bits_per_limb);
+      mpfr_init2 (b, n * mp_bits_per_limb);
+      mpfr_init2 (q, n * mp_bits_per_limb);
+      mpfr_init2 (r, n * mp_bits_per_limb);
+      for (int k = 0; k < K; k++)
+        {
+          // fill limbs of a and b with either 0 or 111...111
+          mpfr_set_ui (a, 1, MPFR_RNDN);
+          mpfr_set_ui (b, 1, MPFR_RNDN);
+          for (int j = 0; j < 2 * n - 1; j++)
+            MPFR_MANT(a)[j] = (gmp_urandomm_ui (RANDS, 2) == 0) ? 0 : ones;
+          MPFR_MANT(a)[2*n-1] = ones;
+          for (int j = 0; j < n - 1; j++)
+            MPFR_MANT(b)[j] = (gmp_urandomm_ui (RANDS, 2) == 0) ? 0 : ones;
+          MPFR_MANT(b)[n-1] = ones;
+          mpfr_div (q, a, b, MPFR_RNDN);
+          /* we should have |q - a/b| <= 1/2 ulp(q) thus
+             |q*b - a| < 1/2 ulp(q) * a */
+          mpfr_fms (r, q, b, a, MPFR_RNDN);
+          mpfr_exp_t e = mpfr_get_exp (q);
+          // 1/2 ulp(q) = 2^(e-prec(q)-1)
+          mpfr_mul_2si (r, r, e - mpfr_get_prec (q) - 1, MPFR_RNDN);
+          if (mpfr_cmpabs (r, a) > 0)
+            {
+              printf ("Error in mpfr_div:\n");
+              mpfr_printf ("a=%Ra\n", a);
+              mpfr_printf ("b=%Ra\n", b);
+              mpfr_printf ("q=%Ra\n", q);
+              exit (1);
+            }
+        }
+      mpfr_clear (a);
+      mpfr_clear (b);
+      mpfr_clear (q);
+      mpfr_clear (r);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  check_divhigh_basecase (100, 1000);
   coverage (1024);
   coverage2 ();
   bug20180126 ();
