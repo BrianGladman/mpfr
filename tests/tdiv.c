@@ -1771,9 +1771,15 @@ check_divhigh_basecase (mpfr_prec_t N, int K)
           if (mpfr_cmpabs (r, a) > 0)
             {
               printf ("Error in mpfr_div:\n");
-              mpfr_printf ("a=%Ra\n", a);
-              mpfr_printf ("b=%Ra\n", b);
-              mpfr_printf ("q=%Ra\n", q);
+              printf ("a = ");
+              mpfr_out_str (stdout, 16, 0, a, MPFR_RNDN);
+              putchar ('\n');
+              printf ("b = ");
+              mpfr_out_str (stdout, 16, 0, b, MPFR_RNDN);
+              putchar ('\n');
+              printf ("q = ");
+              mpfr_out_str (stdout, 16, 0, q, MPFR_RNDN);
+              putchar ('\n');
               exit (1);
             }
         }
