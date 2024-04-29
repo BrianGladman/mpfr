@@ -1762,12 +1762,10 @@ check_divhigh_basecase (mpfr_prec_t N, int K)
           mpfr_set_ui (a, 1, MPFR_RNDN);
           mpfr_set_ui (b, 1, MPFR_RNDN);
           for (j = 0; j < 2 * n - 1; j++)
-            MPFR_MANT(a)[j] = (gmp_urandomm_ui (RANDS, 2) == 0) ?
-              MPFR_LIMB_ZERO : MPFR_LIMB_MAX;
+            MPFR_MANT(a)[j] = RAND_BOOL () ? MPFR_LIMB_ZERO : MPFR_LIMB_MAX;
           MPFR_MANT(a)[2*n-1] = MPFR_LIMB_MAX;
           for (j = 0; j < n - 1; j++)
-            MPFR_MANT(b)[j] = (gmp_urandomm_ui (RANDS, 2) == 0) ?
-              MPFR_LIMB_ZERO : MPFR_LIMB_MAX;
+            MPFR_MANT(b)[j] = RAND_BOOL () ? MPFR_LIMB_ZERO : MPFR_LIMB_MAX;
           MPFR_MANT(b)[n-1] = MPFR_LIMB_MAX;
 
           mpfr_div (q, a, b, MPFR_RNDN);
