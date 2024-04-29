@@ -1742,7 +1742,7 @@ coverage2 (void)
 static void
 check_divhigh_basecase (mpfr_prec_t N, int K)
 {
-  mp_limb_t ones = ~ (mp_limb_t) 0;
+  mp_limb_t ones = MPFR_LIMB_MAX;
   for (mpfr_prec_t n = MPFR_PREC_MIN; n <= N; n++)
     {
       mpfr_t a, b, q, r;
