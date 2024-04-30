@@ -205,9 +205,9 @@ mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
       {
         /* this implements the "early exit" of Algorithm BasecaseShortDiv
            from [2] (step 10) */
-        qp[--n] = ~ (mp_limb_t) 0;
-        mpn_zero (qp, n);
-        return qh + mpn_add_1 (qp + n, qp + n, n0 - n, 1);
+        while (n)
+          qp[--n] = MPFR_LIMB_MAX;
+        break;
       }
       MPFR_ASSERTN(q0 == np[n - 1]);
       qp[--n] = q2;

@@ -1757,13 +1757,73 @@ coverage2 (void)
   mpfr_clear (w);
 }
 
+/* perform K random tests of mpfr_divhigh_n_basecase for up to N limbs */
+static void
+check_divhigh_basecase (mpfr_prec_t N, int K)
+{
+  mpfr_prec_t n;
+
+  for (n = MPFR_PREC_MIN; n <= N; n++)
+    {
+      mpfr_t a, b, q, r;
+      int j, k;
+
+      mpfr_init2 (a, 2 * n * mp_bits_per_limb);
+      mpfr_init2 (b, n * mp_bits_per_limb);
+      mpfr_init2 (q, n * mp_bits_per_limb);
+      mpfr_init2 (r, n * mp_bits_per_limb);
+
+      for (k = 0; k < K; k++)
+        {
+          mpfr_exp_t e;
+
+          /* fill limbs of a and b with either 0 or 111...111 */
+          mpfr_set_ui (a, 1, MPFR_RNDN);
+          mpfr_set_ui (b, 1, MPFR_RNDN);
+          for (j = 0; j < 2 * n - 1; j++)
+            MPFR_MANT(a)[j] = RAND_BOOL () ? MPFR_LIMB_ZERO : MPFR_LIMB_MAX;
+          MPFR_MANT(a)[2*n-1] = MPFR_LIMB_MAX;
+          for (j = 0; j < n - 1; j++)
+            MPFR_MANT(b)[j] = RAND_BOOL () ? MPFR_LIMB_ZERO : MPFR_LIMB_MAX;
+          MPFR_MANT(b)[n-1] = MPFR_LIMB_MAX;
+
+          mpfr_div (q, a, b, MPFR_RNDN);
+          /* we should have |q - a/b| <= 1/2 ulp(q) thus
+             |q*b - a| < 1/2 ulp(q) * a */
+          mpfr_fms (r, q, b, a, MPFR_RNDN);
+          e = MPFR_GET_EXP (q);
+          /* 1/2 ulp(q) = 2^(e-prec(q)-1) */
+          mpfr_mul_2si (r, r, e - MPFR_GET_PREC (q) - 1, MPFR_RNDN);
+          if (mpfr_cmpabs (r, a) > 0)
+            {
+              printf ("Error in mpfr_div:\n");
+              printf ("a = ");
+              mpfr_out_str (stdout, 16, 0, a, MPFR_RNDN);
+              putchar ('\n');
+              printf ("b = ");
+              mpfr_out_str (stdout, 16, 0, b, MPFR_RNDN);
+              putchar ('\n');
+              printf ("q = ");
+              mpfr_out_str (stdout, 16, 0, q, MPFR_RNDN);
+              putchar ('\n');
+              exit (1);
+            }
+        }
+
+      mpfr_clear (a);
+      mpfr_clear (b);
+      mpfr_clear (q);
+      mpfr_clear (r);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
   bug20240423 ();
-
+  check_divhigh_basecase (100, 1000);
   coverage (1024);
   coverage2 ();
   bug20180126 ();
