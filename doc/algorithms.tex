@@ -556,23 +556,7 @@ $(1-\epsilon)^n \geq 1-n\epsilon$, which is true.
 
 \subsection{The {\tt mpfr\_add} function}
 
-\begin{verbatim}
-   mpfr_add (A, B, C, rnd)
-   /* on suppose B et C de me^me signe, et EXP(B) >= EXP(C) */
-
-   0. d = EXP(B) - EXP(C) /* d >= 0 par hypothe`se */
-   1. Soient B1 les prec(A) premiers bits de B, et B0 le reste
-             C1 les bits de C correspondant a` B1, C0 le reste
-   /* B0, C1, C0 peuvent e^tre vides, mais pas B1 */
-
-          <----------- A ---------->
-          <----------- B1 ---------><------ B0 ----->
-             <---------- C1 -------><------------ C0 ----------->
-
-   2. A <- B1 + (C1 >> d)
-   3. q <- compute_carry (B0, C0, rnd)
-   4. A <- A + q
-\end{verbatim}
+See \cite{lefevre:inria-00000026}.
 
 \subsection{The {\tt mpfr\_cmp2} function}
 
