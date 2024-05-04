@@ -64,7 +64,7 @@ mpfr_cos2_aux (mpfr_ptr f, mpfr_srcptr r)
   mpz_init (t);
   ex = mpfr_get_z_2exp (x, r); /* r = x*2^ex */
 
-  /* Remove trailing zeroes.
+  /* Remove trailing zeros.
      Since x comes from a regular MPFR number, due to the constraints on the
      exponent and the precision, there can be no integer overflow below. */
   l = mpz_scan1 (x, 0);

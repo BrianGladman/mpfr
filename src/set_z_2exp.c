@@ -181,7 +181,7 @@ mpfr_set_z_2exp (mpfr_ptr f, mpz_srcptr z, mpfr_exp_t e, mpfr_rnd_t rnd_mode)
         mpn_lshift (fp - dif, zp, zn, k);
       else
         MPN_COPY (fp - dif, zp, zn);
-      /* fill with zeroes */
+      /* fill with zeros */
       MPN_ZERO (fp, -dif);
       inex = 0; /* result is exact */
     }
