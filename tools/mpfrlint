@@ -587,8 +587,8 @@ Minimal GMP version mismatch:
   doc/mpfr.texi:  $gmpv4
 EOF
 
-doc=(FAQ.html Makefile.am README.dev add-with-carry.c check-typography \
-     faq.xsl fdl.texi mini-gmp mpfr.texi sum.txt update-faq)
+doc=(FAQ.html Makefile.am README.dev add-with-carry.c algorithms.tex
+     check-typography faq.xsl fdl.texi mini-gmp mpfr.texi sum.txt update-faq)
 doc=(doc/${^doc})
 files=(AUTHORS BUGS INSTALL NEWS README TODO $doc examples $srctests)
 
