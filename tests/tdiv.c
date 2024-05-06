@@ -1217,6 +1217,25 @@ test_bad_aux (mpfr_prec_t p, mpfr_prec_t extra)
   mpfr_nextbelow (w); /* now w < q0 */
   mpfr_mul (u, v, w, MPFR_RNDZ); /* thus u < v*q0 */
   mpfr_div (q, u, v, MPFR_RNDZ); /* should have q < q0 */
+  if (! mpfr_less_p (q, q0))
+    {
+      /* This test fails in 40102f1ed724c7d22492b7bef57977c5b66d4c0b
+         on x86_64 with "-DMINI_GMP_LIMB_TYPE=char". */
+      printf ("Error in test_bad_aux: expected q < q0\n");
+      printf ("u = "); mpfr_dump (u);
+      printf ("v = "); mpfr_dump (v);
+      if (mpfr_equal_p (q, q0))
+        {
+          printf ("q = q0 = ");
+          mpfr_dump (q);
+        }
+      else
+        {
+          printf ("q  = "); mpfr_dump (q);
+          printf ("q0 = "); mpfr_dump (q0);
+        }
+      exit (1);
+    }
   MPFR_ASSERTN (mpfr_cmp (q, q0) < 0);
   mpfr_div (q, u, v, MPFR_RNDU); /* should have q = q0 */
   MPFR_ASSERTN (mpfr_cmp (q, q0) == 0);
