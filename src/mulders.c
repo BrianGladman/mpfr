@@ -195,12 +195,12 @@ mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
          proceed to the next limb np[n-2].
          If q0 > np[n-1], the partial quotient q2 was too large.
          If q0 < np[n-1], the partial quotient q2 was too small. */
-      if (MPFR_UNLIKELY(q0 > np[n - 1])) // q2 was too large
+      if (MPFR_UNLIKELY(q0 > np[n - 1])) /* q2 was too large */
         {
           q0 -= mpn_add_n (np - 1, np - 1, dp, n);
           q2 --;
         }
-      if (MPFR_UNLIKELY(q0 < np[n - 1])) // q2 was too small
+      if (MPFR_UNLIKELY(q0 < np[n - 1])) /* q2 was too small */
       {
         /* this implements the "early exit" of Algorithm BasecaseShortDiv
            from [2] (step 10) */
