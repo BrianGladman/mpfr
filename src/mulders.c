@@ -163,7 +163,6 @@ mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
 {
   mp_limb_t qh, d1, d0, q2, q1, q0;
   mpfr_pi1_t dinv2;
-  mp_size_t n0 = n;
 
   MPFR_ASSERTD(n >= 2);
 
