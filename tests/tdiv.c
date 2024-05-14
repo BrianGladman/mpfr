@@ -1221,7 +1221,8 @@ test_bad_aux (mpfr_prec_t p, mpfr_prec_t extra)
     {
       /* This test fails in 40102f1ed724c7d22492b7bef57977c5b66d4c0b
          on x86_64 with "-DMINI_GMP_LIMB_TYPE=char". */
-      printf ("Error in test_bad_aux: expected q < q0\n");
+      printf ("Error in test_bad_aux (p = %ld, extra = %ld):"
+              " expected q < q0\n", (long) p, (long) extra);
       printf ("u = "); mpfr_dump (u);
       printf ("v = "); mpfr_dump (v);
       if (mpfr_equal_p (q, q0))
