@@ -1573,7 +1573,7 @@ bug20240423 (void)
   mpfr_set_str (v, "0xf.ffffffffffffffffffffffffffffffffffffffffffffffcp-4", 16, MPFR_RNDN);
   mpfr_div (q, u, v, MPFR_RNDN);
   mpfr_set_str (r, "0x1.000000000000000000000000000000000000000000000004p+0", 16, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_equal_p (q, r));
+  MPFR_ASSERTN (mpfr_equal_p (q, r));
   mpfr_clear (q);
   mpfr_clear (r);
   mpfr_clear (u);
