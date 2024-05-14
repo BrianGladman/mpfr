@@ -509,7 +509,7 @@ check_lowr (void)
          if z is representable on 9 bits, or we have an even round case */
 
       c2 = get_inexact (z2, x, tmp);
-      if ((mpfr_equal_p (z2, z) && c) || inex_cmp (c, c2))
+      if ((! mpfr_equal_p (z2, z) && c) || inex_cmp (c, c2))
         {
           printf ("Error in mpfr_div rnd=MPFR_RNDN\n");
           printf ("got        "); mpfr_dump (z2);
