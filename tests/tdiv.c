@@ -513,7 +513,7 @@ check_lowr (void)
         {
           printf ("Error in mpfr_div rnd=MPFR_RNDN\n");
           printf ("got        "); mpfr_dump (z2);
-          printf ("instead of "); mpfr_dump (z);
+          printf ("for z =    "); mpfr_dump (z);
           printf ("inex flag = %d, expected %d\n", c, c2);
           exit (1);
         }
