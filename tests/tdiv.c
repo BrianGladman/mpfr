@@ -509,11 +509,11 @@ check_lowr (void)
          if z is representable on 9 bits, or we have an even round case */
 
       c2 = get_inexact (z2, x, tmp);
-      if ((! mpfr_equal_p (z2, z) && c) || inex_cmp (c, c2))
+      if ((mpfr_equal_p (z2, z) && c) || inex_cmp (c, c2))
         {
           printf ("Error in mpfr_div rnd=MPFR_RNDN\n");
           printf ("got        "); mpfr_dump (z2);
-          printf ("instead of "); mpfr_dump (z);
+          printf ("for z =    "); mpfr_dump (z);
           printf ("inex flag = %d, expected %d\n", c, c2);
           exit (1);
         }
@@ -1561,6 +1561,34 @@ bug20171218 (void)
   mpfr_clear (c);
 }
 
+/* Fails in the bug_divhigh branch with -DMINI_GMP_LIMB_TYPE=char
+   and mini-gmp (failure similar to the one mentioned in
+   commit 4c2a82ecb9179a431dc9445c5dd7dd8d2336404d). */
+static void
+bug20240506 (void)
+{
+  mpfr_t q, u, v, r;
+  mpfr_init2 (q, 196);
+  mpfr_init2 (r, 196);
+  mpfr_init2 (u, 196 + 25);
+  mpfr_init2 (v, 196 + 25);
+  mpfr_set_str_binary (u, "0.10111110111101100111001101100100010011111001111110101111001001001111010101100010110010110010110010000000101000000111000101010010100101000100000100111101101111101000001101011001111001111100011010010101101111111011010110001E-1");
+  mpfr_set_str_binary (v, "0.11111110101110000100100011010010111100101101001010010010110111101111010111101011110110001111100101011110010011011100011110111100010001010001011010101010111000101011001110110110100111111101111010111110010110000010000111100E-1");
+  mpfr_div (q, u, v, MPFR_RNDZ);
+  mpfr_set_str_binary (r, "0.1011111111101100001000110101100100001010000000110110001001100100110111100101110111110111010011101111111010101101100111010001101110101101001010101111011111001000010100110011101011101100010100111100E0");
+  if (! mpfr_equal_p (q, r))
+    {
+      printf ("Error in bug20240506:\n");
+      printf ("Expected "); mpfr_dump (r);
+      printf ("Got      "); mpfr_dump (q);
+      exit (1);
+    }
+  mpfr_clear (q);
+  mpfr_clear (r);
+  mpfr_clear (u);
+  mpfr_clear (v);
+}
+
 static void
 bug20240423 (void)
 {
@@ -1573,7 +1601,7 @@ bug20240423 (void)
   mpfr_set_str (v, "0xf.ffffffffffffffffffffffffffffffffffffffffffffffcp-4", 16, MPFR_RNDN);
   mpfr_div (q, u, v, MPFR_RNDN);
   mpfr_set_str (r, "0x1.000000000000000000000000000000000000000000000004p+0", 16, MPFR_RNDN);
-  MPFR_ASSERTN(mpfr_equal_p (q, r));
+  MPFR_ASSERTN (mpfr_equal_p (q, r));
   mpfr_clear (q);
   mpfr_clear (r);
   mpfr_clear (u);
@@ -1843,6 +1871,7 @@ main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  bug20240506 ();
   bug20240423 ();
   check_divhigh_basecase (100, 1000);
   coverage (1024);
