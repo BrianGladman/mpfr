@@ -202,8 +202,13 @@ mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
         }
       if (MPFR_UNLIKELY(q0 < np[n - 1])) /* q2 was too small */
       {
-        /* this implements the "early exit" of Algorithm BasecaseShortDiv
-           from [2] (step 10) */
+        /* This implements the "early exit" of Algorithm BasecaseShortDiv
+           from [2] (step 10). Note that in [2], q2 is approximated by
+           dividing the upper 2 limbs np[n-1] and np[n-2] by dp[n-1],
+           while here we divide the upper 3 limbs of np[] by the upper 2
+           limbs of dp[], which can yield a smaller value of q2, and the
+           early exit case does not necessarily imply q2=MPFR_LIMB_MAX. */
+        qp[--n] = q2;
         while (n)
           qp[--n] = MPFR_LIMB_MAX;
         break;
