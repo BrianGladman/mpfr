@@ -1562,6 +1562,31 @@ bug20171218 (void)
 }
 
 /* Fails in the bug_divhigh branch with -DMINI_GMP_LIMB_TYPE=char
+   and mini-gmp. */
+static void
+bug20240514 (void)
+{
+  mpfr_t q, u, v, r;
+
+  mpfr_inits2 (65, q, u, v, r, (mpfr_ptr) 0);
+  mpfr_set_str_binary (u, "0.11111111111111111111111111000001100000000011110100000001111111111");
+  mpfr_set_str_binary (v, "0.11111111111111111111111111111111111111111111111111111111111111110");
+  test_div (q, u, v, MPFR_RNDA);
+  mpfr_set_str_binary (r, "0.11111111111111111111111111000001100000000011110100000010000000001");
+  if (! mpfr_equal_p (q, r))
+    {
+      printf ("Error in bug20240514:\n");
+      printf ("Expected "); mpfr_dump (r);
+      printf ("Got      "); mpfr_dump (q);
+      exit (1);
+    }
+  mpfr_clear (q);
+  mpfr_clear (r);
+  mpfr_clear (u);
+  mpfr_clear (v);
+}
+
+/* Fails in the bug_divhigh branch with -DMINI_GMP_LIMB_TYPE=char
    and mini-gmp (failure similar to the one mentioned in
    commit 4c2a82ecb9179a431dc9445c5dd7dd8d2336404d). */
 static void
@@ -1871,6 +1896,7 @@ main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  bug20240514 ();
   bug20240506 ();
   bug20240423 ();
   check_divhigh_basecase (100, 1000);
