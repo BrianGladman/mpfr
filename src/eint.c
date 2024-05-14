@@ -75,7 +75,7 @@ mpfr_eint_aux (mpfr_ptr y, mpfr_srcptr x)
       mpz_tdiv_q_2exp (m, m, MPFR_PREC (x) - w);  /* one still has m != 0 */
       MPFR_LOG_MSG (("e=%" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) e));
     }
-  /* Remove trailing zeroes from m: this will speed up much cases where
+  /* Remove trailing zeros from m: this will speed up much cases where
      x is a small integer divided by a power of 2.
      Note: As shown above, m != 0. This is needed for the "e += ..." below,
      otherwise n would take the largest value of mp_bitcnt_t and could be

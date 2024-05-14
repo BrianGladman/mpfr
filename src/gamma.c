@@ -172,7 +172,7 @@ mpfr_gamma (mpfr_ptr gamma, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
        n = MAX(MPFR_PREC(x), MPFR_PREC(gamma)).
      We know from "Bound on Runs of Zeros and Ones for Algebraic Functions",
      Proceedings of Arith15, T. Lang and J.-M. Muller, 2001, that the maximal
-     number of consecutive zeroes or ones after the round bit for 1/x is n-1
+     number of consecutive zeros or ones after the round bit for 1/x is n-1
      for an input x of n bits [this is an actually much older result!].
      But we need a more precise lower bound. Assume that 1/x is near a
      breakpoint y. From the definition of n, the input x fits on n bits

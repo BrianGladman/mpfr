@@ -51,7 +51,7 @@ struct parsed_string {
   int            base;     /* base of the string */
   unsigned char *mantissa; /* raw significand (without any point) */
   unsigned char *mant;     /* stripped significand (without starting and
-                              ending zeroes). This points inside the area
+                              ending zeros). This points inside the area
                               allocated for the mantissa field. */
   size_t         prec;     /* length of mant (zero for +/-0) */
   size_t         alloc;    /* allocation size of mantissa */
