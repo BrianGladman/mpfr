@@ -181,6 +181,11 @@ mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
   /* dinv2.inv32 = floor ((B^3 - 1) / (d0 + d1 B)) - B */
   while (n > 0)
     {
+      /* In Remark 5 of [2], we should divide by the upper 2 limbs of H_j,
+         which coincide with the upper 2 limbs of the divisor, except for
+         the last iteration where H_j has only one non-zero limb. */
+      if (n == 1)
+        d0 = 0;
       if (MPFR_UNLIKELY(np[n-1] > d1 || (np[n-1] == d1 && np[n-2] >= d0)))
         q2 = MPFR_LIMB_MAX;
       else
@@ -203,12 +208,7 @@ mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
       if (MPFR_UNLIKELY(q0 < np[n - 1])) /* q2 was too small */
       {
         /* This implements the "early exit" of Algorithm BasecaseShortDiv
-           from [2] (step 10). Note that in [2], q2 is approximated by
-           dividing the upper 2 limbs np[n-1] and np[n-2] by dp[n-1],
-           while here we divide the upper 3 limbs of np[] by the upper 2
-           limbs of dp[], which can yield a smaller value of q2, and the
-           early exit case does not necessarily imply q2=MPFR_LIMB_MAX. */
-        qp[--n] = q2;
+           from [2] (step 10). */
         while (n)
           qp[--n] = MPFR_LIMB_MAX;
         break;
