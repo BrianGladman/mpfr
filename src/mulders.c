@@ -189,13 +189,14 @@ mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
       else if (n > 1)
         udiv_qr_3by2 (q2, q1, q0, np[n - 1], np[n - 2], np[n - 3],
                       d1, d0, dinv2.inv32);
-      else { /* Case n=1: since dinv2 was computed for d0 = dp[n - 2],
+      else
+        { /* Case n=1: since dinv2 was computed for d0 = dp[n - 2],
                 we can't use it for d0 = 0 */
-        if (MPFR_UNLIKELY(np[n-1] == d1))
-          q2 = MPFR_LIMB_MAX;
-        else /* now np[n-1] < d1 */
-          udiv_qrnnd (q2, q1, np[n - 1], np[n - 2], d1);
-      }
+          if (MPFR_UNLIKELY(np[n-1] == d1))
+            q2 = MPFR_LIMB_MAX;
+          else /* now np[n-1] < d1 */
+            udiv_qrnnd (q2, q1, np[n - 1], np[n - 2], d1);
+        }
 
       q0 = mpn_submul_1 (np - 1, dp, n, q2);
       /* q0 is the upper limb of the product {dp, n} * q2, minus the
@@ -211,13 +212,13 @@ mpfr_divhigh_n_basecase (mpfr_limb_ptr qp, mpfr_limb_ptr np,
           q2 --;
         }
       if (MPFR_UNLIKELY(q0 < np[n - 1])) /* q2 was too small */
-      {
-        /* This implements the "early exit" of Algorithm BasecaseShortDiv
-           from [2] (step 10). */
-        while (n)
-          qp[--n] = MPFR_LIMB_MAX;
-        break;
-      }
+        {
+          /* This implements the "early exit" of Algorithm BasecaseShortDiv
+             from [2] (step 10). */
+          while (n != 0)
+            qp[--n] = MPFR_LIMB_MAX;
+          break;
+        }
       MPFR_ASSERTN(q0 == np[n - 1]);
       qp[--n] = q2;
       dp ++;
