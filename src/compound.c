@@ -1,4 +1,4 @@
-/* mpfr_compound, mpfr_compound_si --- compound(x,n) = (1+x)^n
+/* mpfr_compound, mpfr_compound_si --- compound(x,y) = (1+x)^y
 
 
 Copyright 2021-2024 Free Software Foundation, Inc.
