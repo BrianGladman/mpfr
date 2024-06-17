@@ -24,8 +24,9 @@ along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
 https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
 
+/* TODO: For consistency with add1sp1_extracted.c, use #define's
+   instead of <stdint.h>? */
 #include <stdint.h>
-#include <inttypes.h> /* for __builtin_clzll */
 
 /* beginning of manually added declarations */
 
@@ -527,4 +528,3 @@ int32_t
   MPFR_RoundingMode_mpfr_rnd_t x3,
   int64_t x4
 ) = MPFR_Sub1sp1_mpfr_sub1sp1;
-

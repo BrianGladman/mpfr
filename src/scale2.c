@@ -42,7 +42,7 @@ mpfr_scale2 (double d, int exp)
 
     /* now 1/2 <= d < 1 */
 
-    /* infinities and zeroes have already been checked */
+    /* infinities and zeros have already been checked */
     MPFR_ASSERTD (-1073 <= exp && exp <= 1025);
 
     x.d = d;

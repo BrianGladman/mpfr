@@ -79,7 +79,7 @@ S (mpz_t *T, mpz_t *P, mpz_t *Q, unsigned long n1, unsigned long n2, int need_P)
         mpz_mul (P[0], P[0], P[1]);
       mpz_mul (Q[0], Q[0], Q[1]);
 
-      /* remove common trailing zeroes if any */
+      /* remove common trailing zeros if any */
       v = mpz_scan1 (T[0], 0);
       if (v > 0)
         {

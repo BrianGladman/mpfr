@@ -587,8 +587,8 @@ Minimal GMP version mismatch:
   doc/mpfr.texi:  $gmpv4
 EOF
 
-doc=(FAQ.html Makefile.am README.dev add-with-carry.c check-typography \
-     faq.xsl fdl.texi mini-gmp mpfr.texi sum.txt update-faq)
+doc=(FAQ.html Makefile.am README.dev add-with-carry.c algorithms.tex
+     check-typography faq.xsl fdl.texi mini-gmp mpfr.texi sum.txt update-faq)
 doc=(doc/${^doc})
 files=(AUTHORS BUGS INSTALL NEWS README TODO $doc examples $srctests)
 
@@ -614,6 +614,20 @@ if which codespell > /dev/null 2> /dev/null; then
 else
   echo "Warning! codespell is not installed. Cannot check spelling." >&2
 fi
+
+# Contrary to "zeroed" and "zeroing", which are sometimes used, "zeroes"
+# as a verb (third-person singular) is rare in practice. Most often, this
+# word appears as a noun (plural of "zero") instead of "zeros", which is
+# the most common spelling and what we should use. So let's warn about it
+# (in case of false positive, we should add an exception with "grep -v").
+# Note: that's why in SCOWL (Spell Checker Oriented Word Lists)[*], "zero"
+# is in english-words.10 and "zeros" in english-words.20, but "zeroes" is
+# only in *variant_2-words.20 (as a variant of the plural of "zero") and
+# special-hacker.50 (as a verb).
+# [*] http://wordlist.aspell.net/
+err-if-output \
+  --msg='Suspicious word "zeroes": correct only as a verb; plural of "zero" is "zeros".' \
+  -t "zeroes" grep -ir zeroes $files
 
 err-if-output --msg='Say "positive infinity" and "negative infinity".' -t \
   "+/- infinity" grep -Eir "(plus|minus) *infinity" $files

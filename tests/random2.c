@@ -79,7 +79,7 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mpfr_exp_t exp,
   ran >>= MPFR_LOG2_GMP_NUMB_BITS;      /* Ideally   log2(GMP_NUMB_BITS) */
   ran_nbits = BITS_PER_RANDCALL - MPFR_LOG2_GMP_NUMB_BITS; /* Ideally - log2(GMP_NUMB_BITS) */
 
-  /* Bit 0 of ran chooses string of ones/string of zeroes.
+  /* Bit 0 of ran chooses string of ones/string of zeros.
      Make most significant limb be non-zero by setting bit 0 of RAN.  */
   ran |= 1;
   ri = xn - 1;
@@ -114,7 +114,7 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mpfr_exp_t exp,
         }
       else
         {
-          /* Generate a string of nb zeroes.  */
+          /* Generate a string of nb zeros.  */
           if (nb > bit_pos)
             {
               xp[ri--] = acc;
