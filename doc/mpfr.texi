@@ -3100,7 +3100,7 @@ on POSIX systems). Note, however, that @code{errno} might be changed to
 another value by some internal library call if another error occurs there
 (currently, this would come from the unallocation function).
 
-@deftypefun int mpfr_fprintf (FILE *@var{stream}, const char *@var{template}, @dots{})
+@deftypefun int mpfr_fprintf (FILE *@var{stream}, const char *@var{template}, ...)
 @deftypefunx int mpfr_vfprintf (FILE *@var{stream}, const char *@var{template}, va_list @var{ap})
 Print to the stream @var{stream} the optional arguments under the control of
 the template string @var{template}.
@@ -3108,7 +3108,7 @@ Return the number of characters written or a negative value if an error
 occurred.
 @end deftypefun
 
-@deftypefun  int mpfr_printf (const char *@var{template}, @dots{})
+@deftypefun  int mpfr_printf (const char *@var{template}, ...)
 @deftypefunx int mpfr_vprintf (const char *@var{template}, va_list @var{ap})
 Print to @code{stdout} the optional arguments under the control of the
 template string @var{template}.
@@ -3116,7 +3116,7 @@ Return the number of characters written or a negative value if an error
 occurred.
 @end deftypefun
 
-@deftypefun int mpfr_sprintf (char *@var{buf}, const char *@var{template}, @dots{})
+@deftypefun int mpfr_sprintf (char *@var{buf}, const char *@var{template}, ...)
 @deftypefunx int mpfr_vsprintf (char *@var{buf}, const char *@var{template}, va_list @var{ap})
 Form a null-terminated array corresponding to the optional arguments under
 the control of the template string @var{template}, and print it in
@@ -3127,7 +3127,7 @@ Return the number of characters written in the array @var{buf}
 the terminating null character or a negative value if an error occurred.
 @end deftypefun
 
-@deftypefun int mpfr_snprintf (char *@var{buf}, size_t @var{n}, const char *@var{template}, @dots{})
+@deftypefun int mpfr_snprintf (char *@var{buf}, size_t @var{n}, const char *@var{template}, ...)
 @deftypefunx int mpfr_vsnprintf (char *@var{buf}, size_t @var{n}, const char *@var{template}, va_list @var{ap})
 Form a null-terminated array corresponding to the optional arguments under
 the control of the template string @var{template}, and print it in
@@ -3140,7 +3140,7 @@ sufficiently large, @emph{not counting}
 the terminating null character, or a negative value if an error occurred.
 @end deftypefun
 
-@deftypefun int mpfr_asprintf (char **@var{str}, const char *@var{template}, @dots{})
+@deftypefun int mpfr_asprintf (char **@var{str}, const char *@var{template}, ...)
 @deftypefunx int mpfr_vasprintf (char **@var{str}, const char *@var{template}, va_list @var{ap})
 Write their output as a null-terminated array in a block of memory allocated
 using the allocation function (@pxref{Memory Handling}). A pointer to the
