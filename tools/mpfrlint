@@ -512,6 +512,14 @@ grep __gmp_ tests/*.c | \
 grep -E '[^a-z_](m|re)alloc *\(' tests/*.c | \
   err-if-output -t "alloc" grep -Ev '^tests/(memory|talloc-cache).c:'
 
+# In function prototypes, "..." must be used instead of "@dots{}".
+# This is important for HTML generation, as with GNU Texinfo 7.1,
+# the "…" Unicode character is generated with "@dots{}" instead of
+# the 3 dots "..." (in C source, it is "..." that is correct, so
+# this is what is expected).
+err-if-output --msg='Use "..." instead of "@dots{}" in function prototypes.' \
+  -t "@dots{} in prototypes" grep '@deftypefun.*@dots' doc/mpfr.texi
+
 err-if-output --dir=doc "check-typography" ./check-typography
 
 rndmodes1=(${(o)$(perl -ne '/return\s*"(MPFR_\S+)"/ and print "$1\n"' src/print_rnd_mode.c)})
