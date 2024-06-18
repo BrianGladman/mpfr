@@ -499,6 +499,7 @@ DEFN(4)
 DEFN(5)
 DEFN(17)
 DEFN(120)
+DEFN(LONG_MAX)
 
 #define TEST_FUNCTION mpfr_compound2
 #define test_generic test_generic_compound2
@@ -524,6 +525,10 @@ DEFN(120)
 #define test_generic test_generic_compound120
 #include "tgeneric.c"
 
+#define TEST_FUNCTION mpfr_compoundLONG_MAX
+#define test_generic test_generic_compoundLONG_MAX
+#include "tgeneric.c"
+
 int
 main (void)
 {
@@ -542,6 +547,7 @@ main (void)
   test_generic_compound5 (MPFR_PREC_MIN, 100, 100);
   test_generic_compound17 (MPFR_PREC_MIN, 100, 100);
   test_generic_compound120 (MPFR_PREC_MIN, 100, 100);
+  test_generic_compoundLONG_MAX (MPFR_PREC_MIN, 100, 100);
 
   /* Note: For small n, we need a psup high enough to avoid too many
      "f exact while f^(-1) inexact" occurrences in bad_cases(). */
@@ -557,6 +563,8 @@ main (void)
              0, -256, 255, 4, 128, 80, 40);
   bad_cases (mpfr_compound120, inv_compound120, "mpfr_compound120",
              0, -256, 255, 4, 128, 80, 40);
+  bad_cases (mpfr_compoundLONG_MAX, inv_compoundLONG_MAX,
+             "mpfr_compoundLONG_MAX", 0, -256, 255, 4, 128, 80, 40);
 
   ofuf_thresholds (mpfr_compound2, inv_compound2, "mpfr_compound2",
                    999, 999, 0, POSOF);

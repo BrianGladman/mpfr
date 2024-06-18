@@ -176,7 +176,9 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
          the much slower mpfr_log2p1 just below. */
       if (mpfr_add_ui (t, x, 1, MPFR_RNDZ) == 0)
         {
+          MPFR_CLEAR_FLAGS ();
           inexact = mpfr_pow_si (y, t, n, rnd_mode);
+          MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
           goto end;
         }
 
