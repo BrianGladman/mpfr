@@ -158,6 +158,28 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
       mpfr_prec_t precu = MPFR_ADD_PREC (prec, extra);
       mpfr_rnd_t rnd2;
 
+      /* Exact cases like compound(0.5,2) = 9/4 must be detected, since
+         except for 1+x power of 2, the log2p1 below will be inexact,
+         so that in the Ziv test, inexact != 0 and MPFR_CAN_ROUND will
+         fail (even for RNDN, as the ternary value cannot be determined),
+         yielding an infinite loop.
+         For an exact case in precision prec(y), 1+x will necessarily
+         be exact in precision prec(y), thus also in prec(t), since
+         prec(t) >= prec(y); and we can use mpfr_pow_si under this
+         condition.
+         Let's do this detection first as it is fast (just an addition),
+         and in case of success, we get the result immediately. Moreover,
+         this will succeed on many inexact cases (as soon as 1+x fits in
+         the working precision).
+         Note: we could also do the detection without doing the addition,
+         but the gain (in case of failure) should not be noticeable due to
+         the much slower mpfr_log2p1 just below. */
+      if (mpfr_add_ui (t, x, 1, MPFR_RNDZ) == 0)
+        {
+          inexact = mpfr_pow_si (y, t, n, rnd_mode);
+          goto end;
+        }
+
       /* We compute (1+x)^n as 2^(n*log2p1(x)),
          and we round toward 1, thus we round n*log2p1(x) toward 0,
          which implies we round log2p1(x) toward 0.
@@ -327,21 +349,6 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
                 }
               mpfr_clear (v);
             }
-        }
-
-      /* Exact cases like compound(0.5,2) = 9/4 must be detected, since
-         except for 1+x power of 2, the log2p1 above will be inexact,
-         so that in the Ziv test, inexact != 0 and MPFR_CAN_ROUND will
-         fail (even for RNDN, as the ternary value cannot be determined),
-         yielding an infinite loop.
-         For an exact case in precision prec(y), 1+x will necessarily
-         be exact in precision prec(y), thus also in prec(t), where
-         prec(t) >= prec(y), and we can use mpfr_pow_si under this
-         condition (which will also evaluate some non-exact cases). */
-      if (mpfr_add_ui (t, x, 1, MPFR_RNDZ) == 0)
-        {
-          inexact = mpfr_pow_si (y, t, n, rnd_mode);
-          goto end;
         }
 
       MPFR_ZIV_NEXT (loop, prec);
