@@ -58,6 +58,17 @@ static void patches (void)
 #define SIGNED_STR(V) ((V) < 0 ? "signed" : "unsigned")
 #define SIGNED(I) SIGNED_STR((I) - (I) - 1)
 
+/* Warning about the usage of printf/puts below:
+ *
+ *   - If a macro expansion is used, it must not appear in the first
+ *     argument of printf (format string), as we do not know whether
+ *     the expanded string contains a '%' character.
+ *
+ *   - If a #if preprocessor directive is used in an argument, parentheses
+ *     must be put around the function name, in case this function is also
+ *     implemented as a macro (#if does not work in macro arguments).
+ */
+
 int main (void)
 {
   unsigned long c;
@@ -98,7 +109,7 @@ int main (void)
 #endif
 
 #if defined(__STDC__) || defined(__STDC_VERSION__)
-  printf ("C/C++: __STDC__ = "
+  (puts) ("C/C++: __STDC__ = "
 #if defined(__STDC__)
           MAKE_STR(__STDC__)
 #else
@@ -113,32 +124,27 @@ int main (void)
 #if defined(__cplusplus)
           ", C++"
 #endif
-          "\n");
+          );
 #endif
 
 #if defined(__GNUC__)
-  printf ("GNU compatibility: __GNUC__ = " MAKE_STR(__GNUC__)
+  (puts) ("GNU compatibility: __GNUC__ = " MAKE_STR(__GNUC__)
           ", __GNUC_MINOR__ = "
 #if defined(__GNUC_MINOR__)
           MAKE_STR(__GNUC_MINOR__)
 #else
           "undef"
 #endif
-          "\n");
+          );
 #endif
 
 #if defined(__INTEL_COMPILER)
-  printf ("Intel compiler: __INTEL_COMPILER = "
-#if defined(__INTEL_COMPILER)
-          MAKE_STR(__INTEL_COMPILER)
-#else
-          "undef"
-#endif
-          "\n");
+  (puts) ("[tversion] Intel compiler: __INTEL_COMPILER = "
+          MAKE_STR(__INTEL_COMPILER));
 #endif
 
 #if defined(_WIN32) || defined(_MSC_VER)
-  printf ("MS Windows: _WIN32 = "
+  (puts) ("MS Windows: _WIN32 = "
 #if defined(_WIN32)
           MAKE_STR(_WIN32)
 #else
@@ -150,18 +156,18 @@ int main (void)
 #else
           "undef"
 #endif
-          "\n");
+          );
 #endif
 
 #if defined(__GLIBC__)
-  printf ("GNU C library: __GLIBC__ = " MAKE_STR(__GLIBC__)
+  (puts) ("GNU C library: __GLIBC__ = " MAKE_STR(__GLIBC__)
           ", __GLIBC_MINOR__ = "
 #if defined(__GLIBC_MINOR__)
           MAKE_STR(__GLIBC_MINOR__)
 #else
           "undef"
 #endif
-          "\n");
+          );
 #endif
 
   printf ("\n");

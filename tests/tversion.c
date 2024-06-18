@@ -137,12 +137,7 @@ main (void)
 
 #if defined(__INTEL_COMPILER)
   (puts) ("[tversion] Intel compiler: __INTEL_COMPILER = "
-#if defined(__INTEL_COMPILER)
-          MAKE_STR(__INTEL_COMPILER)
-#else
-          "undef"
-#endif
-          );
+          MAKE_STR(__INTEL_COMPILER));
 #endif
 
 #if defined(_WIN32) || defined(_MSC_VER)
