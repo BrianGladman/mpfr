@@ -135,14 +135,8 @@ main (void)
           );
 #endif
 
-#if defined(__ICC) || defined(__INTEL_COMPILER)
-  (puts) ("[tversion] Intel compiler: __ICC = "
-#if defined(__ICC)
-          MAKE_STR(__ICC)
-#else
-          "undef"
-#endif
-          ", __INTEL_COMPILER = "
+#if defined(__INTEL_COMPILER)
+  (puts) ("[tversion] Intel compiler: __INTEL_COMPILER = "
 #if defined(__INTEL_COMPILER)
           MAKE_STR(__INTEL_COMPILER)
 #else

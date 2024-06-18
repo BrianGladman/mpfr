@@ -456,12 +456,10 @@ dnl Warning: This test is *only* for CFLAGS settings.
 dnl If the compiler is ICC, add some specific flags, except on MS-Windows.
 dnl Don't add warnings flags (Otherwise you'll get more than 20000 warnings).
 dnl Add -long_double flags? Don't use -pc64 !
-dnl Notes (VL):
-dnl   * With icc 10.1 20080212 on itanium, the __ICC macro is not defined,
-dnl     even when the -icc option is used (contrary to what is documented
-dnl     on the icc man page).
-dnl   * When ICC is correctly detected (__ICC macro defined), unsetting
-dnl     the GCC variable confuses libtool. See:
+dnl Notes (some might be obsolete):
+dnl   * the old __ICC macro is now replaced by __INTEL_COMPILER
+dnl   * When ICC is correctly detected (__INTEL_COMPILER macro defined),
+dnl     unsetting the GCC variable confuses libtool. See:
 dnl       https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=485421
 dnl   * If need be, the gcc predefined macros __GNUC_* can be disabled
 dnl     thanks to the -no-gcc option.
@@ -474,7 +472,7 @@ dnl     option has been introduced in ICC 9.0 for Linux (2005-06):
 dnl     https://climserv.ipsl.polytechnique.fr/documentation/intel-icc/ReleaseNotes.htm
 AC_MSG_CHECKING(for non-MS-Windows ICC)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#if (!defined(__ICC) && !defined(__INTEL_COMPILER)) || defined(_WIN32)
+#if !defined(__INTEL_COMPILER) || defined(_WIN32)
 # error "Not a non-MS-Windows ICC"
 error
 #endif

@@ -35,8 +35,6 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    support/enable extensions like the ones seen under GNU/Linux.
    https://sympa.inria.fr/sympa/arc/mpfr/2011-02/msg00032.html */
 # define __MPFR_ICC(a,b,c) 0
-#elif defined(__ICC)
-# define __MPFR_ICC(a,b,c) (__ICC >= (a)*100+(b)*10+(c))
 #elif defined(__INTEL_COMPILER)
 # define __MPFR_ICC(a,b,c) (__INTEL_COMPILER >= (a)*100+(b)*10+(c))
 #else

@@ -39,9 +39,6 @@ Table of contents:
 2. Compiler/library detection
 ##############################################################################
 
-- update ICC detection.
-  * Use only __INTEL_COMPILER instead of the obsolete macro __ICC?
-
 
 ##############################################################################
 3. Changes in existing functions

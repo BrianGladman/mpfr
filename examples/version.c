@@ -127,14 +127,8 @@ int main (void)
           "\n");
 #endif
 
-#if defined(__ICC) || defined(__INTEL_COMPILER)
-  printf ("Intel compiler: __ICC = "
-#if defined(__ICC)
-          MAKE_STR(__ICC)
-#else
-          "undef"
-#endif
-          ", __INTEL_COMPILER = "
+#if defined(__INTEL_COMPILER)
+  printf ("Intel compiler: __INTEL_COMPILER = "
 #if defined(__INTEL_COMPILER)
           MAKE_STR(__INTEL_COMPILER)
 #else
