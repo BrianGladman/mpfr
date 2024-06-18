@@ -250,8 +250,8 @@ mpfr_compound_si (mpfr_ptr y, mpfr_srcptr x, long n, mpfr_rnd_t rnd_mode)
          |t - (1+x)^n| <= ulp(t) + |t|*2^(e-precu)
                        < 2^(EXP(t)-prec) + 2^(EXP(t)+e-precu).
          If e-precu >= 0, then the rounding error on u2 is too large,
-         and we have to loop again. FIXME about "loop again": there are
-         still tests below that may exit the loop. */
+         and we have to loop again (except in some particular cases
+         below, for which the result is computed in another way). */
       if (e < precu)
         {
           mpfr_exp_t e3 = (precu - prec >= e) ? 1 : e + 1 - (precu - prec);
