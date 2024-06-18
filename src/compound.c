@@ -1,5 +1,8 @@
 /* mpfr_compound, mpfr_compound_si --- compound(x,y) = (1+x)^y
-
+   The case of integer y, that is, compound(x,n) = (1+x)^n with n in Z,
+   is specified by the IEEE 754 standard. The case of non-integer y is
+   a trivial extension based on the rules of mpfr_pow for some special
+   values.
 
 Copyright 2021-2024 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
