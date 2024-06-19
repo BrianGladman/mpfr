@@ -63,6 +63,7 @@ while (<FILE>)
     /^\@deftypefun/ or next;
     my ($r,$f,$args) = /^\@deftypefunx? +(\S+|\{[^}]+\}) (\S+) \((.+)\)$/
       or die "$0: error in mpfr.texi line $.\n";
+    $r =~ s/^\{(.+)\}$/\1/;
     my @args = ($r);
     foreach my $arg (split /, /, $args)
       {
