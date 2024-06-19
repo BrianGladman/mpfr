@@ -33,9 +33,10 @@ while ($file =~ /\n__MPFR_DECLSPEC +([^;]*);/g)
     my ($r,$f,$args) =
       $decl =~ /^(\S.*?\S)\s+(\S+)\s+\(([^)]+)\)/
       or die "$0: error in mpfr.h on the function prototype\n$decl\n";
+    # First, ignore functions used only for macros.
     # Note: the mpfr_sgn function is used only for the mpfr_cmp_ui macro
     # (not to be confused with the documented mpfr_sgn macro).
-    next if $f =~ /^mpfr_(cmp3|set4|sgn)$/; # used only for macros
+    next if $f =~ /^mpfr_(cmp3|set4|sgn|round_nearest_away_(begin|end))$/;
     next if $f eq 'mpfr_get_d1'; # deprecated, documentation removed in 2007
     my @args = ($r);
     foreach my $arg (split /,\s*/, $args)
