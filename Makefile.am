@@ -56,8 +56,8 @@ nobase_dist_doc_DATA = AUTHORS BUGS COPYING COPYING.LESSER NEWS TODO \
 # distribute it just in case it would be used.
 EXTRA_DIST = PATCHES VERSION doc/README.dev doc/check-typography doc/mini-gmp \
   tools/check_mparam.c tools/ck-clz_tab tools/ck-copyright-notice \
-  tools/ck-mparam tools/ck-news tools/ck-version-info tools/get_patches.sh \
-  version-ext.sh $(DATAFILES)
+  tools/ck-mparam tools/ck-news tools/ck-proto tools/ck-version-info \
+  tools/get_patches.sh version-ext.sh $(DATAFILES)
 
 bench:
 	cd tools/bench && $(MAKE) $(AM_MAKEFLAGS) bench
@@ -77,6 +77,7 @@ dist-hook:
 	cd $(srcdir) && tools/ck-version-info
 	cd $(srcdir) && tools/ck-copyright-notice
 	cd $(srcdir) && tools/ck-news
+	cd $(srcdir) && tools/ck-proto
 	cd $(srcdir) && tools/ck-clz_tab
 	$(srcdir)/tools/ck-mparam
 	cd $(srcdir)/doc && ./check-typography
