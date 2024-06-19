@@ -549,6 +549,9 @@ MPFR_EXTENSION
 __MPFR_DECLSPEC _Decimal128 mpfr_get_decimal128 (mpfr_srcptr, mpfr_rnd_t);
 #endif
 __MPFR_DECLSPEC long double mpfr_get_ld (mpfr_srcptr, mpfr_rnd_t);
+#ifndef _MPFR_NO_DEPRECATED_GET_D1 /* for the test of this function */
+MPFR_DEPRECATED
+#endif
 __MPFR_DECLSPEC double mpfr_get_d1 (mpfr_srcptr);
 __MPFR_DECLSPEC double mpfr_get_d_2exp (long*, mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC long double mpfr_get_ld_2exp (long*, mpfr_srcptr, mpfr_rnd_t);

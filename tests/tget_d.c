@@ -22,6 +22,7 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 
 #include <float.h>
 
+#define _MPFR_NO_DEPRECATED_GET_D1
 #include "mpfr-test.h"
 #include "ieee_floats.h"
 
