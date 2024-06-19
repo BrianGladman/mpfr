@@ -1777,8 +1777,8 @@ See also @code{mpfr_fits_slong_p}, @code{mpfr_fits_ulong_p},
 @code{mpfr_fits_intmax_p} and @code{mpfr_fits_uintmax_p}.
 @end deftypefun
 
-@deftypefun double mpfr_get_d_2exp (long *@var{exp}, const mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-@deftypefunx {long double} mpfr_get_ld_2exp (long *@var{exp}, const mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefun double mpfr_get_d_2exp (long int *@var{exp}, const mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefunx {long double} mpfr_get_ld_2exp (long int *@var{exp}, const mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Return @var{d} and set @var{exp}
 (formally, the value pointed to by @var{exp})
 such that @tm{0.5 @le{} @GMPabs{@var{d}} < 1}
