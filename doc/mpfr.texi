@@ -2456,7 +2456,7 @@ Set @var{rop} to the cosine (resp.@: sine and tangent) of
 @code{mpfr_sinu}, @code{mpfr_cosu} and @code{mpfr_tanu} for special values.
 @end deftypefun
 
-@deftypefun int mpfr_sin_cos (mpfr_t @var{sop}, const mpfr_t @var{cop}, const mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefun int mpfr_sin_cos (mpfr_t @var{sop}, mpfr_t @var{cop}, const mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set simultaneously @var{sop} to the sine of @var{op} and @var{cop} to the
 cosine of @var{op}, rounded in the direction @var{rnd} with the corresponding
 precisions of @var{sop} and @var{cop}, which must be different variables.
@@ -2561,7 +2561,7 @@ Set @var{rop} to the hyperbolic cosine, sine or tangent of @var{op},
 rounded in the direction @var{rnd}.
 @end deftypefun
 
-@deftypefun int mpfr_sinh_cosh (mpfr_t @var{sop}, const mpfr_t @var{cop}, const mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefun int mpfr_sinh_cosh (mpfr_t @var{sop}, mpfr_t @var{cop}, const mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set simultaneously @var{sop} to the hyperbolic sine of @var{op} and
 @var{cop} to the hyperbolic cosine of @var{op},
 rounded in the direction @var{rnd} with the corresponding precision of
@@ -3256,7 +3256,7 @@ When @var{op} is an integer or an infinity, set @var{rop} to zero with
 the same sign as @var{op}.
 @end deftypefun
 
-@deftypefun int mpfr_modf (mpfr_t @var{iop}, const mpfr_t @var{fop}, const mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+@deftypefun int mpfr_modf (mpfr_t @var{iop}, mpfr_t @var{fop}, const mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set simultaneously @var{iop} to the integral part of @var{op} and @var{fop} to
 the fractional part of @var{op}, rounded in the direction @var{rnd} with the
 corresponding precision of @var{iop} and @var{fop} (equivalent to
