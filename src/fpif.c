@@ -292,7 +292,7 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
  */
 static unsigned char*
 mpfr_fpif_store_exponent (unsigned char *buffer, size_t *buffer_size,
-                          mpfr_ptr x)
+                          mpfr_srcptr x)
 {
   unsigned char *result;
   mpfr_uexp_t uexp;
@@ -457,7 +457,8 @@ mpfr_fpif_read_exponent_from_file (mpfr_ptr x, FILE * fh)
  *        format
  */
 static unsigned char*
-mpfr_fpif_store_limbs (unsigned char *buffer, size_t *buffer_size, mpfr_ptr x)
+mpfr_fpif_store_limbs (unsigned char *buffer, size_t *buffer_size,
+                       mpfr_srcptr x)
 {
   unsigned char *result;
   mpfr_prec_t precision;
@@ -523,7 +524,7 @@ mpfr_fpif_read_limbs (mpfr_ptr x, unsigned char *buffer, size_t nb_byte)
  * return 0 if successful
  */
 int
-mpfr_fpif_export (FILE *fh, mpfr_ptr x)
+mpfr_fpif_export (FILE *fh, mpfr_srcptr x)
 {
   int status;
   unsigned char *buf;

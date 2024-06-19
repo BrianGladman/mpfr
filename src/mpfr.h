@@ -1227,7 +1227,7 @@ __MPFR_DECLSPEC int mpfr_fprintf (FILE*, const char*, ...);
 #endif
 #define mpfr_fpif_export __gmpfr_fpif_export
 #define mpfr_fpif_import __gmpfr_fpif_import
-__MPFR_DECLSPEC int mpfr_fpif_export (FILE*, mpfr_ptr);
+__MPFR_DECLSPEC int mpfr_fpif_export (FILE*, mpfr_srcptr);
 __MPFR_DECLSPEC int mpfr_fpif_import (mpfr_ptr, FILE*);
 
 #if defined (__cplusplus)
