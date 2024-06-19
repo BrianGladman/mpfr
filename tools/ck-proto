@@ -1,5 +1,11 @@
 #!/usr/bin/env perl
 
+# Check the consistency of function prototypes between "mpfr.h" and
+# "mpfr.texi".
+
+# Note: this script must not be used to build MPFR due to the
+# dependency on perl, but this is OK for "make dist".
+
 # Copyright 2024 Free Software Foundation, Inc.
 # This script is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
