@@ -1645,7 +1645,7 @@ do {                                                                  \
    static assertion. */
 #define IS_SIGNED(X) ((X) * 0 - 1 < 0)
 
-#define mpfr_get_d1(x) mpfr_get_d(x,__gmpfr_default_rounding_mode)
+#define mpfr_get_d1(x) mpfr_get_d((x), __gmpfr_default_rounding_mode)
 
 /* Store in r the size in bits of the mpz_t z */
 #define MPFR_MPZ_SIZEINBASE2(r, z)                      \
