@@ -42,12 +42,15 @@ while ($file =~ /\n__MPFR_DECLSPEC +([^;]*);/g)
     foreach my $arg (split /,\s*/, $args)
       {
         $arg =~ s/ +\*/\*/;
-        $arg =~ s/long(\**)$/long int\1/;
         $arg =~ s/mp(fr?|q|z)_ptr/mp\1_t/;
         $arg =~ s/mp(fr?|q|z)_srcptr/const mp\1_t/;
         push @args, $arg;
       }
     defined $fh{$f} and die "$0: $f given twice in mpfr.h";
+    foreach my $arg (@args)
+      {
+        $arg =~ s/long(\**)$/long int\1/;
+      }
     $fh{$f} = \@args;
     $f{$f} = 1;
   }
