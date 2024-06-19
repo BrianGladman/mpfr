@@ -42,7 +42,7 @@ while ($file =~ /\n__MPFR_DECLSPEC +([^;]*);/g)
     foreach my $arg (split /,\s*/, $args)
       {
         $arg =~ s/ +\*/\*/;
-        $arg =~ s/mp(fr?|q|z)_ptr/mp\1_t/;
+        $arg =~ s/mp(fr?|q|z)_ptr$/mp\1_t/;
         $arg =~ s/mp(fr?|q|z)_srcptr/const mp\1_t/;
         push @args, $arg;
       }
@@ -71,7 +71,8 @@ while (<FILE>)
     foreach my $arg (split /, /, $args)
       {
         $arg eq '...' || $arg eq 'void'
-          || $arg =~ s/^(\S[^@]*\S) ?\@var\{[^}]+\}(?:\@fptt\{\[\]\})?$/\1/
+          || $arg =~ s/^(\S[^@]*\S) ?\@var\{[^}]+\}(\@fptt\{\[\]\})?$/
+                      $1.($2 && '*')/e
           or die "$0: error in mpfr.texi line $. (bad argument)\n";
         $arg =~ s/ +\*/\*/;
         push @args, $arg;
