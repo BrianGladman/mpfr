@@ -716,7 +716,6 @@ __MPFR_DECLSPEC int mpfr_fits_sshort_p (mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_fits_uintmax_p (mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_fits_intmax_p (mpfr_srcptr, mpfr_rnd_t);
 
-__MPFR_DECLSPEC void mpfr_extract (mpz_ptr, mpfr_srcptr, unsigned int);
 __MPFR_DECLSPEC void mpfr_swap (mpfr_ptr, mpfr_ptr);
 __MPFR_DECLSPEC void mpfr_dump (mpfr_srcptr);
 
