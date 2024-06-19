@@ -525,7 +525,7 @@ __MPFR_DECLSPEC int mpfr_div_q (mpfr_ptr, mpfr_srcptr, mpq_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_add_q (mpfr_ptr, mpfr_srcptr, mpq_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_sub_q (mpfr_ptr, mpfr_srcptr, mpq_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_cmp_q (mpfr_srcptr, mpq_srcptr);
-__MPFR_DECLSPEC void mpfr_get_q (mpq_ptr q, mpfr_srcptr f);
+__MPFR_DECLSPEC void mpfr_get_q (mpq_ptr, mpfr_srcptr);
 #endif
 __MPFR_DECLSPEC int mpfr_set_str (mpfr_ptr, const char *, int, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_init_set_str (mpfr_ptr, const char *, int,
@@ -561,7 +561,7 @@ __MPFR_DECLSPEC unsigned long mpfr_get_ui (mpfr_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC size_t mpfr_get_str_ndigits (int, mpfr_prec_t);
 __MPFR_DECLSPEC char * mpfr_get_str (char*, mpfr_exp_t*, int, size_t,
                                      mpfr_srcptr, mpfr_rnd_t);
-__MPFR_DECLSPEC int mpfr_get_z (mpz_ptr z, mpfr_srcptr f, mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_get_z (mpz_ptr, mpfr_srcptr, mpfr_rnd_t);
 
 __MPFR_DECLSPEC void mpfr_free_str (char *);
 
