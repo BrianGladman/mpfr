@@ -42,6 +42,9 @@ while ($file =~ /\n__MPFR_DECLSPEC +([^;]*);/g)
     foreach my $arg (split /,\s*/, $args)
       {
         $arg =~ s/ +\*/\*/;
+        $arg =~ s/long(\**)$/long int\1/;
+        $arg =~ s/mp(fr?|q|z)_ptr/mp\1_t/;
+        $arg =~ s/mp(fr?|q|z)_srcptr/const mp\1_t/;
         push @args, $arg;
       }
     defined $fh{$f} and die "$0: $f given twice in mpfr.h";
@@ -77,16 +80,35 @@ close FILE or die;
 
 foreach my $f (sort keys %f)
   {
-    if (!defined $fh{$f} && !defined $alias{$f})
+    next if defined $alias{$f};
+    if (!defined $fh{$f})
       {
         warn
           "function $f is documented in mpfr.texi but not declared in mpfr.h\n";
         $err = 1;
+        next;
       }
     if (!defined $ft{$f})
       {
         warn
           "function $f is declared in mpfr.h but not documented in mpfr.texi\n";
+        $err = 1;
+        next;
+      }
+    my @fh = @{$fh{$f}};
+    my @ft = @{$ft{$f}};
+    if ($#fh eq $#ft)
+      {
+        foreach my $i (0..$#fh)
+          {
+            next if $fh[$i] eq $ft[$i];
+            warn "function $f, argument $i: $fh[$i] <> $ft[$i]\n";
+            $err = 1;
+          }
+      }
+    else
+      {
+        warn "function $f: inconsistent number of arguments\n";
         $err = 1;
       }
   }
