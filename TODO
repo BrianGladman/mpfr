@@ -383,6 +383,11 @@ Table of contents:
   (but the same rules as FMA/FMS could be chosen, based on 1/±0 = ±Inf and
   1/±Inf = ±0).
 
+- Givens rotation x/sqrt(x^2+y^2)
+  https://en.wikipedia.org/wiki/Givens_rotation
+  According to table 1 from https://core.ac.uk/download/pdf/52319414.pdf,
+  in radix 2, there are no midpoint cases, and the only exact cases are
+  x=0 or y=0.
 
 ##############################################################################
 5. Efficiency
