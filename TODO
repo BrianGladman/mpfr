@@ -385,8 +385,14 @@ Table of contents:
 
 - Givens rotation x/sqrt(x^2+y^2)
   https://en.wikipedia.org/wiki/Givens_rotation
-  From a basic study of the 2-adic valuation, exact/midpoint cases are
-  not possible in any precision, except for x = 0 or y = 0.
+  Exact/midpoint cases are not possible in any precision, except for
+  x = 0 or y = 0. Indeed, assume that for x ≠ 0 and y ≠ 0, there is
+  z = x/sqrt(x^2+y^2) that is an integer multiplied by a power of 2.
+  Without loss of generality, assume that x and y are positive integers,
+  not both even. One has x^2 = z^2·(x^2+y^2). The 2-adic valuations of
+  x^2 and z^2 are even, so the one of x^2+y^2 too. But x^2+y^2 is 1 or 2
+  mod 4, meaning that its valuation is 0 or 1, thus 0. This implies that
+  z is an integer. Impossible as this would give z^2·(x^2+y^2) > x^2.
 
 ##############################################################################
 5. Efficiency
