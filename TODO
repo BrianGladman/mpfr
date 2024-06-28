@@ -385,6 +385,8 @@ Table of contents:
 
 - Givens rotation x/sqrt(x^2+y^2)
   https://en.wikipedia.org/wiki/Givens_rotation
+  From a basic study of the 2-adic valuation, exact/midpoint cases are
+  not possible in any precision, except for x = 0 or y = 0.
 
 ##############################################################################
 5. Efficiency
