@@ -2312,8 +2312,7 @@ Important note: In some domains, computing transcendental functions
 (even more with correct rounding) is expensive, even in small precision,
 for example the trigonometric and Bessel functions with a large argument.
 For some functions, the algorithm complexity and memory usage does not
-depend only on the output precision: for instance, the memory usage of
-@code{mpfr_rootn_ui} is also linear in the argument @var{k}, and the
+depend only on the output precision: for instance, the
 memory usage of the incomplete Gamma function also depends on the
 precision of the input @var{op}. It is also theoretically possible that
 some functions on some particular inputs might be very hard to round
