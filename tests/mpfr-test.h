@@ -195,6 +195,13 @@ int test_version (void);
 /* Memory handling */
 #define DEFAULT_MEMORY_LIMIT (1UL << 22)
 extern size_t tests_memory_limit;
+extern int tests_memory_disabled;
+void *tests_allocate (size_t);
+void *tests_reallocate (void *, size_t, size_t);
+void tests_free (void *, size_t);
+size_t tests_get_totalsize (void);
+size_t tests_get_maxsize (void);
+void tests_reset_maxsize (void);
 void tests_memory_start (void);
 void tests_memory_end (void);
 
@@ -329,12 +336,6 @@ extern gmp_randstate_t  mpfr_rands;
         gmp_randclear (mpfr_rands);    \
       }                                 \
   } while (0)
-
-/* Memory Allocation */
-extern int tests_memory_disabled;
-void *tests_allocate (size_t);
-void *tests_reallocate (void *, size_t, size_t);
-void tests_free (void *, size_t);
 
 #if defined (__cplusplus)
 }

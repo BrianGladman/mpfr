@@ -74,6 +74,7 @@ size_t tests_memory_limit = DEFAULT_MEMORY_LIMIT;
    must not be run. */
 static struct header  *tests_memory_list;
 static size_t tests_total_size = 0;
+static size_t tests_max_size = 0;
 MPFR_LOCK_DECL(mpfr_lock_memory)
 
 static void *
@@ -153,6 +154,8 @@ tests_addsize (size_t size)
       fflush (NULL);
       abort ();
     }
+  if (tests_total_size > tests_max_size)
+    tests_max_size = tests_total_size;
 }
 
 void *
@@ -295,6 +298,24 @@ tests_free (void *ptr, size_t size)
   tests_free_nosize (ptr);
 
   MPFR_UNLOCK_WRITE(mpfr_lock_memory);
+}
+
+size_t
+tests_get_totalsize (void)
+{
+  return tests_total_size;
+}
+
+size_t
+tests_get_maxsize (void)
+{
+  return tests_max_size;
+}
+
+void
+tests_reset_maxsize (void)
+{
+  tests_max_size = 0;
 }
 
 void

@@ -963,6 +963,9 @@ expensive. In particular, for code that is based on the mpz layer of GMP,
 do not use mpz_init, but mpz_init2 with the estimated maximum size; it is
 better to overestimate this size a bit than underestimating it.
 
+Memory usage can be checked (ignoring fragmentation and overhead) in the
+tests with tests_get_totalsize, tests_get_maxsize and tests_reset_maxsize.
+
 ===========================================================================
 
 Do not use C99-only features, such as empty macro arguments or C++-style
