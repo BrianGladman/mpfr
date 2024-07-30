@@ -502,7 +502,7 @@ main (int argc, char *argv[])
       for (l = 0; cputime () - st1 < 1.0; l++)
         TF (x, y, k, MPFR_RNDN);
       st1 = (cputime () - st1) / l;
-      printf ("%-15s took %.2es\n", MAKE_STR(TF), st1);
+      printf ("%-15s took %12.8fs\n", MAKE_STR(TF), st1);
 
       /* compare with x^(1/k) = exp(1/k*log(x)) */
       /* first warm up cache */
@@ -519,7 +519,7 @@ main (int argc, char *argv[])
           mpfr_exp (y, y, MPFR_RNDN);
         }
       st2 = (cputime () - st2) / l;
-      printf ("exp(1/k*log(x)) took %.2es\n", st2);
+      printf ("exp(1/k*log(x)) took %12.8fs\n", st2);
 
       mpfr_clear (x);
       mpfr_clear (y);
