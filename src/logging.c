@@ -48,7 +48,6 @@ static void
 mpfr_log_begin (void)
 {
   const char *var;
-  time_t tt;
 
   /* Grab some information */
   var = getenv ("MPFR_LOG_LEVEL");
@@ -87,6 +86,11 @@ mpfr_log_begin (void)
     var = "mpfr.log";
   if (mpfr_log_type != 0)
     {
+      time_t tt;
+      struct tm *tm_p;
+      char s[32];  /* a bit more than needed, just in case */
+      size_t r;
+
       mpfr_log_file = fopen (var, "w");
       if (mpfr_log_file == NULL)
         {
@@ -94,10 +98,11 @@ mpfr_log_begin (void)
           abort ();
         }
       time (&tt);
-      /* FIXME: ctime() was marked as obsolescent in POSIX.1-2008 and
-         [[deprecated]] for the future ISO C23 standard. In particular,
-         see https://www.open-std.org/JTC1/SC22/WG14/www/docs/n2566.pdf */
-      fprintf (mpfr_log_file, "MPFR LOG FILE %s\n", ctime (&tt));
+      tm_p = localtime (&tt);
+      r = strftime (s, sizeof s, "%Y-%m-%d %H:%M:%S", tm_p);
+
+      fprintf (mpfr_log_file, "MPFR LOG FILE %s\n",
+               r != 0 ? s : "[strftime failed]");
       fflush (mpfr_log_file);  /* always done */
     }
 }
