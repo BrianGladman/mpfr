@@ -94,6 +94,9 @@ mpfr_log_begin (void)
           abort ();
         }
       time (&tt);
+      /* FIXME: ctime() was marked as obsolescent in POSIX.1-2008 and
+         [[deprecated]] for the future ISO C23 standard. In particular,
+         see https://www.open-std.org/JTC1/SC22/WG14/www/docs/n2566.pdf */
       fprintf (mpfr_log_file, "MPFR LOG FILE %s\n", ctime (&tt));
       fflush (mpfr_log_file);  /* always done */
     }
