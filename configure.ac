@@ -74,7 +74,7 @@ dnl Alternatively, the test program could output the result to a file and
 dnl return with the 0 exit status if it could do that successfully.
 dnl
 dnl [*] 2.8.2 Exit Status for Commands
-dnl https://pubs.opengroup.org/onlinepubs/9699919799//utilities/V3_chap02.html#tag_18_08_02
+dnl https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_08_02
 
 test_CFLAGS=${CFLAGS+set}
 

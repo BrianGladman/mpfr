@@ -1545,7 +1545,7 @@ Makefile portability
 
 Due to the various "make" implementations, the "make" rules must follow
 the POSIX standard:
-  https://pubs.opengroup.org/onlinepubs/9699919799/utilities/make.html
+  https://pubs.opengroup.org/onlinepubs/9799919799/utilities/make.html
 
 The GNU Autoconf manual has a chapter "Portable Make Programming".
 
