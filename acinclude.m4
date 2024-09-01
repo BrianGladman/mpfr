@@ -5,10 +5,10 @@ dnl  Contributed by the AriC and Caramba projects, INRIA.
 dnl
 dnl  This file is part of the GNU MPFR Library.
 dnl
-dnl  The GNU MPFR Library is free software; you can redistribute it and/or modify
-dnl  it under the terms of the GNU Lesser General Public License as published
-dnl  by the Free Software Foundation; either version 3 of the License, or (at
-dnl  your option) any later version.
+dnl  The GNU MPFR Library is free software; you can redistribute it and/or
+dnl  modify it under the terms of the GNU Lesser General Public License as
+dnl  published by the Free Software Foundation; either version 3 of the
+dnl  License, or (at your option) any later version.
 dnl
 dnl  The GNU MPFR Library is distributed in the hope that it will be useful, but
 dnl  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -16,9 +16,8 @@ dnl  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 dnl  License for more details.
 dnl
 dnl  You should have received a copy of the GNU Lesser General Public License
-dnl  along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-dnl  https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-dnl  51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+dnl  along with the GNU MPFR Library; see the file COPYING.LESSER.
+dnl  If not, see <https://www.gnu.org/licenses/>.
 
 dnl  autoconf 2.60 is necessary because of the use of AC_PROG_SED.
 dnl  The following line allows the autoconf wrapper (when installed)
