@@ -5,7 +5,7 @@
 @c Note that the 5 occurrences of the version string in this file
 @c should be updated by the tools/update-version script.
 @set VERSION 4.3.0-dev
-@set UPDATED-MONTH July 2024
+@set UPDATED-MONTH September 2024
 @settitle GNU MPFR @value{VERSION}
 @synindex tp fn
 @iftex
