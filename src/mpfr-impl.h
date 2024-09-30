@@ -2734,6 +2734,17 @@ extern "C" {
    (see changeset r13820 in the ubf2 branch). So, for the time being,
    as long as the code does not break, do not change anything.
 
+   [Added on 2024-09-30] The above suggestion may not be correct. Any use
+   of __mpfr_ubf_struct will lead to a break of the aliasing rules at some
+   point. A solution might be to define something like
+     typedef struct {
+       __mpfr_struct m;
+       mpz_t _mpfr_zexp;
+     } __mpfr_ubf_struct;
+   and manipulate it with a mpfr_ptr pointer to the member m. This would
+   be very similar to
+     https://stackoverflow.com/questions/63518693/struct-extension-in-c
+
    Note: The condition "use mpfr_ptr to access the usual mpfr_t members and
    mpfr_ubf_ptr to access the additional member _mpfr_zexp" may be ignored
    if the union type is visible within the function (see ISO C99 6.5.2.3#5
