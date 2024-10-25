@@ -156,9 +156,12 @@ test_tiny (void)
                   mpfr_set (z, t, (mpfr_rnd_t) rnd);
                   if (! mpfr_equal_p (y, z))
                     {
-                      mpfr_printf ("Error for x=%Ra\n", x);
-                      mpfr_printf ("Expected  z=%Ra\n", z);
-                      mpfr_printf ("Got       y=%Ra\n", z);
+                      printf ("Error for x=");
+                      mpfr_dump (x);
+                      printf ("Expected  z=");
+                      mpfr_dump (z);
+                      printf ("Got       y=");
+                      mpfr_dump (z);
                       exit (1);
                     }
                 }
@@ -171,9 +174,12 @@ test_tiny (void)
                   mpfr_set (z, t, (mpfr_rnd_t) rnd);
                   if (! mpfr_equal_p (y, z))
                     {
-                      mpfr_printf ("Error for x=%Ra\n", x);
-                      mpfr_printf ("Expected  z=%Ra\n", z);
-                      mpfr_printf ("Got       y=%Ra\n", z);
+                      printf ("Error for x=");
+                      mpfr_dump (x);
+                      printf ("Expected  z=");
+                      mpfr_dump (z);
+                      printf ("Got       y=");
+                      mpfr_dump (z);
                       exit (1);
                     }
                 }
