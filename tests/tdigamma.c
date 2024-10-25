@@ -133,7 +133,9 @@ bug20210215 (void)
 static void
 test_tiny (void)
 {
-  for (int p = MPFR_PREC_MIN; p <= 10; p++)
+  int p;
+
+  for (p = MPFR_PREC_MIN; p <= 10; p++)
     {
       /* the special code needs EXP(x) < -2, thus |x| < 2^-3 */
       mpfr_t x, y, z, t;
@@ -152,7 +154,7 @@ test_tiny (void)
               if (mpfr_can_round (t, 0, MPFR_RNDN, (mpfr_rnd_t) rnd, p))
                 {
                   mpfr_set (z, t, (mpfr_rnd_t) rnd);
-                  if (mpfr_cmp (y, z))
+                  if (! mpfr_equal_p (y, z))
                     {
                       mpfr_printf ("Error for x=%Ra\n", x);
                       mpfr_printf ("Expected  z=%Ra\n", z);
@@ -167,7 +169,7 @@ test_tiny (void)
               if (mpfr_can_round (t, 0, MPFR_RNDN, (mpfr_rnd_t) rnd, p))
                 {
                   mpfr_set (z, t, (mpfr_rnd_t) rnd);
-                  if (mpfr_cmp (y, z))
+                  if (! mpfr_equal_p (y, z))
                     {
                       mpfr_printf ("Error for x=%Ra\n", x);
                       mpfr_printf ("Expected  z=%Ra\n", z);

@@ -334,6 +334,7 @@ int
 mpfr_digamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
   int inex;
+  mpfr_exp_t e;
   MPFR_SAVE_EXPO_DECL (expo);
 
   MPFR_LOG_FUNC
@@ -391,7 +392,7 @@ mpfr_digamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
    |y - Digamma(x)| >= 2^(-2n-1)ufp(y), and rounding -1/x gives the correct result.
    If x < 2^E, then y > 2^(-E), thus ufp(y) > 2^(-E-1).
    A sufficient condition is thus EXP(x) <= -2 MAX(PREC(x),PREC(Y)). */
-  mpfr_exp_t e = MPFR_GET_EXP (x);
+  e = MPFR_GET_EXP (x);
   if (e < -2)
     {
       if (e <= -2 * (mpfr_exp_t) MAX(MPFR_PREC(x), MPFR_PREC(y)))
