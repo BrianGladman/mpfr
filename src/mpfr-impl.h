@@ -485,6 +485,17 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
        https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2270.pdf
    Note: Evaluating expr might yield side effects, but such side effects
    must not change the results (except by yielding an assertion failure).
+   If MPFR_ASSERT* is used as a left expression of a comma operator, make
+   sure to protect the full expression with parentheses in order to avoid
+   a compilation error when it appears in a function or macro argument.
+   For instance, do not write
+     bp[MPFR_ASSERTD (k >= 0), k]
+   but
+     bp[(MPFR_ASSERTD (k >= 0), k)]
+   because
+     MPFR_UNLIKELY (bp[MPFR_ASSERTD (k >= 0), k] == 0)
+   would be invalid (it may also be better to put the assertion earlier
+   to improve the readability of the code, if possible).
 */
 #ifndef MPFR_WANT_ASSERT
 # define MPFR_WANT_ASSERT 0
@@ -1792,6 +1803,13 @@ typedef struct {
 /*
  * Note: due to the labels, one cannot use a macro MPFR_RNDRAW* more than
  * once in a function (otherwise these labels would not be unique).
+ *
+ * Moreover, these macros have "complex" arguments (handlers and extra),
+ * which can take code. One should make sure that such code does not use
+ * commas that are not inside parentheses (this must be parentheses, not
+ * brackets); otherwise the comma just separates the macro arguments,
+ * and the compilation would fail as there would be more arguments than
+ * expected by the macro definition.
  */
 
 /*
