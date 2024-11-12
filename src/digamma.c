@@ -21,6 +21,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #include "mpfr-impl.h"
 
+/* References:
+   [1] Bounds on Runs of Zeros and Ones for Algebraic Functions,
+       Tomas Lang and Jean-Michel Muller,
+       Proceedings of the 15th IEEE Symposium on Computer Arithmetic, 2001.
+*/
+
 /* FIXME: Check that MPFR_GET_EXP can only be called on regular values
    (in r14025, this is not the case) and that there cannot be integer
    overflows. */
@@ -385,13 +391,27 @@ mpfr_digamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   /* for x very small, we have Digamma(x) = -1/x - gamma + O(x), more precisely
      -1 < Digamma(x) + 1/x < 0 for -0.2 < x < 0.2, thus:
      (i) either x is a power of two, then 1/x is exactly representable, and
-         as long as 1/2*ulp(1/x) > 1, we can conclude;
+         as long as 1/2*ulp(1/x) > 1, we can conclude.
+         If 2^(e-1) <= |x| < 2^e, then 2^(-e) < |1/x| < 2^(-e+1),
+         thus ulp_y(1/x) = 2^(-e+1-prec(y)), and we want
+         1/2*2^(-e+1-prec(y)) > 1, thus e <= -prec(y)-1;
      (ii) otherwise assume x has <= n bits, and y has <= n+1 bits, then
-   |y + 1/x| >= 2^(-2n) ufp(y), where ufp means unit in first place.
-   Since |Digamma(x) + 1/x| <= 1, if 2^(-2n) ufp(y) >= 2, then
-   |y - Digamma(x)| >= 2^(-2n-1)ufp(y), and rounding -1/x gives the correct result.
-   If x < 2^E, then y > 2^(-E), thus ufp(y) > 2^(-E-1).
-   A sufficient condition is thus EXP(x) <= -2 MAX(PREC(x),PREC(Y)). */
+          we know from [1] that the longest runs of zeros or ones in 1/x
+          have length n-1, thus we can have in the worst case
+          1/x = aaa...aaa000...0001... or 1/x = aaa...aaa111...1110...
+          where aaa...aaa has n+1 bits, and 000...000 or 111...111 has n-1
+          bits, and aaa...aaa corresponds to -y. In both cases
+          |y + 1/x| >= 2^(-2n) ufp(y), where ufp means unit in first place.
+          Since |Digamma(x) + 1/x| < 1, if 2^(-2n) ufp(y) = 2^k with k >= 1,
+          then by the triangular inequality
+          |y - Digamma(x)| > 2^k-1 >= 2^(k-1) = 2^(-2n-1) ufp(y),
+          and rounding -1/x gives the
+          correct result. If 2^(e-1) <= |x| < 2^e, then |y| > 2^(-e),
+          thus ufp(y) >= 2^(-e).
+          The hypothesis 2^(-2n) ufp(y) = 2^k with k >= 1 is thus satisfied
+          as long as -2n-e >= 1, thus e <= -2n-1, with n is the maximum
+          of both precisions.
+          A sufficient condition is thus EXP(x) <= -2 MAX(PREC(x),PREC(y)). */
   e = MPFR_GET_EXP (x);
   if (e < -2)
     {
