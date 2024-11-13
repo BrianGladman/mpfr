@@ -295,7 +295,10 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         {
           j ++;
           mpfr_ui_div (t, 1, x_plus_j, MPFR_RNDN); /* err <= 1/2 ulp */
-          mpfr_add (u, u, t, MPFR_RNDN);
+          mpfr_add (u, u, t, MPFR_RNDN);           /* err <= 1/2 ulp */
+          /* since |t| <= |u|, the 1/2 ulp error on t induces an error
+             <= 1/2 ulp on u, thus the total error for the mpfr_ui_div
+             and mpfr_add calls is bounded by 1 ulp(u) */
           inex = mpfr_add_ui (x_plus_j, x_plus_j, 1, MPFR_RNDZ);
           if (inex != 0) /* we lost one bit */
             {
@@ -303,7 +306,9 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
               mpfr_prec_round (x_plus_j, q, MPFR_RNDZ);
               mpfr_nextabove (x_plus_j);
             }
-          /* since all terms are positive, the error is bounded by j ulps */
+          /* by induction, we see the total error on u is bounded by j ulp(u),
+             since the total error is bounded by:
+             (j-1)*ulp(u_old) + ulp(u) <= j*ulp(u) since u_old <= u. */
         }
       for (erru = 0; j > 1; erru++, j = (j + 1) / 2);
       errt = mpfr_digamma_approx (t, x_plus_j);
