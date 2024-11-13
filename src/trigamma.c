@@ -27,6 +27,107 @@ If not, see <https://www.gnu.org/licenses/>. */
        Vol. 27, No. 1 (1978), pp. 97-99 (3 pages)
 */
 
+/* compute trigamma(x) for x < 1/2 using the reflection formula:
+   trigamma(1-x) + trigamma(x) = pi^2*(1+cot(pi*x)^2)
+   thus for x < 1/2:
+   (a) evaluate z = trigamma(y), where y = 1-x >= 1/2
+   (b) return pi^2*(1+cot(pi*x)^2) - z
+*/
+static int
+mpfr_trigamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
+{
+  /* trigamma(n) = +Inf for n integer, n <= 0 */
+  if (mpfr_integer_p (x))
+    {
+      MPFR_SET_INF(y);
+      MPFR_SET_POS(y);
+      return 0;
+    }
+
+  return mpfr_set (y, x, rnd_mode); // not yet implemented
+}
+
+/* special case for x=1/2, where trigamma(1/2) = pi^2/2 */
+static int
+half (mpfr_ptr y, mpfr_rnd_t rnd_mode)
+{
+  mpfr_t t;
+  int inex;
+  mpfr_prec_t p = MPFR_PREC(y), extra;
+  /* We can check by exhaustive search that the algorithm below returns the
+     correct rounding for extra = 7 for p <= 152,
+     then for extra = 14 for p <= 9629 bits.
+     Then extra = 64 is probably overkill for all possible values of p,
+     but it would be more rigorous to have a Ziv loop (FIXME). */
+  extra = (p <= 152) ? 7 : (p <= 9629) ? 14 : 64;
+  mpfr_init2 (t, MPFR_PREC(y) + extra);
+  mpfr_const_pi (t, MPFR_RNDN);
+  mpfr_sqr (t, t, MPFR_RNDN);
+  inex = mpfr_div_2ui (y, t, 1, rnd_mode);
+  mpfr_clear (t);
+  return inex;
+}
+
+/* case x >= 1/2 */
+static int
+mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
+{
+  mpfr_prec_t p = MPFR_PREC(y) + 10, q;
+  mpfr_t t, u, x_plus_j;
+  int inex;
+  mpfr_exp_t errt, erru, expt;
+  mpfr_prec_t j = 0, min;
+  MPFR_ZIV_DECL (loop);
+
+  if (mpfr_cmp_ui_2exp (x, 1, -1) == 0) /* x = 1/2 */
+    return half (y, rnd_mode);
+
+  /* now x > 1/2: we use the shift formula trigamma(x+1) = trigamma(x) - 1/x^2
+     which yields
+     trigamma(x) = 1/x^2 + 1/(x+1)^2 + ... + 1/(x+k-1)^2 + trigamma(x+k)
+     until z = x+k is large enough such that we can use the formula:
+     trigamma(z) = 1/z + 1/(2z^2) + sum(B[2j]/z^(2j+1), j=1..infinity) (2)
+     where B[2j] are Bernoulli numbers.
+  */
+
+  /* Compute a precision q such that x+1 is exact. */
+  if (MPFR_PREC(x) <= MPFR_GET_EXP(x))
+    {
+      /* The goal of the first assertion is to let the compiler ignore
+         the second one when MPFR_EMAX_MAX <= MPFR_PREC_MAX. */
+      MPFR_ASSERTD (MPFR_EXP(x) <= MPFR_EMAX_MAX);
+      MPFR_ASSERTN (MPFR_EXP(x) <= MPFR_PREC_MAX);
+      /* In that case, ulp(x) = 2^(EXP(x)-PREC(x)) >= 1,
+         thus adding 1 will not change the precision (in case of binade
+         change, we have x+1 = 2^EXP(x) which is exact). */
+      q = MPFR_EXP(x);
+    }
+  else
+    /* In that case, ulp(x) < 1, thus if we add 1 at bit of weight 0,
+       we might get an overflow, and need PREC(x)+1 bits. */
+    q = MPFR_PREC(x) + 1;
+
+  MPFR_ZIV_INIT (loop, p);
+  for(;;)
+    {
+      /* Since |B[2j]| ~ 4*sqrt(pi*j)*(j/(pi*e))^(2j), we have
+         t[j] := B[2j]/z^(2j+1) ~ 4/z*sqrt(pi*j)*(j/(pi*e*z))^(2j).
+         This yields t[j+1]/t[j] ~ ((j+1)/(pi*e*z))^(2j+2)/(j/(pi*e*z))^(2j)
+                                 ~ ((j+1)/(pi*e*z))^2*(1+1/j)^(2j)
+                                 ~ (j/(pi*e*z))^2*e^2 ~ (j/(pi*z))^2.
+         The smaller term in the divergent series (2) is obtained approximately
+         for j = pi*z, and this term is about exp(-2*pi*z).
+         Since we want it to be less than 2^-p, this gives z > p*log(2)/(2*pi),
+         i.e., x >= 0.1103 p. To be safe, we ensure x >= 0.25 * p.
+      */
+    }
+  min = (p + 3) / 4;
+  if (min < 2)
+    min = 2;
+  MPFR_ZIV_FREE (loop);
+  return inex;
+}
+
 /* trigamma is the 2nd derivative of log(gamma(x)) */
 int
 mpfr_trigamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
@@ -94,9 +195,9 @@ mpfr_trigamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         {
           mpfr_t t;
           mpfr_init2 (t, w);
-          inex = mpfr_mul (t, x, x, MPFR_RNDN);
+          mpfr_mul (t, x, x, MPFR_RNDN);
           /* t = x^2 * (1 + theta1) with |theta1| < 2^-w */
-          inex = inex || mpfr_si_div (t, 1, t, MPFR_RNDN);
+          mpfr_si_div (t, 1, t, MPFR_RNDN);
           /* t = 1/x^2 / (1 + theta1)^2 * (1 + theta2)
              with |theta1|, |theta2} < 2^-w thus
              t = 1/x^2 * (1 + theta3) with |theta3| < 4*2^-w,
@@ -112,6 +213,11 @@ mpfr_trigamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
             }
         }
     }
+
+  if (MPFR_IS_NEG(x) || MPFR_EXP(x) < 0) /* x < 1/2 */
+    inex = mpfr_trigamma_reflection (y, x, rnd_mode);
+  else
+    inex = mpfr_trigamma_positive (y, x, rnd_mode);
 
  end:
   MPFR_SAVE_EXPO_FREE (expo);
