@@ -73,9 +73,10 @@ half (mpfr_ptr y, mpfr_rnd_t rnd_mode)
    Assumes s does not overlap with x.
    Returns an integer e such that the error is bounded by 2^e ulps
    of the result s.
-   Use the formula
-   trigamma(x) = 1/x + 1/(2x^2) + sum(B[2j]/x^(2j+1), j=1..infinity) (2)
-   where B[2j] are Bernoulli numbers.
+   Use the formula (6.4.11) with n=1 from Abramowitz & Stegun:
+   trigamma(x) = 1/x + 1/(2x^2) + sum(B[2j]/x^(2j+1), j=1..infinity)
+   where B[2j] are Bernoulli numbers, which we rewrite as:
+   trigamma(x) = 1/x * (1 + 1/(2x) + sum(B[2j]/x^(2j), j=1..infinity))
 */
 static mpfr_exp_t
 mpfr_trigamma_approx (mpfr_ptr s, mpfr_srcptr x)
@@ -91,47 +92,46 @@ mpfr_trigamma_approx (mpfr_ptr s, mpfr_srcptr x)
   mpfr_init2 (u, p);
   mpfr_init2 (invxx, p);
 
-  mpfr_log (s, x, MPFR_RNDN);         /* error <= 1/2 ulp */
-  mpfr_ui_div (t, 1, x, MPFR_RNDN);   /* error <= 1/2 ulp */
+  mpfr_set_ui (s, 1, MPFR_RNDN);     /* exact */
+  mpfr_ui_div (t, 1, x, MPFR_RNDN);  /* error <= 1/2 ulp */
   mpfr_div_2ui (t, t, 1, MPFR_RNDN); /* exact */
-  mpfr_sub (s, s, t, MPFR_RNDN);
-  /* error <= 1/2 + 1/2*2^(EXP(olds)-EXP(s)) + 1/2*2^(EXP(t)-EXP(s)).
-     For x >= 2, log(x) >= 2*(1/(2x)), thus olds >= 2t, and olds - t >= olds/2,
-     thus 0 <= EXP(olds)-EXP(s) <= 1, and EXP(t)-EXP(s) <= 0, thus
-     error <= 1/2 + 1/2*2 + 1/2 <= 2 ulps. */
-  e = 2; /* initial error */
-  mpfr_sqr (invxx, x, MPFR_RNDZ);     /* invxx = x^2 * (1 + theta)
-                                         for |theta| <= 2^(-p) */
+  mpfr_add (s, s, t, MPFR_RNDN);     /* error <= 1/2 ulp */
+  /* since x >= 2, we have t <= 1/2 thus the 1/2 ulp error on t = 1/x
+     translates to 1/4 ulp(1), and to 1/8 ulp(1) after t = t/2,
+     which stays <= 1/8 ulp(1) after the addition of s and t, thus the error
+     so far is bounded by 1/8 + 1/2 < 1 ulp(s) */
+  e = 1; /* initial error in ulp(s) */
+  /* Note: the values 'theta' below may represent different values,
+     all with |theta| <= 2^-p, following Higham's method */
+  mpfr_sqr (invxx, x, MPFR_RNDZ);     /* invxx = x^2 * (1 + theta) */
   mpfr_ui_div (invxx, 1, invxx, MPFR_RNDU); /* invxx = 1/x^2 * (1 + theta)^2 */
 
   /* in the following we note err=xxx when the ratio between the approximation
-     and the exact result can be written (1 + theta)^xxx for |theta| <= 2^(-p),
-     following Higham's method */
+     and the exact result can be written (1 + theta)^xxx for |theta| <= 2^-p */
   mpfr_set_ui (t, 1, MPFR_RNDN); /* err = 0 */
   for (n = 1;; n++)
     {
-      /* The main term is Bernoulli[2n]/(2n)/x^(2n) = B[n]/(2n+1)!(2n)/x^(2n)
-         = B[n]*t[n]/(2n) where t[n]/t[n-1] = 1/(2n)/(2n+1)/x^2. */
+      /* The main term is Bernoulli[2n]/x^(2n) = b[n]/(2n+1)!/x^(2n)
+         = b[n]*t[n] where t[n]/t[n-1] = 1/(2n+1)/x^2. */
       mpfr_mul (t, t, invxx, MPFR_RNDU);        /* err = err + 3 */
-      mpfr_div_ui (t, t, 2 * n, MPFR_RNDU);     /* err = err + 1 */
       mpfr_div_ui (t, t, 2 * n + 1, MPFR_RNDU); /* err = err + 1 */
-      /* we thus have err = 5n here */
-      mpfr_div_ui (u, t, 2 * n, MPFR_RNDU);     /* err = 5n+1 */
-      mpfr_mul_z (u, u, mpfr_bernoulli_cache(n), MPFR_RNDU);/* err = 5n+2, and the
-                                                   absolute error is bounded
-                                                   by 10n+4 ulp(u) [Rule 11] */
+      /* we thus have err = 4n here */
+      mpfr_mul_z (u, u, mpfr_bernoulli_cache(n), MPFR_RNDU);
+        /* err = 4n+1, and the absolute error is bounded by 4n+1 ulp(u)
+           [Rule 11] from algorithms.pdf */
       /* if the terms 'u' are decreasing by a factor two at least,
          then the error coming from those is bounded by
-         sum((10n+4)/2^n, n=1..infinity) = 24 */
+         sum((4n+1)/2^n, n=1..infinity) = 9 */
       exps = MPFR_GET_EXP (s);
       expu = MPFR_GET_EXP (u);
       if (expu < exps - (mpfr_exp_t) p)
         break;
-      mpfr_sub (s, s, u, MPFR_RNDN); /* error <= 24 + n/2 */
+      mpfr_add (s, s, u, MPFR_RNDN);
       if (MPFR_GET_EXP (s) < exps)
         e <<= exps - MPFR_GET_EXP (s);
-      e ++; /* error in mpfr_sub */
-      f = 10 * n + 4;
+      e ++; /* error in mpfr_add */
+      f = 4 * n + 1;
+      /* convert the 4n+1 ulp(u) error into ulp(s) */
       while (expu < exps)
         {
           f = (1 + f) / 2;
@@ -144,6 +144,13 @@ mpfr_trigamma_approx (mpfr_ptr s, mpfr_srcptr x)
   mpfr_clear (u);
   mpfr_clear (invxx);
 
+  /* multiply the sum s by 1/x: if the error is bounded by e ulp(s),
+     then it is bounded relatively by 2*e*2^-p, thus after the division
+     below it is bounded relatively by (1+2*e*2^-p)*(1 + 2^-p) - 1 <
+     (2e+2)*2^-p thus by 2e+2 ulps (again by Rule 1). */
+  mpfr_div (s, s, x, MPFR_RNDN);
+
+  e = 2 * e + 2;
   f = 0;
   while (e > 1)
     {
