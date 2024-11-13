@@ -82,21 +82,22 @@ mpfr_digamma_approx (mpfr_ptr s, mpfr_srcptr x)
       mpfr_div_ui (t, t, 2 * n + 1, MPFR_RNDU); /* err = err + 1 */
       /* we thus have err = 5n here */
       mpfr_div_ui (u, t, 2 * n, MPFR_RNDU);     /* err = 5n+1 */
-      mpfr_mul_z (u, u, mpfr_bernoulli_cache(n), MPFR_RNDU);/* err = 5n+2, and the
-                                                   absolute error is bounded
-                                                   by 10n+4 ulp(u) [Rule 11] */
+      mpfr_mul_z (u, u, mpfr_bernoulli_cache(n), MPFR_RNDU)
+        /* err = 5n+2, and the error is bounded by (5n+2) ulp(u)
+           [Rule 1 from algorithms.pdf] */
       /* if the terms 'u' are decreasing by a factor two at least,
          then the error coming from those is bounded by
-         sum((10n+4)/2^n, n=1..infinity) = 24 */
+         sum((5n+2)/2^n, n=1..infinity) = 12 */
       exps = MPFR_GET_EXP (s);
       expu = MPFR_GET_EXP (u);
       if (expu < exps - (mpfr_exp_t) p)
         break;
-      mpfr_sub (s, s, u, MPFR_RNDN); /* error <= 24 + n/2 */
+      mpfr_sub (s, s, u, MPFR_RNDN);
       if (MPFR_GET_EXP (s) < exps)
         e <<= exps - MPFR_GET_EXP (s);
       e ++; /* error in mpfr_sub */
-      f = 10 * n + 4;
+      /* convert the error (5n+2) ulp(u) into ulp(s) */
+      f = 5 * n + 2;
       while (expu < exps)
         {
           f = (1 + f) / 2;
