@@ -68,6 +68,92 @@ half (mpfr_ptr y, mpfr_rnd_t rnd_mode)
   return inex;
 }
 
+/* Put in s an approximation of trigamma(x).
+   Assumes x >= 2.
+   Assumes s does not overlap with x.
+   Returns an integer e such that the error is bounded by 2^e ulps
+   of the result s.
+   Use the formula
+   trigamma(x) = 1/x + 1/(2x^2) + sum(B[2j]/x^(2j+1), j=1..infinity) (2)
+   where B[2j] are Bernoulli numbers.
+*/
+static mpfr_exp_t
+mpfr_trigamma_approx (mpfr_ptr s, mpfr_srcptr x)
+{
+  mpfr_prec_t p = MPFR_PREC (s);
+  mpfr_t t, u, invxx;
+  mpfr_exp_t e, exps, f, expu;
+  unsigned long n;
+
+  MPFR_ASSERTN (MPFR_IS_POS (x) && MPFR_GET_EXP (x) >= 2);
+
+  mpfr_init2 (t, p);
+  mpfr_init2 (u, p);
+  mpfr_init2 (invxx, p);
+
+  mpfr_log (s, x, MPFR_RNDN);         /* error <= 1/2 ulp */
+  mpfr_ui_div (t, 1, x, MPFR_RNDN);   /* error <= 1/2 ulp */
+  mpfr_div_2ui (t, t, 1, MPFR_RNDN); /* exact */
+  mpfr_sub (s, s, t, MPFR_RNDN);
+  /* error <= 1/2 + 1/2*2^(EXP(olds)-EXP(s)) + 1/2*2^(EXP(t)-EXP(s)).
+     For x >= 2, log(x) >= 2*(1/(2x)), thus olds >= 2t, and olds - t >= olds/2,
+     thus 0 <= EXP(olds)-EXP(s) <= 1, and EXP(t)-EXP(s) <= 0, thus
+     error <= 1/2 + 1/2*2 + 1/2 <= 2 ulps. */
+  e = 2; /* initial error */
+  mpfr_sqr (invxx, x, MPFR_RNDZ);     /* invxx = x^2 * (1 + theta)
+                                         for |theta| <= 2^(-p) */
+  mpfr_ui_div (invxx, 1, invxx, MPFR_RNDU); /* invxx = 1/x^2 * (1 + theta)^2 */
+
+  /* in the following we note err=xxx when the ratio between the approximation
+     and the exact result can be written (1 + theta)^xxx for |theta| <= 2^(-p),
+     following Higham's method */
+  mpfr_set_ui (t, 1, MPFR_RNDN); /* err = 0 */
+  for (n = 1;; n++)
+    {
+      /* The main term is Bernoulli[2n]/(2n)/x^(2n) = B[n]/(2n+1)!(2n)/x^(2n)
+         = B[n]*t[n]/(2n) where t[n]/t[n-1] = 1/(2n)/(2n+1)/x^2. */
+      mpfr_mul (t, t, invxx, MPFR_RNDU);        /* err = err + 3 */
+      mpfr_div_ui (t, t, 2 * n, MPFR_RNDU);     /* err = err + 1 */
+      mpfr_div_ui (t, t, 2 * n + 1, MPFR_RNDU); /* err = err + 1 */
+      /* we thus have err = 5n here */
+      mpfr_div_ui (u, t, 2 * n, MPFR_RNDU);     /* err = 5n+1 */
+      mpfr_mul_z (u, u, mpfr_bernoulli_cache(n), MPFR_RNDU);/* err = 5n+2, and the
+                                                   absolute error is bounded
+                                                   by 10n+4 ulp(u) [Rule 11] */
+      /* if the terms 'u' are decreasing by a factor two at least,
+         then the error coming from those is bounded by
+         sum((10n+4)/2^n, n=1..infinity) = 24 */
+      exps = MPFR_GET_EXP (s);
+      expu = MPFR_GET_EXP (u);
+      if (expu < exps - (mpfr_exp_t) p)
+        break;
+      mpfr_sub (s, s, u, MPFR_RNDN); /* error <= 24 + n/2 */
+      if (MPFR_GET_EXP (s) < exps)
+        e <<= exps - MPFR_GET_EXP (s);
+      e ++; /* error in mpfr_sub */
+      f = 10 * n + 4;
+      while (expu < exps)
+        {
+          f = (1 + f) / 2;
+          expu ++;
+        }
+      e += f; /* total rounding error coming from 'u' term */
+    }
+
+  mpfr_clear (t);
+  mpfr_clear (u);
+  mpfr_clear (invxx);
+
+  f = 0;
+  while (e > 1)
+    {
+      f++;
+      e = (e + 1) / 2;
+      /* Invariant: 2^f * e does not decrease */
+    }
+  return f;
+}
+
 /* case x >= 1/2 */
 static int
 mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
@@ -126,7 +212,7 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       */
       min = (p + 3) / 4;
       if (min < 2)
-        min = 2;
+        min = 2; /* ensures x_plus_j >= 2 at the end of the loop below */
 
       mpfr_set (x_plus_j, x, MPFR_RNDN);
       mpfr_set_ui (u, 0, MPFR_RNDN);
@@ -141,6 +227,12 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
              |theta1|, |theta2| < 2^-p, thus
              t = 1/(x+j)^2 * (1 + theta3) with |theta3| < 3.1 * 2^-p */
           mpfr_add (u, u, t, MPFR_RNDN);
+          /* u = (u_old + t) * (1 + theta4) with |theta4| < 2^-p
+               = (u_old + 1/(x+j)^2 * (1 + theta3)) * (1 + theta4)
+               = (u_old + 1/(x+j)^2) * (1 + theta5)
+               with |theta5| < (1 + theta3)*(1 + theta4) - 1 < 4.2 * 2^-p.
+               The relative error for this step is thus bounded by
+               4.2 * 2^-p at each step, thus at most by 4.2 ulps */
           inex = mpfr_add_ui (x_plus_j, x_plus_j, 1, MPFR_RNDZ);
           if (inex != 0) /* we lost one bit */
             {
@@ -148,9 +240,16 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
               mpfr_prec_round (x_plus_j, q, MPFR_RNDZ);
               mpfr_nextabove (x_plus_j);
             }
-          /* since all terms are positive, the error is bounded by j ulps */
+          /* By induction, the total error is bounded by 4.2*j ulps.
+             Indeed, assume the error on u_old was bounded by
+             4.2*(j-1)*ulp(u_old), then the total error is bounded by:
+             4.2*(j-1)*ulp(u_old) + 4.2*ulp(u) <= 4.2*j*ulp(u) since u_old < u.
+          */
         }
     }
+  j = 5 * u; /* upper bound for the error */
+  for (erru = 0; j > 1; erru++, j = (j + 1) / 2);
+  errt = mpfr_trigamma_approx (t, x_plus_j);
   MPFR_ZIV_FREE (loop);
   inex = mpfr_set (y, t, rnd_mode);
   mpfr_clear (t);
