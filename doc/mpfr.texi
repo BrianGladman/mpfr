@@ -2645,9 +2645,11 @@ undefined, and when @var{op} is @pom{}0, *@var{signp} is the sign of the zero.
 @end deftypefun
 
 @deftypefun int mpfr_digamma (mpfr_t @var{rop}, const mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
-Set @var{rop} to the value of the Digamma (sometimes also called Psi)
+@deftypefunx int mpfr_trigamma (mpfr_t @var{rop}, const mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
+Set @var{rop} to the value of the Digamma (resp.@: Trigamma)
 function on @var{op}, rounded in the direction @var{rnd}.
-When @var{op} is a negative integer, set @var{rop} to NaN@.
+The Digamma function is sometimes called Psi.
+For Digamma, when @var{op} is a negative integer, set @var{rop} to NaN@.
 @end deftypefun
 
 @deftypefun int mpfr_beta (mpfr_t @var{rop}, const mpfr_t @var{op1}, const mpfr_t @var{op2}, mpfr_rnd_t @var{rnd})

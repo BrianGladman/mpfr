@@ -177,8 +177,8 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
   /* now x > 1/2: we use the shift formula trigamma(x+1) = trigamma(x) - 1/x^2
      which yields
-     trigamma(x) = 1/x^2 + 1/(x+1)^2 + ... + 1/(x+k-1)^2 + trigamma(x+k)
-     until z = x+k is large enough such that we can use the formula:
+     trigamma(x) = 1/x^2 + 1/(x+1)^2 + ... + 1/(x+j)^2 + trigamma(x+j+1)
+     until z = x+j+1 is large enough such that we can use the formula:
      trigamma(z) = 1/z + 1/(2z^2) + sum(B[2j]/z^(2j+1), j=1..infinity) (2)
      where B[2j] are Bernoulli numbers.
   */
@@ -253,10 +253,31 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
              4.2*(j-1)*ulp(u_old) + 4.2*ulp(u) <= 4.2*j*ulp(u) since u_old < u.
           */
         }
+      j = 5 * j; /* upper bound for the error */
+      for (erru = 0; j > 1; erru++, j = (j + 1) / 2);
+      errt = mpfr_trigamma_approx (t, x_plus_j);
+      expt = MPFR_GET_EXP (t);
+      /* now u approximates 1/x^2 + ... + 1/(x+j)^2 with error <= 2^erru ulp(u)
+         and t approximates 1/z + 1/(2z^2) + sum(B[2j]/z^(2j+1), j=1..infinity)
+         for z = x+j+1, with error <= 2^errt ulp(t) */
+      mpfr_add (t, u, t, MPFR_RNDN); /* add both terms */
+      MPFR_ASSERTD(MPFR_NOTZERO(t));
+      /* scale errt in case of cancellation */
+      if (MPFR_GET_EXP (t) < expt)
+        errt += expt - MPFR_EXP(t);
+      /* scale erru in case of cancellation */
+      if (MPFR_NOTZERO(u) && MPFR_GET_EXP (t) < MPFR_GET_EXP (u))
+        erru += MPFR_EXP(u) - MPFR_EXP(t);
+      /* the error is now bounded by (2^errt + 2^erru) * ulp(t),
+         for the new value of t */
+      errt = (errt >= erru) ? errt + 1 : erru + 1;
+      /* the error is bounded by 2^errt * ulp(t) */
+      if (MPFR_CAN_ROUND (t, p - errt, MPFR_PREC(y), rnd_mode))
+        break;
+      MPFR_ZIV_NEXT (loop, p);
+      mpfr_set_prec (t, p);
+      mpfr_set_prec (u, p);
     }
-  j = 5 * u; /* upper bound for the error */
-  for (erru = 0; j > 1; erru++, j = (j + 1) / 2);
-  errt = mpfr_trigamma_approx (t, x_plus_j);
   MPFR_ZIV_FREE (loop);
   inex = mpfr_set (y, t, rnd_mode);
   mpfr_clear (t);
@@ -287,8 +308,8 @@ mpfr_trigamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         {
           if (MPFR_IS_POS(x)) /* trigamma(+Inf) = +0 */
             {
-              MPFR_SET_SAME_SIGN(y, x);
               MPFR_SET_ZERO(y);
+              MPFR_SET_POS(y);
               MPFR_RET(0);
             }
           else                /* trigamma(-Inf) = NaN */
@@ -341,7 +362,7 @@ mpfr_trigamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
              and the rounding error is bounded by 4 ulps.
              Since the error from the O(1) term is also bounded by 4 ulps,
              the total error is bounded by 8 ulps. */
-          if (MPFR_CAN_ROUND (t, p - 3, MPFR_PREC(y), rnd_mode))
+          if (MPFR_CAN_ROUND (t, w - 3, MPFR_PREC(y), rnd_mode))
             {
               inex = mpfr_set (y, t, rnd_mode);
               mpfr_clear (t);
