@@ -36,6 +36,9 @@ If not, see <https://www.gnu.org/licenses/>. */
    Assumes s does not overlap with x.
    Returns an integer e such that the error is bounded by 2^e ulps
    of the result s.
+   Use the formula (6.3.18) from Abramowitz & Stegun:
+   trigamma(x) = log(x) + 1/(2x) + sum(B[2j]/(2jx^(2j)), j=1..infinity)
+   where B[2j] are the Bernoulli numbers.
 */
 static mpfr_exp_t
 mpfr_digamma_approx (mpfr_ptr s, mpfr_srcptr x)
@@ -70,8 +73,10 @@ mpfr_digamma_approx (mpfr_ptr s, mpfr_srcptr x)
   mpfr_set_ui (t, 1, MPFR_RNDN); /* err = 0 */
   for (n = 1;; n++)
     {
-      /* The main term is Bernoulli[2n]/(2n)/x^(2n) = B[n]/(2n+1)!(2n)/x^(2n)
-         = B[n]*t[n]/(2n) where t[n]/t[n-1] = 1/(2n)/(2n+1)/x^2. */
+      /* The main term is Bernoulli[2n]/(2n)/x^(2n) = b[n]/(2n+1)!/(2n)/x^(2n)
+         = b[n]*t[n]/(2n) where t[n]/t[n-1] = 1/(2n)/(2n+1)/x^2,
+         where b[n] = Bernoulli[2n]*(2n+1)! is the value stored in
+         mpfr_bernoulli_cache(n). */
       mpfr_mul (t, t, invxx, MPFR_RNDU);        /* err = err + 3 */
       mpfr_div_ui (t, t, 2 * n, MPFR_RNDU);     /* err = err + 1 */
       mpfr_div_ui (t, t, 2 * n + 1, MPFR_RNDU); /* err = err + 1 */
