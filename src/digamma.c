@@ -82,7 +82,7 @@ mpfr_digamma_approx (mpfr_ptr s, mpfr_srcptr x)
       mpfr_div_ui (t, t, 2 * n + 1, MPFR_RNDU); /* err = err + 1 */
       /* we thus have err = 5n here */
       mpfr_div_ui (u, t, 2 * n, MPFR_RNDU);     /* err = 5n+1 */
-      mpfr_mul_z (u, u, mpfr_bernoulli_cache(n), MPFR_RNDU)
+      mpfr_mul_z (u, u, mpfr_bernoulli_cache(n), MPFR_RNDU);
         /* err = 5n+2, and the error is bounded by (5n+2) ulp(u)
            [Rule 1 from algorithms.pdf] */
       /* if the terms 'u' are decreasing by a factor two at least,
@@ -324,19 +324,17 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
          that in this case, this is an exact zero, not an underflow. */
       if (MPFR_NOTZERO(t))
         {
+          /* rescale the error errt * ulp(t_old) in terms of ulp(t) */
           if (MPFR_GET_EXP (t) < expt)
             errt += expt - MPFR_EXP(t);
           /* Warning: if u is zero (which happens when x_plus_j >= min at the
              beginning of the while loop above), EXP(u) is not defined.
              In this case we have no error from u. */
+          /* rescale the error erru * ulp(u) in terms of ulp(t) */
           if (MPFR_NOTZERO(u) && MPFR_GET_EXP (t) < MPFR_GET_EXP (u))
             erru += MPFR_EXP(u) - MPFR_EXP(t);
-          if (errt > erru)
-            errt = errt + 1;
-          else if (errt == erru)
-            errt = errt + 2;
-          else
-            errt = erru + 1;
+          errt = (errt >= erru) ? errt + 1 : erru + 1;
+          /* the total error is bounded by 2^errt * ulp(t) */
           if (MPFR_CAN_ROUND (t, p - errt, MPFR_PREC(y), rnd_mode))
             break;
         }
