@@ -252,15 +252,20 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
     }
 
   /* compute a precision q such that x+1 is exact */
-  if (MPFR_PREC(x) < MPFR_GET_EXP(x))
+  if (MPFR_PREC(x) <= MPFR_GET_EXP(x))
     {
       /* The goal of the first assertion is to let the compiler ignore
          the second one when MPFR_EMAX_MAX <= MPFR_PREC_MAX. */
       MPFR_ASSERTD (MPFR_EXP(x) <= MPFR_EMAX_MAX);
       MPFR_ASSERTN (MPFR_EXP(x) <= MPFR_PREC_MAX);
+      /* In that case, ulp(x) = 2^(EXP(x)-PREC(x)) >= 1,
+         thus adding 1 will not change the precision (in case of binade
+         change, we have x+1 = 2^EXP(x) which is exact). */
       q = MPFR_EXP(x);
     }
   else
+    /* In that case, ulp(x) < 1, thus if we add 1 at bit of weight 0,
+       we might get an overflow, and need PREC(x)+1 bits. */
     q = MPFR_PREC(x) + 1;
 
   /* FIXME: q can be much too large, e.g. equal to the maximum exponent! */
