@@ -107,6 +107,10 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
        we might get an overflow, and need PREC(x)+1 bits. */
     q = MPFR_PREC(x) + 1;
 
+  mpfr_init2 (x_plus_j, q);
+
+  mpfr_init2 (t, p);
+  mpfr_init2 (u, p);
   MPFR_ZIV_INIT (loop, p);
   for(;;)
     {
@@ -120,11 +124,38 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
          Since we want it to be less than 2^-p, this gives z > p*log(2)/(2*pi),
          i.e., x >= 0.1103 p. To be safe, we ensure x >= 0.25 * p.
       */
+      min = (p + 3) / 4;
+      if (min < 2)
+        min = 2;
+
+      mpfr_set (x_plus_j, x, MPFR_RNDN);
+      mpfr_set_ui (u, 0, MPFR_RNDN);
+      j = 0;
+      while (mpfr_cmp_ui (x_plus_j, min) < 0)
+        {
+          j ++;
+          mpfr_ui_div (t, 1, x_plus_j, MPFR_RNDN);
+          /* t = 1/(x+j) * (1 + theta1) with |theta1| < 2^-p */
+          mpfr_sqr (t, t, MPFR_RNDN);
+          /* t = 1/(x+j)^2 * (1 + theta1)^2 * (1 + theta2) with
+             |theta1|, |theta2| < 2^-p, thus
+             t = 1/(x+j)^2 * (1 + theta3) with |theta3| < 3.1 * 2^-p */
+          mpfr_add (u, u, t, MPFR_RNDN);
+          inex = mpfr_add_ui (x_plus_j, x_plus_j, 1, MPFR_RNDZ);
+          if (inex != 0) /* we lost one bit */
+            {
+              q ++;
+              mpfr_prec_round (x_plus_j, q, MPFR_RNDZ);
+              mpfr_nextabove (x_plus_j);
+            }
+          /* since all terms are positive, the error is bounded by j ulps */
+        }
     }
-  min = (p + 3) / 4;
-  if (min < 2)
-    min = 2;
   MPFR_ZIV_FREE (loop);
+  inex = mpfr_set (y, t, rnd_mode);
+  mpfr_clear (t);
+  mpfr_clear (u);
+  mpfr_clear (x_plus_j);
   return inex;
 }
 
