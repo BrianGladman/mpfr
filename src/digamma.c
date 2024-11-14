@@ -137,12 +137,14 @@ mpfr_digamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
      ("y[%Pd]=%.*Rg inexact=%d", mpfr_get_prec(y), mpfr_log_prec, y, inex));
 
   /* we want that 1-x is exact with precision q: if 0 < x < 1/2, then
-     q = PREC(x)-EXP(x) is ok, otherwise if -1 <= x < 0, q = PREC(x)-EXP(x)
-     is ok, otherwise for x < -1, PREC(x) is ok if EXP(x) <= PREC(x),
+     q = PREC(x)-EXP(x) is ok, otherwise if -1 <= x < 0, q = PREC(x)-EXP(x)+1
+     is ok, otherwise for x < -1, PREC(x)+1 is ok if EXP(x) <= PREC(x),
      otherwise we need EXP(x) */
   expx = MPFR_GET_EXP (x);
-  if (expx < 0)
-    q = MPFR_PREC(x) + 1 - expx;
+  if (MPFR_IS_POS (x))           /* 0 < x < 1/2 */
+    q = MPFR_PREC(x) - expx;
+  else if (expx <= 0)            /* -1/2 < x < 0 */
+    q = MPFR_PREC(x) - expx + 1;
   else if (expx <= MPFR_PREC(x))
     q = MPFR_PREC(x) + 1;
   else
