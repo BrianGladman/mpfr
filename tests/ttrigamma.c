@@ -35,7 +35,6 @@ special (void)
   mpfr_set_inf (y, -1);
   mpfr_set_inf (x, 1);
   mpfr_trigamma (y, x, MPFR_RNDN);
-  mpfr_dump (y);
   if (mpfr_zero_p (y) == 0 || mpfr_signbit (y))
     {
       printf ("error for Trigamma(+Inf)\n");
@@ -56,9 +55,9 @@ main (int argc, char *argv[])
 
   special ();
 
-  test_generic (MPFR_PREC_MIN, 200, 20);
+  data_check ("data/trigamma", mpfr_trigamma, "mpfr_trigamma");
 
-  // data_check ("data/trigamma", mpfr_digamma, "mpfr_trigamma");
+  test_generic (MPFR_PREC_MIN, 200, 20);
 
   tests_end_mpfr ();
   return 0;

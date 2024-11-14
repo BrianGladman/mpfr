@@ -25,27 +25,8 @@ If not, see <https://www.gnu.org/licenses/>. */
    [1] Algorithm AS 121: Trigamma Function. B. E. Schneider,
        Journal of the Royal Statistical Society. Series C (Applied Statistics),
        Vol. 27, No. 1 (1978), pp. 97-99 (3 pages)
+   [2] Handbook of Mathematical Functions, Abramowitz & Stegun, 1964
 */
-
-/* compute trigamma(x) for x < 1/2 using the reflection formula:
-   trigamma(1-x) + trigamma(x) = pi^2*(1+cot(pi*x)^2)
-   thus for x < 1/2:
-   (a) evaluate z = trigamma(y), where y = 1-x >= 1/2
-   (b) return pi^2*(1+cot(pi*x)^2) - z
-*/
-static int
-mpfr_trigamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
-{
-  /* trigamma(n) = +Inf for n integer, n <= 0 */
-  if (mpfr_integer_p (x))
-    {
-      MPFR_SET_INF(y);
-      MPFR_SET_POS(y);
-      return 0;
-    }
-
-  return mpfr_set (y, x, rnd_mode); // not yet implemented
-}
 
 /* special case for x=1/2, where trigamma(1/2) = pi^2/2 */
 static int
@@ -112,16 +93,17 @@ mpfr_trigamma_approx (mpfr_ptr s, mpfr_srcptr x)
   for (n = 1;; n++)
     {
       /* The main term is Bernoulli[2n]/x^(2n) = b[n]/(2n+1)!/x^(2n)
-         = b[n]*t[n] where t[n]/t[n-1] = 1/(2n+1)/x^2. */
+         = b[n]*t[n] where t[n]/t[n-1] = 1/(2n)/(2n+1)/x^2 with t[0]=1. */
       mpfr_mul (t, t, invxx, MPFR_RNDU);        /* err = err + 3 */
+      mpfr_div_ui (t, t, 2 * n, MPFR_RNDU);     /* err = err + 1 */
       mpfr_div_ui (t, t, 2 * n + 1, MPFR_RNDU); /* err = err + 1 */
-      /* we thus have err = 4n here */
-      mpfr_mul_z (u, u, mpfr_bernoulli_cache(n), MPFR_RNDU);
-        /* err = 4n+1, and the absolute error is bounded by 4n+1 ulp(u)
+      /* we thus have err = 5n here */
+      mpfr_mul_z (u, t, mpfr_bernoulli_cache(n), MPFR_RNDU);
+        /* err = 5n+1, and the absolute error is bounded by 5n+1 ulp(u)
            [Rule 11] from algorithms.pdf */
       /* if the terms 'u' are decreasing by a factor two at least,
          then the error coming from those is bounded by
-         sum((4n+1)/2^n, n=1..infinity) = 9 */
+         sum((5n+1)/2^n, n=1..infinity) = 11 */
       exps = MPFR_GET_EXP (s);
       expu = MPFR_GET_EXP (u);
       if (expu < exps - (mpfr_exp_t) p)
@@ -130,8 +112,8 @@ mpfr_trigamma_approx (mpfr_ptr s, mpfr_srcptr x)
       if (MPFR_GET_EXP (s) < exps)
         e <<= exps - MPFR_GET_EXP (s);
       e ++; /* error in mpfr_add */
-      f = 4 * n + 1;
-      /* convert the 4n+1 ulp(u) error into ulp(s) */
+      f = 5 * n + 1;
+      /* convert the 5n+1 ulp(u) error into ulp(s) */
       while (expu < exps)
         {
           f = (1 + f) / 2;
@@ -169,11 +151,43 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpfr_t t, u, x_plus_j;
   int inex;
   mpfr_exp_t errt, erru, expt;
-  mpfr_prec_t j = 0, min;
+  mpfr_prec_t j, min;
   MPFR_ZIV_DECL (loop);
 
   if (mpfr_cmp_ui_2exp (x, 1, -1) == 0) /* x = 1/2 */
     return half (y, rnd_mode);
+
+  /* for very large x, trigamma(x) = 1/x + 1/(2x^2) + O(1/x^3) according
+     to formula (6.4.12) from Abramowitz & Stegun. Graphically we see that
+     for x >= 1, 1/x + 1/(2x^2) < trigamma(x) < 1/x + 1/x^2. */
+  mpfr_prec_t guard = 10;
+  while (MPFR_PREC(y) + guard < MPFR_EXP(x))
+    {
+      /* this ensures x >= 1, moreover with e := MPFR_PREC(y) + guard,
+         e < EXP(x) ensures 2^e <= x since 2^(EXP(x)-1) <= x < 2^EXP(x),
+         thus 1/x^2 <= 2^(-2e) */
+      mpfr_init2 (t, MPFR_PREC(y) + guard);
+      mpfr_ui_div (t, 1, x, MPFR_RNDN);
+      /* |t - trigamma(x)| <= 1/2*ulp(t) + |trigamma(x) - 1/x|
+                           <= 1/2*ulp(t) + 1/(2x^2)
+                           <= 1/2*ulp(t) + 2^(-2e-1)
+                          <= ulp(t)
+         since |t| >= 2^-e thus ulp(t) >= 2^(-e-PREC(y)-guard) = 2^(-2e) */
+      if (MPFR_CAN_ROUND (t, MPFR_PREC(y) + guard, MPFR_PREC(y), rnd_mode))
+        {
+          inex = mpfr_set (y, t, rnd_mode);
+          mpfr_clear (t);
+          return inex;
+        }
+      mpfr_clear (t);
+      /* double the guard bits, as long as PREC(y) + guard < EXP(x) */
+      if (MPFR_PREC(y) + 2 * guard < MPFR_EXP(x))
+        guard = 2 * guard;
+      else if (guard < MPFR_EXP(x) - MPFR_PREC(y) - 1)
+        guard = MPFR_EXP(x) - MPFR_PREC(y) - 1; /* largest possible value */
+      else
+        break;
+    }
 
   /* now x > 1/2: we use the shift formula trigamma(x+1) = trigamma(x) - 1/x^2
      which yields
@@ -226,7 +240,6 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       j = 0;
       while (mpfr_cmp_ui (x_plus_j, min) < 0)
         {
-          j ++;
           mpfr_ui_div (t, 1, x_plus_j, MPFR_RNDN);
           /* t = 1/(x+j) * (1 + theta1) with |theta1| < 2^-p */
           mpfr_sqr (t, t, MPFR_RNDN);
@@ -247,12 +260,14 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
               mpfr_prec_round (x_plus_j, q, MPFR_RNDZ);
               mpfr_nextabove (x_plus_j);
             }
+          j ++;
           /* By induction, the total error is bounded by 4.2*j ulps.
              Indeed, assume the error on u_old was bounded by
              4.2*(j-1)*ulp(u_old), then the total error is bounded by:
              4.2*(j-1)*ulp(u_old) + 4.2*ulp(u) <= 4.2*j*ulp(u) since u_old < u.
           */
         }
+      /* u approximates 1/x^2 + 1/(x+1)^2 + ... + 1/(x+j-1)^2 */
       j = 5 * j; /* upper bound for the error */
       for (erru = 0; j > 1; erru++, j = (j + 1) / 2);
       errt = mpfr_trigamma_approx (t, x_plus_j);
@@ -283,6 +298,170 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpfr_clear (t);
   mpfr_clear (u);
   mpfr_clear (x_plus_j);
+  return inex;
+}
+
+/* compute trigamma(x) for x < 1/2 (x <> 0) using the reflection formula
+   (6.4.7) from Abramowitz & Stegun:
+   trigamma(1-x) + trigamma(x) = pi^2*(1+cot(pi*x)^2)
+   thus for x < 1/2:
+   (a) evaluate z = trigamma(y), where y = 1-x >= 1/2
+   (b) return pi^2*(1+cot(pi*x)^2) - z
+*/
+static int
+mpfr_trigamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
+{
+  mpfr_prec_t p;
+  mpfr_t t, u, v;
+  mpfr_exp_t e1, e2, expt, expv, expx, q;
+  int inex;
+  MPFR_ZIV_DECL (loop);
+
+  /* trigamma(n) = +Inf for n integer, n <= 0 */
+  if (mpfr_integer_p (x))
+    {
+      MPFR_SET_INF(y);
+      MPFR_SET_POS(y);
+      return 0;
+    }
+
+  p = MPFR_PREC(y) + 10;
+
+  /* we want that 1-x is exact with precision q: if 0 < x < 1/2, then
+     q = PREC(x)-EXP(x) is ok, otherwise if -1 <= x < 0, q = PREC(x)-EXP(x)+1
+     is ok, otherwise for x < -1, PREC(x)+1 is ok if EXP(x) <= PREC(x),
+     otherwise we need EXP(x) */
+  expx = MPFR_GET_EXP (x);
+  if (MPFR_IS_POS (x))           /* 0 < x < 1/2 */
+    q = MPFR_PREC(x) - expx;
+  else if (expx <= 0)            /* -1/2 < x < 0 */
+    q = MPFR_PREC(x) - expx + 1;
+  else if (expx <= MPFR_PREC(x))
+    q = MPFR_PREC(x) + 1;
+  else
+    q = expx;
+  MPFR_ASSERTN (q <= MPFR_PREC_MAX);
+  mpfr_init2 (u, q);
+  MPFR_DBGRES(inex = mpfr_ui_sub (u, 1, x, MPFR_RNDN));
+  MPFR_ASSERTN(inex == 0);
+
+  mpfr_init2 (t, p);
+  mpfr_init2 (v, p);
+
+  MPFR_ZIV_INIT (loop, p);
+  for (;;)
+    {
+      /* below we use theta for a variable with |theta|<=2^-p, where different
+         instances of theta may represent different values */
+      mpfr_const_pi (v, MPFR_RNDN);  /* v = pi*(1+theta) */
+      mpfr_mul (t, v, x, MPFR_RNDN); /* t = pi*x*(1+theta)^2 */
+      /* thus t = pi*x*(1+3*theta) (with a different value of theta)
+         and the relative error is bounded by 3*2^-p, which by Rule 1 from
+         algorithms.pdf translates into 3 ulps(t) */
+      e1 = MPFR_GET_EXP(t) - (mpfr_exp_t) p + 2;
+      /* bound for t: err(t) <= 2^e1 */
+
+      /* compute cot(t) */
+      mpfr_cot (t, t, MPFR_RNDN);
+      expt = MPFR_GET_EXP(t);
+      /* cot(t + h) = cot(t) + eps * (1 + cot(t)^2) with |eps| <= h <= 2^e1 */
+      if (expt > 0) /* |cot(t)| > 1 */
+        e1 = e1 + 2 * expt + 1; /* 1 + cot(t)^2 <= 2*cot(t)^2 */
+      else
+        e1 = e1 + 1; /* |cot(t)| <= 1 thus |1 + cot(t)^2| <= 2 */
+      /* now |eps * (1 + cot(t)^2)| <= 2^e1 */
+      /* add the rounding error from mpfr_cot, which is 1/2 ulp(t)
+         = 2^(EXP(t)-p-1) */
+      if (e1 >= expt - p - 1)
+        e1 ++;
+      else
+        e1 = expt - p;
+      /* now t = cot(pi*x) + eps with |eps| < 2^e1 */
+
+      /* square t */
+      mpfr_sqr (t, t, MPFR_RNDN);
+      /* the induced error is 2*eps*cot(pi*x) + eps^2
+         <= 2^(e1+1) * 2^expt + 2^(2*e1) */
+      MPFR_ASSERTD(e1 <= expt + 1);
+      e1 = e1 + 1 + expt + 1; /* bounds 2^(e1+1) * 2^expt + 2^(2*e1),
+                                 where we assumed e1 <= expt+1 */
+      /* add the rounding error from mpfr_sqr */
+      expt = MPFR_GET_EXP(t);
+      if (e1 >= expt - p - 1)
+        e1 ++;
+      else
+        e1 = expt - p;
+      /* now t = cot(pi*x)^2 + eps with |eps| < 2^e1 */
+
+      /* add 1 */
+      mpfr_add_ui (t, t, 1, MPFR_RNDN);
+      /* add the rounding error from the addition */
+      expt = MPFR_GET_EXP(t);
+      if (e1 >= expt - p - 1)
+        e1 ++;
+      else
+        e1 = expt - p;
+      /* now t = cot(pi*x)^2 + 1 + eps with |eps| < 2^e1 */
+
+      /* multiply by pi */
+      mpfr_mul (t, t, v, MPFR_RNDN);
+      /* the induced error is |pi*eps| < 2^(e1+2) */
+      e1 += 2;
+      /* add the rounding error from mpfr_mul */
+      expt = MPFR_GET_EXP(t);
+      if (e1 >= expt - p - 1)
+        e1 ++;
+      else
+        e1 = expt - p;
+      /* now t = pi*(cot(pi*x)^2 + 1) + eps with |eps| < 2^e1 */
+
+      /* multiply again by pi */
+      mpfr_mul (t, t, v, MPFR_RNDN);
+      /* the induced error is |pi*eps| < 2^(e1+2) */
+      e1 += 2;
+      /* add the rounding error from mpfr_mul */
+      expt = MPFR_GET_EXP(t);
+      if (e1 >= expt - p - 1)
+        e1 ++;
+      else
+        e1 = expt - p;
+      /* now t = pi^2*(cot(pi*x)^2 + 1) + eps with |eps| < 2^e1 */
+
+      mpfr_trigamma_positive (v, u, MPFR_RNDN);   /* error <= 1/2 ulp */
+      expv = MPFR_GET_EXP (v);
+      mpfr_sub (v, t, v, MPFR_RNDN);
+      if (MPFR_NOTZERO(v))
+        {
+          /* convert absolute error 2^e1 for t into ulp(v) */
+          e1 -= MPFR_EXP(v) - p; /* ulp(v) = 2^(EXP(v) - PREC(v)) */
+          /* the error on t is now bounded by 2^e1 * ulp(v) */
+          /* now take into account the 1/2 ulp error on old v,
+             and the 1/2 ulp error on (new) v */
+          if (MPFR_EXP(v) >= expv) /* the new v is larger */
+            e2 = 0; /* EXP(old_v) <= EXP(v) thus 1/2 ulp(old_v) <= 1/2 ulp(v)
+                       thus 1/2 ulp(old_v) + 1/2 ulp(v) <= 2^0 * ulp(v) */
+          else
+            e2 = expv - MPFR_EXP(v); /* EXP(v) <= 2^k * EXP(old_v)
+                                        thus 1/2 ulp(old_v) + 1/2 ulp(v)
+                                        <= (2^(k-1) + 1) * ulp(v)
+                                        <= 2^k * ulp(v) */
+          /* add both errors */
+          e1 = (e1 >= e2) ? e1 + 1 : e2 + 1;
+          if (MPFR_CAN_ROUND (v, p - e1, MPFR_PREC(y), rnd_mode))
+            break;
+        }
+      MPFR_ZIV_NEXT (loop, p);
+      mpfr_set_prec (t, p);
+      mpfr_set_prec (v, p);
+    }
+  MPFR_ZIV_FREE (loop);
+
+  inex = mpfr_set (y, v, rnd_mode);
+
+  mpfr_clear (t);
+  mpfr_clear (v);
+  mpfr_clear (u);
+
   return inex;
 }
 
@@ -328,18 +507,20 @@ mpfr_trigamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
     }
 
-  /* trigamma is undefined for negative integers */
+  /* trigamma is +Inf for negative integers */
   if (MPFR_IS_NEG(x) && mpfr_integer_p (x))
     {
-      MPFR_SET_NAN(y);
-      MPFR_RET_NAN;
+      MPFR_SET_INF(y);
+      MPFR_SET_POS(y);
+      MPFR_SET_DIVBY0 ();
+      MPFR_RET(0);
     }
 
   /* now x is a normal number */
 
   MPFR_SAVE_EXPO_MARK (expo);
   /* For x very small, we have trigamma(x) = 1/x^2 + O(1),
-     where the O(1) term is less than 2 for |x| < 2^-4.
+     where the O(1) term is positive and less than 2 for |x| < 2^-4.
      Let w = prec(y) + 20 be the working precision.
      If |x| < 2^e, then 1/x^2 > 2^(-2e), thus ulp_w(1/x^2) >= 2^(-2e+1-w).
      As long as -2e+1-w >= -1, we have ulp_w(1/x^2) >= 1/2,
@@ -348,24 +529,47 @@ mpfr_trigamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpfr_exp_t e = MPFR_GET_EXP (x);
   if (e <= -4) /* |x| < 2^-4 */
     {
+      int ok = 0;
       mpfr_prec_t w = MPFR_PREC(y) + 20;
       if (-2 * e + 1 - w >= -1)
         {
           mpfr_t t;
           mpfr_init2 (t, w);
-          mpfr_mul (t, x, x, MPFR_RNDN);
           /* t = x^2 * (1 + theta1) with |theta1| < 2^-w */
-          mpfr_si_div (t, 1, t, MPFR_RNDN);
+          inex = mpfr_si_div (t, 1, x, MPFR_RNDN);
+          /* if t = o(1/x) overflows with extended exponent range,
+             then 1/x^2 will overflow too */
+          if (MPFR_IS_INF(t))
+            {
+              mpfr_set (y, t, MPFR_RNDN);
+              ok = 1;
+            }
+          else if (inex == 0) /* x is a power of two: round to 1/x^2 + eps */
+            {
+              mpfr_sqr (y, t, MPFR_RNDN);
+              if (rnd_mode == MPFR_RNDA || rnd_mode == MPFR_RNDU)
+                {
+                  mpfr_nextabove (y);
+                  inex = 1;
+                }
+              else
+                inex = -1;
+              ok = 1;
+            }
           /* t = 1/x^2 / (1 + theta1)^2 * (1 + theta2)
              with |theta1|, |theta2} < 2^-w thus
              t = 1/x^2 * (1 + theta3) with |theta3| < 4*2^-w,
              and the rounding error is bounded by 4 ulps.
              Since the error from the O(1) term is also bounded by 4 ulps,
              the total error is bounded by 8 ulps. */
-          if (MPFR_CAN_ROUND (t, w - 3, MPFR_PREC(y), rnd_mode))
+          else if (MPFR_CAN_ROUND (t, w - 3, MPFR_PREC(y), rnd_mode))
             {
-              inex = mpfr_set (y, t, rnd_mode);
-              mpfr_clear (t);
+              inex = mpfr_sqr (y, t, rnd_mode);
+              ok = 1;
+            }
+          mpfr_clear (t);
+          if (ok)
+            {
               MPFR_SAVE_EXPO_UPDATE_FLAGS (expo, __gmpfr_flags);
               goto end;
             }
