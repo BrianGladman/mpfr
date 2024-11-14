@@ -213,7 +213,14 @@ mpfr_digamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   return inex;
 }
 
-/* we have x >= 1/2 here */
+/* We have x >= 1/2 here.
+   We use the recurrence formula (6.3.5) from Abramowitz & Stegun:
+   digamma(x+1) = digamma(x) + 1/x, which yields:
+   digamma(x) = -1/x - 1/(x+1) - ... - 1/(x+j) + digamma(x+j+1)
+   where digamma(x+j+1) is approximated using formula (6.3.18):
+   digamma(z) = log(z) - 1/(2z) - sum(B[2n]/(2nz^(2n)), n=1..infinity)
+   where z = x+j+1 and B[2n] is the Bernoulli number of order 2n.
+*/
 static int
 mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
