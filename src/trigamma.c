@@ -167,7 +167,23 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
          e < EXP(x) ensures 2^e <= x since 2^(EXP(x)-1) <= x < 2^EXP(x),
          thus 1/x^2 <= 2^(-2e) */
       mpfr_init2 (t, MPFR_PREC(y) + guard);
-      mpfr_ui_div (t, 1, x, MPFR_RNDN);
+      inex = mpfr_ui_div (t, 1, x, MPFR_RNDN);
+      /* if x is a huge power of 2, then we can round as soon as 1/x^2
+         <= 1/2 ulp_py(1/x), where py is the precision of y.
+         If x = 2^k, then 1/2 ulp_py(1/x) = 2^(-k-py-1), which
+         gives -2k <= -k-py-1, thus py <= k - 1. */
+      if (inex == 0 && MPFR_PREC(y) <= MPFR_EXP(x) - 2)
+        {
+          mpfr_set (y, t, rnd_mode);
+          mpfr_clear (t);
+          if (rnd_mode == MPFR_RNDA || rnd_mode == MPFR_RNDU)
+            {
+              mpfr_nextabove (y);
+              return 1;
+            }
+          else
+            return -1;
+        }
       /* |t - trigamma(x)| <= 1/2*ulp(t) + |trigamma(x) - 1/x|
                            <= 1/2*ulp(t) + 1/(2x^2)
                            <= 1/2*ulp(t) + 2^(-2e-1)
