@@ -196,7 +196,8 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
           return inex;
         }
       mpfr_clear (t);
-      /* double the guard bits, as long as PREC(y) + guard < EXP(x) */
+      /* double the guard bits, as long as PREC(y) + guard < EXP(x).
+         Note: similar to MPFR_ZIV_NEXT in a Ziv loop. */
       if (MPFR_PREC(y) + 2 * guard < MPFR_EXP(x))
         guard = 2 * guard;
       else if (guard < MPFR_EXP(x) - MPFR_PREC(y) - 1)
