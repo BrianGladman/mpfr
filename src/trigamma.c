@@ -62,13 +62,14 @@ half (mpfr_ptr y, mpfr_rnd_t rnd_mode)
 static mpfr_exp_t
 mpfr_trigamma_approx (mpfr_ptr s, mpfr_srcptr x)
 {
-  mpfr_prec_t p = MPFR_PREC (s);
+  mpfr_prec_t p;
   mpfr_t t, u, invxx;
   mpfr_exp_t e, exps, f, expu;
   unsigned long n;
 
   MPFR_ASSERTN (MPFR_IS_POS (x) && MPFR_GET_EXP (x) >= 2);
 
+  p = MPFR_GET_PREC (s);
   mpfr_init2 (t, p);
   mpfr_init2 (u, p);
   mpfr_init2 (invxx, p);
@@ -147,32 +148,34 @@ mpfr_trigamma_approx (mpfr_ptr s, mpfr_srcptr x)
 static int
 mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
-  mpfr_prec_t p = MPFR_PREC(y) + 10, q;
+  mpfr_prec_t px, py, p, q;
   mpfr_t t, u, x_plus_j;
   int inex;
-  mpfr_exp_t errt, erru, expt;
-  mpfr_prec_t j, min;
+  mpfr_exp_t expx, errt, erru, expt1, expt2;
+  mpfr_prec_t guard = 10, j, min;
   MPFR_ZIV_DECL (loop);
 
   if (mpfr_cmp_ui_2exp (x, 1, -1) == 0) /* x = 1/2 */
     return half (y, rnd_mode);
 
+  py = MPFR_GET_PREC (y);
+  expx = MPFR_GET_EXP (x);
+
   /* for very large x, trigamma(x) = 1/x + 1/(2x^2) + O(1/x^3) according
      to formula (6.4.12) from Abramowitz & Stegun. Graphically we see that
      for x >= 1, 1/x + 1/(2x^2) < trigamma(x) < 1/x + 1/x^2. */
-  mpfr_prec_t guard = 10;
-  while (MPFR_PREC(y) + guard < MPFR_EXP(x))
+  while (py + guard < expx)
     {
       /* this ensures x >= 1, moreover with e := MPFR_PREC(y) + guard,
          e < EXP(x) ensures 2^e <= x since 2^(EXP(x)-1) <= x < 2^EXP(x),
          thus 1/x^2 <= 2^(-2e) */
-      mpfr_init2 (t, MPFR_PREC(y) + guard);
+      mpfr_init2 (t, py + guard);
       inex = mpfr_ui_div (t, 1, x, MPFR_RNDN);
       /* if x is a huge power of 2, then we can round as soon as 1/x^2
          <= 1/2 ulp_py(1/x), where py is the precision of y.
          If x = 2^k, then 1/2 ulp_py(1/x) = 2^(-k-py-1), which
          gives -2k <= -k-py-1, thus py <= k - 1. */
-      if (inex == 0 && MPFR_PREC(y) <= MPFR_EXP(x) - 2)
+      if (inex == 0 && py <= expx - 2)
         {
           mpfr_set (y, t, rnd_mode);
           mpfr_clear (t);
@@ -189,7 +192,7 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
                            <= 1/2*ulp(t) + 2^(-2e-1)
                           <= ulp(t)
          since |t| >= 2^-e thus ulp(t) >= 2^(-e-PREC(y)-guard) = 2^(-2e) */
-      if (MPFR_CAN_ROUND (t, MPFR_PREC(y) + guard, MPFR_PREC(y), rnd_mode))
+      if (MPFR_CAN_ROUND (t, py + guard, py, rnd_mode))
         {
           inex = mpfr_set (y, t, rnd_mode);
           mpfr_clear (t);
@@ -198,10 +201,10 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       mpfr_clear (t);
       /* double the guard bits, as long as PREC(y) + guard < EXP(x).
          Note: similar to MPFR_ZIV_NEXT in a Ziv loop. */
-      if (MPFR_PREC(y) + 2 * guard < MPFR_EXP(x))
+      if (py + 2 * guard < expx)
         guard = 2 * guard;
-      else if (guard < MPFR_EXP(x) - MPFR_PREC(y) - 1)
-        guard = MPFR_EXP(x) - MPFR_PREC(y) - 1; /* largest possible value */
+      else if (guard < expx - py - 1)
+        guard = expx - py - 1; /* largest possible value */
       else
         break;
     }
@@ -214,25 +217,28 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
      where B[2j] are Bernoulli numbers.
   */
 
+  px = MPFR_GET_PREC (x);
+
   /* Compute a precision q such that x+1 is exact. */
-  if (MPFR_PREC(x) <= MPFR_GET_EXP(x))
+  if (px <= expx)
     {
       /* The goal of the first assertion is to let the compiler ignore
          the second one when MPFR_EMAX_MAX <= MPFR_PREC_MAX. */
-      MPFR_ASSERTD (MPFR_EXP(x) <= MPFR_EMAX_MAX);
-      MPFR_ASSERTN (MPFR_EXP(x) <= MPFR_PREC_MAX);
+      MPFR_ASSERTD (expx <= MPFR_EMAX_MAX);
+      MPFR_ASSERTN (expx <= MPFR_PREC_MAX);
       /* In that case, ulp(x) = 2^(EXP(x)-PREC(x)) >= 1,
          thus adding 1 will not change the precision (in case of binade
          change, we have x+1 = 2^EXP(x) which is exact). */
-      q = MPFR_EXP(x);
+      q = expx;
     }
   else
     /* In that case, ulp(x) < 1, thus if we add 1 at bit of weight 0,
        we might get an overflow, and need PREC(x)+1 bits. */
-    q = MPFR_PREC(x) + 1;
+    q = px + 1;
 
   mpfr_init2 (x_plus_j, q);
 
+  p = py + 10;
   mpfr_init2 (t, p);
   mpfr_init2 (u, p);
   MPFR_ZIV_INIT (loop, p);
@@ -288,21 +294,22 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       j = 5 * j; /* upper bound for the error */
       for (erru = 0; j > 1; erru++, j = (j + 1) / 2);
       errt = mpfr_trigamma_approx (t, x_plus_j);
-      expt = MPFR_GET_EXP (t);
+      expt1 = MPFR_GET_EXP (t);
       /* now u approximates 1/x^2 + ... + 1/(x+j)^2 with error <= 2^erru ulp(u)
          and t approximates 1/z + 1/(2z^2) + sum(B[2j]/z^(2j+1), j=1..infinity)
          for z = x+j+1, with error <= 2^errt ulp(t) */
       mpfr_add (t, u, t, MPFR_RNDN); /* add both terms */
       MPFR_ASSERTD(MPFR_NOTZERO(t));
+      expt2 = MPFR_GET_EXP (t);
       /* scale errt in case of cancellation */
-      if (MPFR_GET_EXP (t) < expt)
-        errt += expt - MPFR_EXP(t);
+      if (expt2 < expt1)
+        errt += expt1 - expt2;
       /* scale erru in case of cancellation */
-      if (MPFR_NOTZERO(u) && MPFR_GET_EXP (t) < MPFR_GET_EXP (u))
-        erru += MPFR_EXP(u) - MPFR_EXP(t);
+      if (MPFR_NOTZERO(u) && expt2 < MPFR_GET_EXP (u))
+        erru += MPFR_EXP(u) - expt2;
       /* the error is now bounded by (2^errt + 2^erru) * ulp(t),
          for the new value of t */
-      errt = (errt >= erru) ? errt + 1 : erru + 1;
+      errt = (errt >= erru ? errt : erru) + 1;
       /* the error is bounded by 2^errt * ulp(t) */
       if (MPFR_CAN_ROUND (t, p - errt, MPFR_PREC(y), rnd_mode))
         break;
@@ -328,7 +335,7 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 static int
 mpfr_trigamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
-  mpfr_prec_t p;
+  mpfr_prec_t py, p;
   mpfr_t t, u, v;
   mpfr_exp_t e1, e2, expt, expv, expx, q;
   int inex;
@@ -342,7 +349,8 @@ mpfr_trigamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       return 0;
     }
 
-  p = MPFR_PREC(y) + 10;
+  py = MPFR_GET_PREC(y);
+  p = py + 10;
 
   /* we want that 1-x is exact with precision q: if 0 < x < 1/2, then
      q = PREC(x)-EXP(x) is ok, otherwise if -1 <= x < 0, q = PREC(x)-EXP(x)+1
@@ -350,10 +358,10 @@ mpfr_trigamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
      otherwise we need EXP(x) */
   expx = MPFR_GET_EXP (x);
   if (MPFR_IS_POS (x))           /* 0 < x < 1/2 */
-    q = MPFR_PREC(x) - expx;
+    q = MPFR_GET_PREC(x) - expx;
   else if (expx <= 0)            /* -1/2 < x < 0 */
-    q = MPFR_PREC(x) - expx + 1;
-  else if (expx <= MPFR_PREC(x))
+    q = MPFR_GET_PREC(x) - expx + 1;
+  else if (expx <= MPFR_GET_PREC(x))
     q = MPFR_PREC(x) + 1;
   else
     q = expx;
@@ -399,7 +407,7 @@ mpfr_trigamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       mpfr_sqr (t, t, MPFR_RNDN);
       /* the induced error is 2*eps*cot(pi*x) + eps^2
          <= 2^(e1+1) * 2^expt + 2^(2*e1) */
-      MPFR_ASSERTD(e1 <= expt + 1);
+      MPFR_ASSERTN(e1 <= expt + 1);
       e1 = e1 + 1 + expt + 1; /* bounds 2^(e1+1) * 2^expt + 2^(2*e1),
                                  where we assumed e1 <= expt+1 */
       /* add the rounding error from mpfr_sqr */
@@ -463,8 +471,8 @@ mpfr_trigamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
                                         <= (2^(k-1) + 1) * ulp(v)
                                         <= 2^k * ulp(v) */
           /* add both errors */
-          e1 = (e1 >= e2) ? e1 + 1 : e2 + 1;
-          if (MPFR_CAN_ROUND (v, p - e1, MPFR_PREC(y), rnd_mode))
+          e1 = (e1 >= e2 ? e1 : e2) + 1;
+          if (MPFR_CAN_ROUND (v, p - e1, py, rnd_mode))
             break;
         }
       MPFR_ZIV_NEXT (loop, p);
@@ -593,7 +601,7 @@ mpfr_trigamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
         }
     }
 
-  if (MPFR_IS_NEG(x) || MPFR_EXP(x) < 0) /* x < 1/2 */
+  if (MPFR_IS_NEG(x) || e < 0) /* x < 1/2 */
     inex = mpfr_trigamma_reflection (y, x, rnd_mode);
   else
     inex = mpfr_trigamma_positive (y, x, rnd_mode);
