@@ -276,6 +276,10 @@ mpfr_trigamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       if (min < 2)
         min = 2; /* ensures x_plus_j >= 2 at the end of the loop below */
 
+      /* For the mpfr_cmp_ui below. Currently, mpfr_prec_t <= long,
+         so that the compiler should remove this check. */
+      MPFR_ASSERTN (min <= ULONG_MAX);
+
       mpfr_set (x_plus_j, x, MPFR_RNDN);
       mpfr_set_ui (u, 0, MPFR_RNDN);
       j = 0;
