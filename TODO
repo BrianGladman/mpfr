@@ -627,7 +627,8 @@ Table of contents:
   to say "on systems that support it".
 
 - add generic bad cases for functions that don't have an inverse
-  function that is implemented (use a single Newton iteration).
+  function that is implemented (use a single Newton iteration, or
+  the secant method if the derivative is unknown or too complex).
 
 - add bad cases for the internal error bound (by using a dichotomy
   between a bad case for the correct rounding and some input value
