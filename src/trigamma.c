@@ -517,6 +517,7 @@ mpfr_trigamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 int
 mpfr_trigamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
+  mpfr_exp_t e;
   int inex;
   MPFR_SAVE_EXPO_DECL (expo);
 
@@ -574,7 +575,7 @@ mpfr_trigamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
      As long as -2e+1-w >= -1, we have ulp_w(1/x^2) >= 1/2,
      thus |trigamma(x) - 1/x^2| < 4 ulp_w(1/x^2).
   */
-  mpfr_exp_t e = MPFR_GET_EXP (x);
+  e = MPFR_GET_EXP (x);
   if (e <= -4) /* |x| < 2^-4 */
     {
       int ok = 0;
