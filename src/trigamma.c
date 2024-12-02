@@ -406,10 +406,11 @@ mpfr_trigamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       /* square t */
       mpfr_sqr (t, t, MPFR_RNDN);
       /* the induced error is 2*eps*cot(pi*x) + eps^2
-         <= 2^(e1+1) * 2^expt + 2^(2*e1) */
-      MPFR_ASSERTN(e1 <= expt + 1);
-      e1 = e1 + 1 + expt + 1; /* bounds 2^(e1+1) * 2^expt + 2^(2*e1),
-                                 where we assumed e1 <= expt+1 */
+         <= 2^(e1+1) * 2^expt + 2^(2*e1)
+         <= 2^max(expt + 1, e1) + e1 + 1 */
+      e1 = (e1 <= expt + 1) ? e1 + expt + 2 : 2 * e1 + 1;
+      /* the induced error is bounded by 2^e1 */
+
       /* add the rounding error from mpfr_sqr */
       expt = MPFR_GET_EXP(t);
       if (e1 >= expt - p - 1)
