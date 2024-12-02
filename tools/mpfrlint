@@ -420,7 +420,10 @@ err-if-output --msg='Use mpn_sqr instead of mpn_mul_n.' "mpn mul/sqr" \
 
 # Detect a Ziv loop that does not use the MPFR_ZIV_* macros, which may
 # give a bug like the one in rec_sqrt.c, found and fixed in 2023-04.
-# This is a heuristic; it assumes GNU style with correct indentation.
+# This is a heuristic: a for/while loop containing mpfr_can_round or
+# mpfr_round_p (case insensitive) is assumed to be a Ziv loop; it also
+# assumes GNU style with correct indentation to detect the end of the
+# loop (as no real parsing is done).
 # This can be silenced by using MPFR_ZIV_NEXT in a comment in the loop.
 # A false positive may actually be a bad indentation, which should be
 # fixed anyway.

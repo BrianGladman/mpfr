@@ -82,9 +82,9 @@ mpfr_digamma_approx (mpfr_ptr s, mpfr_srcptr x)
       mpfr_div_ui (t, t, 2 * n + 1, MPFR_RNDU); /* err = err + 1 */
       /* we thus have err = 5n here */
       mpfr_div_ui (u, t, 2 * n, MPFR_RNDU);     /* err = 5n+1 */
-      mpfr_mul_z (u, u, mpfr_bernoulli_cache(n), MPFR_RNDU)
-        /* err = 5n+2, and the error is bounded by (5n+2) ulp(u)
-           [Rule 1 from algorithms.pdf] */
+      mpfr_mul_z (u, u, mpfr_bernoulli_cache(n), MPFR_RNDU);
+      /* err = 5n+2, and the error is bounded by (5n+2) ulp(u)
+         [Rule 1 from algorithms.pdf] */
       /* if the terms 'u' are decreasing by a factor two at least,
          then the error coming from those is bounded by
          sum((5n+2)/2^n, n=1..infinity) = 12 */
@@ -120,100 +120,14 @@ mpfr_digamma_approx (mpfr_ptr s, mpfr_srcptr x)
   return f;
 }
 
-/* Use the reflection formula Digamma(1-x) = Digamma(x) + Pi * cot(Pi*x),
-   i.e., Digamma(x) = Digamma(1-x) - Pi * cot(Pi*x).
-   Assume x < 1/2. */
-static int
-mpfr_digamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
-{
-  mpfr_prec_t p = MPFR_PREC(y) + 10;
-  mpfr_t t, u, v;
-  mpfr_exp_t e1, expv, expx, q;
-  int inex;
-  MPFR_ZIV_DECL (loop);
-
-  MPFR_LOG_FUNC
-    (("x[%Pd]=%.*Rg rnd=%d", mpfr_get_prec(x), mpfr_log_prec, x, rnd_mode),
-     ("y[%Pd]=%.*Rg inexact=%d", mpfr_get_prec(y), mpfr_log_prec, y, inex));
-
-  /* we want that 1-x is exact with precision q: if 0 < x < 1/2, then
-     q = PREC(x)-EXP(x) is ok, otherwise if -1 <= x < 0, q = PREC(x)-EXP(x)
-     is ok, otherwise for x < -1, PREC(x) is ok if EXP(x) <= PREC(x),
-     otherwise we need EXP(x) */
-  expx = MPFR_GET_EXP (x);
-  if (expx < 0)
-    q = MPFR_PREC(x) + 1 - expx;
-  else if (expx <= MPFR_PREC(x))
-    q = MPFR_PREC(x) + 1;
-  else
-    q = expx;
-  MPFR_ASSERTN (q <= MPFR_PREC_MAX);
-  mpfr_init2 (u, q);
-  MPFR_DBGRES(inex = mpfr_ui_sub (u, 1, x, MPFR_RNDN));
-  MPFR_ASSERTN(inex == 0);
-
-  /* if x is half an integer, cot(Pi*x) = 0, thus Digamma(x) = Digamma(1-x) */
-  mpfr_mul_2ui (u, u, 1, MPFR_RNDN);
-  inex = mpfr_integer_p (u);
-  mpfr_div_2ui (u, u, 1, MPFR_RNDN);
-  if (inex)
-    {
-      inex = mpfr_digamma (y, u, rnd_mode);
-      goto end;
-    }
-
-  mpfr_init2 (t, p);
-  mpfr_init2 (v, p);
-
-  MPFR_ZIV_INIT (loop, p);
-  for (;;)
-    {
-      mpfr_const_pi (v, MPFR_RNDN);  /* v = Pi*(1+theta) for |theta|<=2^(-p) */
-      mpfr_mul (t, v, x, MPFR_RNDN); /* (1+theta)^2 */
-      e1 = MPFR_GET_EXP(t) - (mpfr_exp_t) p + 1; /* bound for t: err(t) <= 2^e1 */
-      mpfr_cot (t, t, MPFR_RNDN);
-      /* cot(t * (1+h)) = cot(t) - theta * (1 + cot(t)^2) with |theta|<=t*h */
-      if (MPFR_GET_EXP(t) > 0)
-        e1 = e1 + 2 * MPFR_EXP(t) + 1;
-      else
-        e1 = e1 + 1;
-      /* now theta * (1 + cot(t)^2) <= 2^e1 */
-      e1 += (mpfr_exp_t) p - MPFR_EXP(t); /* error is now 2^e1 ulps */
-      mpfr_mul (t, t, v, MPFR_RNDN);
-      e1 ++;
-      mpfr_digamma (v, u, MPFR_RNDN);   /* error <= 1/2 ulp */
-      expv = MPFR_GET_EXP (v);
-      mpfr_sub (v, v, t, MPFR_RNDN);
-      if (MPFR_NOTZERO(v))
-        {
-          if (MPFR_GET_EXP (v) < MPFR_GET_EXP (t))
-            e1 += MPFR_EXP(t) - MPFR_EXP(v); /* scale error for t wrt new v */
-          /* now take into account the 1/2 ulp error for v */
-          if (expv - MPFR_EXP(v) - 1 > e1)
-            e1 = expv - MPFR_EXP(v) - 1;
-          else
-            e1 ++;
-          e1 ++; /* rounding error for mpfr_sub */
-          if (MPFR_CAN_ROUND (v, p - e1, MPFR_PREC(y), rnd_mode))
-            break;
-        }
-      MPFR_ZIV_NEXT (loop, p);
-      mpfr_set_prec (t, p);
-      mpfr_set_prec (v, p);
-    }
-  MPFR_ZIV_FREE (loop);
-
-  inex = mpfr_set (y, v, rnd_mode);
-
-  mpfr_clear (t);
-  mpfr_clear (v);
- end:
-  mpfr_clear (u);
-
-  return inex;
-}
-
-/* we have x >= 1/2 here */
+/* We have x >= 1/2 here.
+   We use the recurrence formula (6.3.5) from Abramowitz & Stegun:
+   digamma(x+1) = digamma(x) + 1/x, which yields:
+   digamma(x) = -1/x - 1/(x+1) - ... - 1/(x+j) + digamma(x+j+1)
+   where digamma(x+j+1) is approximated using formula (6.3.18):
+   digamma(z) = log(z) - 1/(2z) - sum(B[2n]/(2nz^(2n)), n=1..infinity)
+   where z = x+j+1 and B[2n] is the Bernoulli number of order 2n.
+*/
 static int
 mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
@@ -324,19 +238,17 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
          that in this case, this is an exact zero, not an underflow. */
       if (MPFR_NOTZERO(t))
         {
+          /* rescale the error errt * ulp(t_old) in terms of ulp(t) */
           if (MPFR_GET_EXP (t) < expt)
             errt += expt - MPFR_EXP(t);
           /* Warning: if u is zero (which happens when x_plus_j >= min at the
              beginning of the while loop above), EXP(u) is not defined.
              In this case we have no error from u. */
+          /* rescale the error erru * ulp(u) in terms of ulp(t) */
           if (MPFR_NOTZERO(u) && MPFR_GET_EXP (t) < MPFR_GET_EXP (u))
             erru += MPFR_EXP(u) - MPFR_EXP(t);
-          if (errt > erru)
-            errt = errt + 1;
-          else if (errt == erru)
-            errt = errt + 2;
-          else
-            errt = erru + 1;
+          errt = (errt >= erru) ? errt + 1 : erru + 1;
+          /* the total error is bounded by 2^errt * ulp(t) */
           if (MPFR_CAN_ROUND (t, p - errt, MPFR_PREC(y), rnd_mode))
             break;
         }
@@ -349,6 +261,101 @@ mpfr_digamma_positive (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
   mpfr_clear (t);
   mpfr_clear (u);
   mpfr_clear (x_plus_j);
+  return inex;
+}
+
+/* Use the reflection formula Digamma(1-x) = Digamma(x) + Pi * cot(Pi*x),
+   i.e., Digamma(x) = Digamma(1-x) - Pi * cot(Pi*x).
+   Assume x < 1/2. */
+static int
+mpfr_digamma_reflection (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
+{
+  mpfr_prec_t p = MPFR_PREC(y) + 10;
+  mpfr_t t, u, v;
+  mpfr_exp_t e1, expv, expx, q;
+  int inex;
+  MPFR_ZIV_DECL (loop);
+
+  MPFR_LOG_FUNC
+    (("x[%Pd]=%.*Rg rnd=%d", mpfr_get_prec(x), mpfr_log_prec, x, rnd_mode),
+     ("y[%Pd]=%.*Rg inexact=%d", mpfr_get_prec(y), mpfr_log_prec, y, inex));
+
+  /* we want that 1-x is exact with precision q: if 0 < x < 1/2, then
+     q = PREC(x)-EXP(x) is ok, otherwise if -1 <= x < 0, q = PREC(x)-EXP(x)+1
+     is ok, otherwise for x < -1, PREC(x)+1 is ok if EXP(x) <= PREC(x),
+     otherwise we need EXP(x) */
+  expx = MPFR_GET_EXP (x);
+  if (MPFR_IS_POS (x))           /* 0 < x < 1/2 */
+    q = MPFR_PREC(x) - expx;
+  else if (expx <= 0)            /* -1/2 < x < 0 */
+    q = MPFR_PREC(x) - expx + 1;
+  else if (expx <= MPFR_PREC(x))
+    q = MPFR_PREC(x) + 1;
+  else
+    q = expx;
+  MPFR_ASSERTN (q <= MPFR_PREC_MAX);
+  mpfr_init2 (u, q);
+  MPFR_DBGRES(inex = mpfr_ui_sub (u, 1, x, MPFR_RNDN));
+  MPFR_ASSERTN(inex == 0);
+
+  /* if x is half an integer, cot(Pi*x) = 0, thus Digamma(x) = Digamma(1-x) */
+  mpfr_mul_2ui (u, u, 1, MPFR_RNDN);
+  inex = mpfr_integer_p (u);
+  mpfr_div_2ui (u, u, 1, MPFR_RNDN);
+  if (inex)
+    {
+      inex = mpfr_digamma (y, u, rnd_mode);
+      goto end;
+    }
+
+  mpfr_init2 (t, p);
+  mpfr_init2 (v, p);
+
+  MPFR_ZIV_INIT (loop, p);
+  for (;;)
+    {
+      mpfr_const_pi (v, MPFR_RNDN);  /* v = Pi*(1+theta) for |theta|<=2^(-p) */
+      mpfr_mul (t, v, x, MPFR_RNDN); /* (1+theta)^2 */
+      e1 = MPFR_GET_EXP(t) - (mpfr_exp_t) p + 2; /* bound for t: err(t) <= 2^e1 */
+      mpfr_cot (t, t, MPFR_RNDN);
+      /* cot(t * (1+h)) = cot(t) - theta * (1 + cot(t)^2) with |theta|<=t*h */
+      if (MPFR_GET_EXP(t) > 0)
+        e1 = e1 + 2 * MPFR_EXP(t) + 1;
+      else
+        e1 = e1 + 1;
+      /* now theta * (1 + cot(t)^2) <= 2^e1 */
+      e1 += (mpfr_exp_t) p - MPFR_EXP(t); /* error is now 2^e1 ulps */
+      mpfr_mul (t, t, v, MPFR_RNDN);
+      e1 ++;
+      mpfr_digamma_positive (v, u, MPFR_RNDN);   /* error <= 1/2 ulp */
+      expv = MPFR_GET_EXP (v);
+      mpfr_sub (v, v, t, MPFR_RNDN);
+      if (MPFR_NOTZERO(v))
+        {
+          if (MPFR_GET_EXP (v) < MPFR_GET_EXP (t))
+            e1 += MPFR_EXP(t) - MPFR_EXP(v); /* scale error for t wrt new v */
+          /* now take into account the 1/2 ulp error for v */
+          if (expv - MPFR_EXP(v) - 1 > e1)
+            e1 = expv - MPFR_EXP(v) - 1;
+          else
+            e1 ++;
+          e1 ++; /* rounding error for mpfr_sub */
+          if (MPFR_CAN_ROUND (v, p - e1, MPFR_PREC(y), rnd_mode))
+            break;
+        }
+      MPFR_ZIV_NEXT (loop, p);
+      mpfr_set_prec (t, p);
+      mpfr_set_prec (v, p);
+    }
+  MPFR_ZIV_FREE (loop);
+
+  inex = mpfr_set (y, v, rnd_mode);
+
+  mpfr_clear (t);
+  mpfr_clear (v);
+ end:
+  mpfr_clear (u);
+
   return inex;
 }
 
