@@ -64,7 +64,7 @@ mpfr_trigamma_approx (mpfr_ptr s, mpfr_srcptr x)
 {
   mpfr_prec_t p;
   mpfr_t t, u, invxx;
-  mpfr_exp_t e, exps, sh, f, expu;
+  mpfr_exp_t e, f, expu;
   unsigned long n;
 
   MPFR_ASSERTN (MPFR_IS_POS (x) && MPFR_GET_EXP (x) >= 2);
@@ -105,35 +105,17 @@ mpfr_trigamma_approx (mpfr_ptr s, mpfr_srcptr x)
       /* if the terms 'u' are decreasing by a factor two at least,
          then the error coming from those is bounded by
          sum((5n+1)/2^n, n=1..infinity) = 11 */
-      exps = MPFR_GET_EXP (s);
+      MPFR_ASSERTD(MPFR_GET_EXP(s) == 1);
+      /* since x*trigamma(x) is decreasing on [2,+Inf) from about 1.29 to 1,
+         s is always in the binade [1,2) here */
       expu = MPFR_GET_EXP (u);
-      if (expu < exps - (mpfr_exp_t) p)
+      if (expu < 1 - (mpfr_exp_t) p) /* |u| < 1/2 ulp(s) since EXP(s) = 1 */
         break;
       mpfr_add (s, s, u, MPFR_RNDN);
-      sh = exps - MPFR_GET_EXP (s);
-      /* TODO: Give information about the possible positive values of sh.
-         It seems that in almost all cases, sh = 0.
-         So, add a MPFR_UNLIKELY below? */
-      if (sh > 0)
-        {
-#if MPFR_WANT_ASSERT > 0
-          mpfr_exp_t e2 = e;
-          int i;
-          for (i = 0; i < sh; i++)
-            {
-              MPFR_ASSERTD (e2 <= MPFR_EXP_MAX >> 1);
-              e2 <<= 1;
-            }
-#endif
-          e <<= sh;
-#if MPFR_WANT_ASSERT > 0
-          MPFR_ASSERTD (e == e2);
-#endif
-        }
       e ++; /* error in mpfr_add */
       f = 5 * n + 1;
       /* convert the 5n+1 ulp(u) error into ulp(s) */
-      while (expu < exps)
+      while (expu < 1)
         {
           f = (1 + f) / 2;
           expu ++;
