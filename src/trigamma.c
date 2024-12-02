@@ -64,7 +64,7 @@ mpfr_trigamma_approx (mpfr_ptr s, mpfr_srcptr x)
 {
   mpfr_prec_t p;
   mpfr_t t, u, invxx;
-  mpfr_exp_t e, exps, f, expu;
+  mpfr_exp_t e, exps, sh, f, expu;
   unsigned long n;
 
   MPFR_ASSERTN (MPFR_IS_POS (x) && MPFR_GET_EXP (x) >= 2);
@@ -110,8 +110,26 @@ mpfr_trigamma_approx (mpfr_ptr s, mpfr_srcptr x)
       if (expu < exps - (mpfr_exp_t) p)
         break;
       mpfr_add (s, s, u, MPFR_RNDN);
-      if (MPFR_GET_EXP (s) < exps)
-        e <<= exps - MPFR_GET_EXP (s);
+      sh = exps - MPFR_GET_EXP (s);
+      /* TODO: Give information about the possible positive values of sh.
+         It seems that in almost all cases, sh = 0.
+         So, add a MPFR_UNLIKELY below? */
+      if (sh > 0)
+        {
+#if MPFR_WANT_ASSERT > 0
+          mpfr_exp_t e2 = e;
+          int i;
+          for (i = 0; i < sh; i++)
+            {
+              MPFR_ASSERTD (e2 <= MPFR_EXP_MAX >> 1);
+              e2 <<= 1;
+            }
+#endif
+          e <<= sh;
+#if MPFR_WANT_ASSERT > 0
+          MPFR_ASSERTD (e == e2);
+#endif
+        }
       e ++; /* error in mpfr_add */
       f = 5 * n + 1;
       /* convert the 5n+1 ulp(u) error into ulp(s) */
