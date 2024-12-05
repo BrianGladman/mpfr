@@ -26,6 +26,9 @@ If not, see <https://www.gnu.org/licenses/>. */
        Journal of the Royal Statistical Society. Series C (Applied Statistics),
        Vol. 27, No. 1 (1978), pp. 97-99 (3 pages)
    [2] Handbook of Mathematical Functions, Abramowitz & Stegun, 1964
+
+   We assume there are no exact or midpoint cases for trigamma(x),
+   which would make Ziv's algorithm loop forever.
 */
 
 /* special case for x=1/2, where trigamma(1/2) = pi^2/2 */
