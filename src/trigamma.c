@@ -60,7 +60,9 @@ half (mpfr_ptr y, mpfr_rnd_t rnd_mode)
    Use the formula (6.4.11) with n=1 from Abramowitz & Stegun:
    trigamma(x) = 1/x + 1/(2x^2) + sum(B[2j]/x^(2j+1), j=1..infinity)
    where B[2j] are Bernoulli numbers, which we rewrite as:
-   trigamma(x) = 1/x * (1 + 1/(2x) + sum(B[2j]/x^(2j), j=1..infinity))
+   trigamma(x) = 1/x * (1 + 1/(2x) + sum(B[2j]/x^(2j), j=1..infinity)).
+   This is a divergent series, and as usual we assume the error when we sum up to
+   term of index j is bounded by the absolute value of the (j+1)-th term.
 */
 static mpfr_exp_t
 mpfr_trigamma_approx (mpfr_ptr s, mpfr_srcptr x)
