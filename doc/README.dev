@@ -739,7 +739,7 @@ with code like MPFR_EXP_MIN/n).
 
    =====================================================================
 
-Don't use the following variable names since they are keywords for some
+Don't use the following identifiers since they are keywords for some
 compilers:
   - "bool", "true" and "false": keywords in ISO C23.
   - "near" and "far": keywords in some old DOS compiler.
