@@ -739,10 +739,16 @@ with code like MPFR_EXP_MIN/n).
 
    =====================================================================
 
-Don't use "near" and "far" as variable names since they are "Keywords"
-for some C compiler (Old DOS compiler). Also don't use "pm", which is used
-by the C compiler 'sharp' to design variables that should be stored in the
-flash memory. Don't use "new", which is reserved in C++.
+Don't use the following variable names since they are keywords for some
+compilers:
+  - "bool", "true" and "false": keywords in ISO C23.
+  - "near" and "far": keywords in some old DOS compiler.
+  - "pm", which is used by the C compiler 'sharp' to design variables
+    that should be stored in the flash memory.
+  - "new", which is reserved in C++.
+
+Note: This list is not exhaustive; these are just the simplest keywords,
+which are likely to be used by mistake.
 
 Check C++ reserved keywords, e.g. from
 
