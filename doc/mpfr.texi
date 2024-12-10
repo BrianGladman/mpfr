@@ -4623,18 +4623,18 @@ C code using @code{mpfr_get_z} as the second or third term of
 a conditional operator may also be affected. For instance, the
 following is correct with MPFR@tie{}3.0, but not with MPFR@tie{}2.x:
 @example
-bool ? mpfr_get_z(...) : mpfr_add(...);
+cond ? mpfr_get_z(...) : mpfr_add(...);
 @end example
 On the other hand, the following is correct with MPFR@tie{}2.x, but not
 with MPFR@tie{}3.0:
 @example
-bool ? mpfr_get_z(...) : (void) mpfr_add(...);
+cond ? mpfr_get_z(...) : (void) mpfr_add(...);
 @end example
 Portable code should cast @code{mpfr_get_z(...)} to @code{void} to
 use the type @code{void} for both terms of the conditional operator,
 as in:
 @example
-bool ? (void) mpfr_get_z(...) : (void) mpfr_add(...);
+cond ? (void) mpfr_get_z(...) : (void) mpfr_add(...);
 @end example
 Alternatively, @code{if ... else} can be used instead of the
 conditional operator.
