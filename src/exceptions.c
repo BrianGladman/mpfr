@@ -303,7 +303,13 @@ mpfr_check_range (mpfr_ptr x, int t, mpfr_rnd_t rnd_mode)
        * So, the simplest solution is to detect this overflow case here in
        * mpfr_check_range, which is easy to do since the rounded result is
        * necessarily an inexact infinity.
+       * An underflow/overflow detection in the Ziv loop is assumed to be
+       * handled correctly, e.g. by calling mpfr_underflow/mpfr_overflow;
+       * in debug builds, we detect a potential issue with MPFR_ASSERTD:
+       * if the rounding mode is like MPFR_RNDZ, then an inexact infinity
+       * is not possible.
        */
+      MPFR_ASSERTD (! MPFR_IS_LIKE_RNDZ (rnd_mode, MPFR_IS_NEG(x)));
       __gmpfr_flags |= MPFR_FLAGS_OVERFLOW;
     }
   MPFR_RET (t);  /* propagate inexact ternary value, unlike most functions */
