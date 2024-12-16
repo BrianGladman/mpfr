@@ -673,6 +673,9 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                   TGENERIC_CHECK ("bad divide-by-zero flag",
                                   (compare == 0 && !infinite_input) ^
                                   (mpfr_divby0_p () == 0));
+                  TGENERIC_CHECK ("inexact infinity with rounding like RNDZ",
+                                  compare == 0 ||
+                                  ! MPFR_IS_LIKE_RNDZ (rnd, MPFR_IS_NEG (y)));
                 }
               else if (MPFR_IS_ZERO (y))
                 TGENERIC_CHECK ("bad underflow flag",
