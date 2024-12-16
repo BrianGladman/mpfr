@@ -577,13 +577,11 @@ mpfr_trigamma (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd_mode)
              then 1/x^2 will overflow too */
           if (MPFR_IS_INF(t))
             {
-              /* FIXME: In MPFR_RNDZ or equivalent, this returns an
-                 inexact infinity, while a finite result is expected.
-                 Shouldn't mpfr_overflow() be used? */
               MPFR_LOG_MSG (("t = o(1/x) overflows (rnd=%s)\n",
                              mpfr_print_rnd_mode (rnd_mode)));
-              mpfr_set (y, t, MPFR_RNDN);
-              ok = 1;
+              mpfr_clear (t);
+              MPFR_SAVE_EXPO_FREE (expo);
+              return mpfr_overflow (y, rnd_mode, MPFR_SIGN (x));
             }
           else if (inex == 0) /* x is a power of two: round to 1/x^2 + eps */
             {
