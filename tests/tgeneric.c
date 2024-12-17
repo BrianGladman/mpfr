@@ -661,6 +661,12 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
             __gmpfr_flags = oldflags;  /* restore the flags */
           }  /* tests in a reduced exponent range */
 
+          TGENERIC_CHECK ("both overflow and underflow",
+                          ! (mpfr_overflow_p () && mpfr_underflow_p ()));
+          TGENERIC_CHECK ("overflow or underflow without inexact flag",
+                          ! (mpfr_overflow_p () || mpfr_underflow_p ()) ||
+                          mpfr_inexflag_p ());
+
           if (MPFR_IS_SINGULAR (y))
             {
               if (MPFR_IS_NAN (y) || mpfr_nanflag_p ())
@@ -668,9 +674,9 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                                 MPFR_IS_NAN (y) && mpfr_nanflag_p ());
               else if (MPFR_IS_INF (y))
                 {
-                  TGENERIC_CHECK ("bad overflow flag",
+                  TGENERIC_CHECK ("bad overflow flag for inf result",
                                   (compare != 0) ^ (mpfr_overflow_p () == 0));
-                  TGENERIC_CHECK ("bad divide-by-zero flag",
+                  TGENERIC_CHECK ("bad divide-by-zero flag for inf result",
                                   (compare == 0 && !infinite_input) ^
                                   (mpfr_divby0_p () == 0));
                   TGENERIC_CHECK ("inexact infinity with rounding like RNDZ",
@@ -679,9 +685,10 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                 }
               else if (MPFR_IS_ZERO (y))
                 {
-                  TGENERIC_CHECK ("bad underflow flag",
+                  TGENERIC_CHECK ("ternary value / underflow flag mismatch"
+                                  " for zero result",
                                   (compare != 0) ^ (mpfr_underflow_p () == 0));
-                  TGENERIC_CHECK ("bad ternary value",
+                  TGENERIC_CHECK ("bad ternary value for inexact zero result",
                                   (compare >= 0 || MPFR_IS_POS (y)) &&
                                   (compare <= 0 || MPFR_IS_NEG (y)));
                 }
@@ -692,21 +699,25 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                               ! mpfr_overflow_p ());
               TGENERIC_CHECK ("both underflow and divide-by-zero",
                               ! mpfr_underflow_p ());
-              TGENERIC_CHECK ("bad compare value (divide-by-zero)",
+              TGENERIC_CHECK ("bad ternary value (divide-by-zero)",
                               compare == 0);
             }
           else if (mpfr_overflow_p ())
             {
-              TGENERIC_CHECK ("both underflow and overflow",
-                              ! mpfr_underflow_p ());
-              TGENERIC_CHECK ("bad compare value (overflow)", compare != 0);
+              /* An inf result is handled under the "MPFR_IS_SINGULAR (y)"
+                 test. */
+              TGENERIC_CHECK ("bad ternary value for overflow with"
+                              " finite result", compare != 0);
               mpfr_nexttoinf (y);
               TGENERIC_CHECK ("should have been max MPFR number (overflow)",
                               MPFR_IS_INF (y));
             }
           else if (mpfr_underflow_p ())
             {
-              TGENERIC_CHECK ("bad compare value (underflow)", compare != 0);
+              /* A zero result is handled under the "MPFR_IS_SINGULAR (y)"
+                 test. */
+              TGENERIC_CHECK ("bad ternary value for underflow with"
+                              " non-zero result", compare != 0);
               mpfr_nexttozero (y);
               TGENERIC_CHECK ("should have been min MPFR number (underflow)",
                               MPFR_IS_ZERO (y));
