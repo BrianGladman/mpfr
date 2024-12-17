@@ -678,8 +678,13 @@ test_generic (mpfr_prec_t p0, mpfr_prec_t p1, unsigned int nmax)
                                   ! MPFR_IS_LIKE_RNDZ (rnd, MPFR_IS_NEG (y)));
                 }
               else if (MPFR_IS_ZERO (y))
-                TGENERIC_CHECK ("bad underflow flag",
-                                (compare != 0) ^ (mpfr_underflow_p () == 0));
+                {
+                  TGENERIC_CHECK ("bad underflow flag",
+                                  (compare != 0) ^ (mpfr_underflow_p () == 0));
+                  TGENERIC_CHECK ("bad ternary value",
+                                  (compare >= 0 || MPFR_IS_POS (y)) &&
+                                  (compare <= 0 || MPFR_IS_NEG (y)));
+                }
             }
           else if (mpfr_divby0_p ())
             {
