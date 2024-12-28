@@ -542,6 +542,10 @@ Note that emin(m68k) = emin(x86) - 1.
 
 + MPFR_WANT_FLOAT128:   Define to build conversion functions from/to
                         binary128 floats (_Float128 or __float128).
+                        Define it to 1 if constants have the f128 suffix.
+                        Define it to 2 if constants have the q suffix; in
+                        this case, a _Float128 macro may have to be defined
+                        as __float128 (a.k.a. __float128 fallback).
 
 + MPFR_ALLOCA_MAX:      Maximum size for the use of alloca() by temporary
                         allocations (default: 16384); if set to 0, alloca()
