@@ -4,7 +4,7 @@
    a trivial extension based on the rules of mpfr_pow for some special
    values.
 
-Copyright 2021-2024 Free Software Foundation, Inc.
+Copyright 2021-2025 Free Software Foundation, Inc.
 Contributed by the AriC and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
