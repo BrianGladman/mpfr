@@ -35,7 +35,10 @@ usual way (see the INSTALL file, but note that there are no patches to
 apply, and the URLs are not valid since the corresponding version has
 not been released yet).
 
-To generate mpfr.info, you need texinfo version 4.2 (or higher).
+To generate mpfr.info, you need GNU Texinfo version 4.2 (or higher).
+Note that old Texinfo versions are no longer tested (this is useless
+for releases, as the mpfr.info file is provided by the tarball). So
+the actual requirement might be stronger. Please report any issue.
 
 ===========================================================================
 
