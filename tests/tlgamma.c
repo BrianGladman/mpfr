@@ -129,6 +129,15 @@ special (void)
       exit (1);
     }
 
+  /* test with signp=NULL */
+  mpfr_set_ui (x, 2, MPFR_RNDN);
+  mpfr_lgamma (y, NULL, x, MPFR_RNDN);
+  if (MPFR_IS_NAN (y) || mpfr_cmp_ui (y, 0) || MPFR_IS_NEG (y))
+    {
+      printf ("Error for lgamma(2) with signp=NULL\n");
+      exit (1);
+    }
+
   mpfr_set_prec (x, 53);
   mpfr_set_prec (y, 53);
 

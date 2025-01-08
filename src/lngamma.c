@@ -760,13 +760,14 @@ int
 mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
   int inex;
+  int sgn = 1; /* most common case */
 
+  /* when signp=NULL, we print 0 in MPFR_LOG_FUNC */
   MPFR_LOG_FUNC
     (("x[%Pd]=%.*Rg rnd=%d", mpfr_get_prec (x), mpfr_log_prec, x, rnd),
      ("y[%Pd]=%.*Rg signp=%d inexact=%d",
-      mpfr_get_prec (y), mpfr_log_prec, y, *signp, inex));
-
-  *signp = 1;  /* most common case */
+      mpfr_get_prec (y), mpfr_log_prec, y,
+      (signp == NULL) ? 0 : *signp, inex));
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
     {
@@ -779,7 +780,8 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mpfr_rnd_t rnd)
         {
           if (MPFR_IS_ZERO (x))
             MPFR_SET_DIVBY0 ();
-          *signp = MPFR_INT_SIGN (x);
+          if (signp != NULL)
+            *signp = MPFR_INT_SIGN (x);
           MPFR_SET_INF (y);
           MPFR_SET_POS (y);
           MPFR_RET (0);
@@ -797,7 +799,7 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mpfr_rnd_t rnd)
         }
 
       if (unit_bit (x) == 0)
-        *signp = -1;
+        sgn = -1;
 
       /* For tiny negative x, we have gamma(x) = 1/x - euler + O(x),
          thus |gamma(x)| = -1/x + euler + O(x), and
@@ -865,6 +867,10 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mpfr_rnd_t rnd)
     }
 
   inex = mpfr_lngamma_aux (y, x, rnd);
+
+  if (signp != NULL)
+    *signp = sgn;
+
   return inex;
 }
 
