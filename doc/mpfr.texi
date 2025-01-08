@@ -2635,7 +2635,7 @@ See also @code{mpfr_lgamma}.
 @deftypefun int mpfr_lgamma (mpfr_t @var{rop}, int *@var{signp}, const mpfr_t @var{op}, mpfr_rnd_t @var{rnd})
 Set @var{rop} to the value of the logarithm of the absolute value of the
 Gamma function on @var{op}, rounded in the direction @var{rnd}.
-If @var{signp} is not @code{NULL}, the sign
+If @var{signp} is not a null pointer, the sign
 (1 or @minus{}1) of Gamma(@var{op}) is returned in the object pointed to
 by @var{signp}.
 When @var{op} is 1 or 2, set @var{rop} to @mm{+}0 (in all rounding modes).
@@ -4649,6 +4649,9 @@ is set were unspecified.
 Note: this function has been renamed to @code{mpfr_get_z_2exp}
 in MPFR@tie{}3.0, but @code{mpfr_get_z_exp} is still available for
 compatibility reasons.
+
+@item @code{mpfr_lgamma} changed in MPFR@tie{}4.3.
+The @var{signp} argument can now be a null pointer.
 
 @item @code{mpfr_out_str} changed in MPFR@tie{}4.1.
 The argument @var{base} can now be negative (from @minus{}2 to

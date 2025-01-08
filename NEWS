@@ -22,7 +22,7 @@ If not, see <https://www.gnu.org/licenses/>.
 Changes from versions 4.2.* to version 4.3.0:
 - The "" release.
 - New function mpfr_compound.
-- The mpfr_lgamma function allows its signp argument to be a NULL pointer.
+- The mpfr_lgamma function allows its signp argument to be a null pointer.
 
 Changes from versions 4.1.* to version 4.2.0:
 - The "fondue savoyarde" release.
