@@ -29,7 +29,13 @@ mpfr_lgamma_nosign (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
   inex = mpfr_lgamma (y, &sign, x, rnd);
   if (!MPFR_IS_SINGULAR (y))
     {
-      MPFR_ASSERTN (sign == 1 || sign == -1);
+      if (sign != 1 && sign != -1)
+        {
+          printf ("Error in mpfr_lgamma_nosign: sign = %d\n", sign);
+          printf ("x = ");
+          mpfr_dump (x);
+          exit (1);
+        }
       if (sign == -1 && (rnd == MPFR_RNDN || rnd == MPFR_RNDZ))
         {
           mpfr_neg (y, y, MPFR_RNDN);
