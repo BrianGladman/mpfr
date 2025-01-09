@@ -24,11 +24,14 @@ If not, see <https://www.gnu.org/licenses/>. */
 static int
 mpfr_lgamma_nosign (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
-  int inex, sign;
+  int inex, sign = 0;
 
   inex = mpfr_lgamma (y, &sign, x, rnd);
   if (!MPFR_IS_SINGULAR (y))
     {
+      /* Note: sign has been initialized to a value different from 1 and -1,
+         so that we can detect here when it is not explicitly set to 1 or -1
+         in mpfr_lgamma. */
       if (sign != 1 && sign != -1)
         {
           printf ("Error in mpfr_lgamma_nosign: sign = %d\n", sign);
