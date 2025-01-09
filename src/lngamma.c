@@ -853,6 +853,8 @@ mpfr_lgamma (mpfr_ptr y, int *signp, mpfr_srcptr x, mpfr_rnd_t rnd)
               if (ok)
                 {
                   MPFR_SAVE_EXPO_FREE (expo);
+                  if (signp != NULL)
+                    *signp = sgn;
                   return mpfr_check_range (y, inex, rnd);
                 }
               /* if ulp(log(-x)) <= |x| there is no reason to loop,
