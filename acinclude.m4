@@ -832,6 +832,16 @@ Please use another compiler or build MPFR without --enable-float128.])
       ])
 fi
 
+dnl Check if _Float16 is available.
+AC_MSG_CHECKING(if _Float16 is supported)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[
+volatile _Float16 x = 0x1.fp+5f16;
+return x == 0;
+]])],
+      [AC_MSG_RESULT(yes)
+       AC_DEFINE([MPFR_WANT_FLOAT16],1,[Build float16 functions])],
+      [AC_MSG_RESULT(no)])
+
 dnl Check if Static Assertions are supported.
 AC_MSG_CHECKING(for Static Assertion support)
 saved_CPPFLAGS="$CPPFLAGS"
