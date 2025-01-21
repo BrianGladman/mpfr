@@ -68,7 +68,6 @@ mpfr_set_float16 (mpfr_ptr r, _Float16 d, mpfr_rnd_t rnd_mode)
     }
   else if (MPFR_UNLIKELY (e == 0)) /* subnormal case */
     {
-      int sh;
       if (m == 0) /* case +/-0 */
         return mpfr_set_d (r, (double) d, rnd_mode);
       e ++;
