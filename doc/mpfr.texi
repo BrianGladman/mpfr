@@ -3696,8 +3696,7 @@ return zero otherwise.
 @end deftypefun
 
 @deftypefun int mpfr_buildopt_float16_p (void)
-Return a non-zero value if MPFR was compiled with @samp{_Float16} support
-(that is, MPFR was built with the @samp{--enable-float16} configure option),
+Return a non-zero value if MPFR was compiled with @samp{_Float16} support,
 return zero otherwise.
 @end deftypefun
 
