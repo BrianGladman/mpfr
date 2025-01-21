@@ -839,7 +839,7 @@ volatile _Float16 x = 0x1.fp+5f16;
 return x == 0;
 ]])],
       [AC_MSG_RESULT(yes)
-       AC_DEFINE([MPFR_WANT_FLOAT16],1,[Build float16 functions])],
+       AC_DEFINE([MPFR_WANT_FLOAT16],1,[Build _Float16 functions])],
       [AC_MSG_RESULT(no)])
 
 dnl Check if Static Assertions are supported.
