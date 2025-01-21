@@ -32,7 +32,7 @@ If not, see <https://www.gnu.org/licenses/>. */
 typedef union { _Float16 x; uint16_t n; } b16u16;
 
 static void
-check_special (void)
+check_special (mpfr_rnd_t rnd)
 {
   b16u16 f;
   mpfr_t x;
@@ -45,7 +45,7 @@ check_special (void)
   for (i = 0x7c01; i < 0x8000; i++)
     {
       f.n = i;
-      mpfr_set_float16 (x, f.x, MPFR_RNDN);
+      mpfr_set_float16 (x, f.x, rnd);
       if (! mpfr_nan_p (x))
         {
           printf ("Error in mpfr_set_float16(x, NaN = 0x%x)\n", f.n);
@@ -53,7 +53,7 @@ check_special (void)
           mpfr_dump (x);
           exit (1);
         }
-      f.x = mpfr_get_float16 (x, MPFR_RNDN);
+      f.x = mpfr_get_float16 (x, rnd);
       if (! DOUBLE_ISNAN (f.x))
         {
           printf ("Error in mpfr_get_float16(NaN)\n");
@@ -62,7 +62,7 @@ check_special (void)
         }
       /* also check with sign bit set */
       f.n = 0x8000 | i;
-      mpfr_set_float16 (x, f.x, MPFR_RNDN);
+      mpfr_set_float16 (x, f.x, rnd);
       if (! mpfr_nan_p (x))
         {
           printf ("Error in mpfr_set_float16(x, NaN = 0x%x)\n", f.n);
@@ -70,7 +70,7 @@ check_special (void)
           mpfr_dump (x);
           exit (1);
         }
-      f.x = mpfr_get_float16 (x, MPFR_RNDN);
+      f.x = mpfr_get_float16 (x, rnd);
       if (! DOUBLE_ISNAN (f.x))
         {
           printf ("Error in mpfr_get_float16(NaN)\n");
@@ -81,7 +81,7 @@ check_special (void)
 
   /* check +Inf */
   f.n = 0x7c00;
-  mpfr_set_float16 (x, f.x, MPFR_RNDN);
+  mpfr_set_float16 (x, f.x, rnd);
   if (! mpfr_inf_p (x) || MPFR_IS_NEG (x))
     {
       printf ("Error in mpfr_set_float16(x, +Inf)\n");
@@ -89,7 +89,7 @@ check_special (void)
       mpfr_dump (x);
       exit (1);
     }
-  f.x = mpfr_get_float16 (x, MPFR_RNDN);
+  f.x = mpfr_get_float16 (x, rnd);
   if (f.n != 0x7c00)
     {
       printf ("Error in mpfr_get_float16(+Inf)\n");
@@ -99,7 +99,7 @@ check_special (void)
 
   /* check -Inf */
   f.n = 0xfc00;
-  mpfr_set_float16 (x, f.x, MPFR_RNDN);
+  mpfr_set_float16 (x, f.x, rnd);
   if (! mpfr_inf_p (x) || MPFR_IS_POS (x))
     {
       printf ("Error in mpfr_set_float16(x, -Inf)\n");
@@ -107,7 +107,7 @@ check_special (void)
       mpfr_dump (x);
       exit (1);
     }
-  f.x = mpfr_get_float16 (x, MPFR_RNDN);
+  f.x = mpfr_get_float16 (x, rnd);
   if (f.n != 0xfc00)
     {
       printf ("Error in mpfr_get_float16(-Inf)\n");
@@ -117,7 +117,7 @@ check_special (void)
 
   /* check +0 */
   f.n = 0;
-  mpfr_set_float16 (x, f.x, MPFR_RNDN);
+  mpfr_set_float16 (x, f.x, rnd);
   if (! mpfr_zero_p (x) || MPFR_IS_NEG (x))
     {
       printf ("Error in mpfr_set_float16(x, +0)\n");
@@ -125,7 +125,7 @@ check_special (void)
       mpfr_dump (x);
       exit (1);
     }
-  f.x = mpfr_get_float16 (x, MPFR_RNDN);
+  f.x = mpfr_get_float16 (x, rnd);
   if (f.n != 0)
     {
       printf ("Error in mpfr_get_float16(+0.0)\n");
@@ -135,7 +135,7 @@ check_special (void)
 
   /* check -0 */
   f.n = 0x8000;
-  mpfr_set_float16 (x, f.x, MPFR_RNDN);
+  mpfr_set_float16 (x, f.x, rnd);
   if (! mpfr_zero_p (x))
     {
       printf ("Error in mpfr_set_float16(x, -0)\n");
@@ -152,7 +152,7 @@ check_special (void)
       exit (1);
     }
 #endif
-  f.x = mpfr_get_float16 (x, MPFR_RNDN);
+  f.x = mpfr_get_float16 (x, rnd);
   if (f.n != 0x8000)
     {
       printf ("Error in mpfr_get_float16(-0.0)\n");
@@ -165,7 +165,7 @@ check_special (void)
 
 /* check all normal numbers */
 static void
-check_normal (void)
+check_normal (mpfr_rnd_t rnd)
 {
   b16u16 f;
   _Float16 g;
@@ -180,7 +180,7 @@ check_normal (void)
     {
       f.n = i;
       /* Invariant: f.x = m*2^e */
-      mpfr_set_float16 (x, f.x, MPFR_RNDN);
+      mpfr_set_float16 (x, f.x, rnd);
       if (mpfr_cmp_ui_2exp (x, m, e) != 0)
         {
           printf ("Error in mpfr_set_float16(x, %a)\n", (float) f.x);
@@ -188,7 +188,7 @@ check_normal (void)
           mpfr_dump (x);
           exit (1);
         }
-      g = mpfr_get_float16 (x, MPFR_RNDN);
+      g = mpfr_get_float16 (x, rnd);
       if (g != f.x)
         {
           printf ("Error in mpfr_get_float16(%a)\n", (float) f.x);
@@ -197,7 +197,7 @@ check_normal (void)
         }
       /* also check with sign bit set */
       f.n = 0x8000 | i;
-      mpfr_set_float16 (x, f.x, MPFR_RNDN);
+      mpfr_set_float16 (x, f.x, rnd);
       if (mpfr_cmp_si_2exp (x, -m, e) != 0)
         {
           printf ("Error in mpfr_set_float16(x, %a)\n", (float) f.x);
@@ -205,7 +205,7 @@ check_normal (void)
           mpfr_dump (x);
           exit (1);
         }
-      g = mpfr_get_float16 (x, MPFR_RNDN);
+      g = mpfr_get_float16 (x, rnd);
       if (g != f.x)
         {
           printf ("Error in mpfr_get_float16(%a)\n", (float) f.x);
@@ -227,11 +227,15 @@ check_normal (void)
 int
 main (int argc, char *argv[])
 {
+  int rnd;
+
   tests_start_mpfr ();
 
-  check_special ();
-
-  check_normal ();
+  RND_LOOP (rnd)
+    {
+      check_special (rnd);
+      check_normal (rnd);
+    }
 
   tests_end_mpfr ();
 
