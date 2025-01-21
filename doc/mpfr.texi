@@ -4532,7 +4532,7 @@ use @code{mpfr_get_z_exp}.
 
 @item @code{mpfr_set_divby0} in MPFR@tie{}3.1 (new divide-by-zero exception).
 
-@item @code{mpfr_set_float16} in MPFR@tie{}4.4.0.
+@item @code{mpfr_set_float16} in MPFR@tie{}4.3.0.
 
 @item @code{mpfr_set_float128} in MPFR@tie{}4.0 if configured with
 @samp{--enable-float128}.
