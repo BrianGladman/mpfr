@@ -74,7 +74,7 @@ mpfr_set_float16 (mpfr_ptr r, _Float16 d, mpfr_rnd_t rnd_mode)
       e ++;
     }
   else
-    m += 0x400; // add implicit bit
+    m += 0x400; /* add implicit bit */
 
   if (signbit)
     m = -m;
