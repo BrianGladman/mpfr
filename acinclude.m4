@@ -832,11 +832,16 @@ Please use another compiler or build MPFR without --enable-float128.])
       ])
 fi
 
-dnl Check if _Float16 is available.
+dnl Check if _Float16 is available and if the conversion functions,
+dnl which use the optional uint16_t type, can be compiled.
 AC_MSG_CHECKING(if _Float16 is supported)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[
-volatile _Float16 x = 0x1.fp+5f16;
-return x == 0;
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <stdint.h>
+typedef union { _Float16 x; uint16_t n; } b16u16;
+]], [[
+volatile b16u16 v;
+v.x = 0x1.fp+5f16;
+return v.n == 0;
 ]])],
       [AC_MSG_RESULT(yes)
        AC_DEFINE([MPFR_WANT_FLOAT16],1,[Build _Float16 functions])],
