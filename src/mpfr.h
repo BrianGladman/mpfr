@@ -498,6 +498,12 @@ __MPFR_DECLSPEC int mpfr_set_float128 (mpfr_ptr, _Float128, mpfr_rnd_t);
 MPFR_EXTENSION
 __MPFR_DECLSPEC _Float128 mpfr_get_float128 (mpfr_srcptr, mpfr_rnd_t);
 #endif
+#ifdef MPFR_WANT_FLOAT16
+MPFR_EXTENSION
+__MPFR_DECLSPEC int mpfr_set_float16 (mpfr_ptr, _Float16, mpfr_rnd_t);
+MPFR_EXTENSION
+__MPFR_DECLSPEC _Float16 mpfr_get_float16 (mpfr_srcptr, mpfr_rnd_t);
+#endif
 __MPFR_DECLSPEC int mpfr_set_z (mpfr_ptr, mpz_srcptr, mpfr_rnd_t);
 __MPFR_DECLSPEC int mpfr_set_z_2exp (mpfr_ptr, mpz_srcptr, mpfr_exp_t,
                                      mpfr_rnd_t);

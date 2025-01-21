@@ -41,8 +41,9 @@ mpfr_set_float16 (mpfr_ptr r, _Float16 d, mpfr_rnd_t rnd_mode)
   m = v.n & 0x3ff;
 
   /*
-    +Inf is encoded by e=0x1f and m=0
-    NaN is encoded by e=0x1f and m!=0
+    NaN is encoded by e=31 and m!=0
+    +Inf is encoded by e=31 and m=0
+    the largest number is 0x1.ffcp+15 (e=30, m=0x3ff)
     1.0 is encoded by e=15 and m=0
     the smallest positive normal number is 0x1p-14 (e=1, m=0)
     the largest subnormal number is 0x1.ff8p-15 (e=0, m=0x3ff)

@@ -844,6 +844,8 @@ typedef union {
 /* This is standardized by IEEE 754-2008. */
 #define IEEE_FLOAT128_MANT_DIG 113
 
+#define IEEE_FLOAT16_MANT_DIG 11
+
 
 /******************************************************
  ******************  Decimal support  *****************
