@@ -20,7 +20,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the GNU MPFR Library; see the file COPYING.LESSER.
 If not, see <https://www.gnu.org/licenses/>. */
 
-#define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
 
 #ifdef MPFR_WANT_FLOAT16
