@@ -19,6 +19,11 @@ You should have received a copy of the GNU Lesser General Public License
 along with the GNU MPFR Library; see the file COPYING.LESSER.
 If not, see <https://www.gnu.org/licenses/>. */
 
+/* Needed due to the test on MPFR_WANT_FLOAT16 */
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #ifdef MPFR_WANT_FLOAT16
 
 #include "mpfr-test.h"
