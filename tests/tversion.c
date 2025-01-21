@@ -248,6 +248,17 @@ main (void)
     }
 
   if (
+#ifdef MPFR_WANT_FLOAT16
+      !
+#endif
+      mpfr_buildopt_float16_p ())
+    {
+      printf ("ERROR! mpfr_buildopt_float16_p() and macros"
+              " do not match!\n");
+      err = 1;
+    }
+
+  if (
 #ifdef MPFR_WANT_FLOAT128
       !
 #endif
@@ -297,9 +308,8 @@ main (void)
       err = 1;
     }
 
-  (printf) ("[tversion] TLS = %s, float128 = %s, decimal = %s,"
-            " GMP internals = %s\n",
-            mpfr_buildopt_tls_p () ? "yes" : "no",
+  (printf) ("[tversion] _Float16 = %s, float128 = %s, decimal = %s\n",
+            mpfr_buildopt_float16_p () ? "yes" : "no",
             mpfr_buildopt_float128_p () ? "yes" : "no",
             mpfr_buildopt_decimal_p () ? "yes"
 #if defined(DECIMAL_BID_FORMAT)
@@ -307,8 +317,11 @@ main (void)
 #elif defined(DECIMAL_DPD_FORMAT)
             " (DPD)"
 #endif
-            : "no",
-            mpfr_buildopt_gmpinternals_p () ? "yes" : "no");
+            : "no");
+
+  (printf) ("[tversion] GMP internals = %s, TLS = %s\n",
+            mpfr_buildopt_gmpinternals_p () ? "yes" : "no",
+            mpfr_buildopt_tls_p () ? "yes" : "no");
 
 #ifdef MPFR_THREAD_LOCK_METHOD
 # define LOCK_METHOD " (lock method: " MPFR_THREAD_LOCK_METHOD ")"

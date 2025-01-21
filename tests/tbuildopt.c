@@ -59,6 +59,24 @@ check_decimal_p (void)
 }
 
 static void
+check_float16_p (void)
+{
+#ifdef MPFR_WANT_FLOAT16
+  if (!mpfr_buildopt_float16_p())
+    {
+      printf ("Error: mpfr_buildopt_float16_p should return true\n");
+      exit (1);
+    }
+#else
+  if (mpfr_buildopt_float16_p())
+    {
+      printf ("Error: mpfr_buildopt_float16_p should return false\n");
+      exit (1);
+    }
+#endif
+}
+
+static void
 check_float128_p (void)
 {
 #ifdef MPFR_WANT_FLOAT128
@@ -119,6 +137,7 @@ main (void)
 
   check_tls_p();
   check_decimal_p();
+  check_float16_p();
   check_float128_p();
   check_gmpinternals_p();
   check_sharedcache_p ();

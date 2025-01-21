@@ -406,6 +406,7 @@ __MPFR_DECLSPEC MPFR_RETURNS_NONNULL const char * mpfr_get_version (void);
 __MPFR_DECLSPEC MPFR_RETURNS_NONNULL const char * mpfr_get_patches (void);
 
 __MPFR_DECLSPEC int mpfr_buildopt_tls_p          (void);
+__MPFR_DECLSPEC int mpfr_buildopt_float16_p      (void);
 __MPFR_DECLSPEC int mpfr_buildopt_float128_p     (void);
 __MPFR_DECLSPEC int mpfr_buildopt_decimal_p      (void);
 __MPFR_DECLSPEC int mpfr_buildopt_gmpinternals_p (void);

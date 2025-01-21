@@ -3695,6 +3695,12 @@ compiler-level Thread-Local Storage (that is, MPFR was built with the
 return zero otherwise.
 @end deftypefun
 
+@deftypefun int mpfr_buildopt_float16_p (void)
+Return a non-zero value if MPFR was compiled with @samp{_Float16} support
+(that is, MPFR was built with the @samp{--enable-float16} configure option),
+return zero otherwise.
+@end deftypefun
+
 @deftypefun int mpfr_buildopt_float128_p (void)
 Return a non-zero value if MPFR was compiled with @samp{_Float128} support
 (that is, MPFR was built with the @samp{--enable-float128} configure option),
@@ -4387,6 +4393,8 @@ that were added after MPFR@tie{}2.2, and in which MPFR version.
 
 @item @code{mpfr_buildopt_decimal_p} in MPFR@tie{}3.0.
 
+@item @code{mpfr_buildopt_float16_p} in MPFR@tie{}4.3.
+
 @item @code{mpfr_buildopt_float128_p} in MPFR@tie{}4.0.
 
 @item @code{mpfr_buildopt_gmpinternals_p} in MPFR@tie{}3.1.
@@ -4466,7 +4474,7 @@ in MPFR@tie{}4.0.
 
 @item @code{mpfr_get_decimal128} in MPFR@tie{}4.1.
 
-@item @code{mpfr_get_float16} in MPFR@tie{}4.3.0.
+@item @code{mpfr_get_float16} in MPFR@tie{}4.3.
 
 @item @code{mpfr_get_float128} in MPFR@tie{}4.0 if configured with
 @samp{--enable-float128}.
@@ -4532,7 +4540,7 @@ use @code{mpfr_get_z_exp}.
 
 @item @code{mpfr_set_divby0} in MPFR@tie{}3.1 (new divide-by-zero exception).
 
-@item @code{mpfr_set_float16} in MPFR@tie{}4.3.0.
+@item @code{mpfr_set_float16} in MPFR@tie{}4.3.
 
 @item @code{mpfr_set_float128} in MPFR@tie{}4.0 if configured with
 @samp{--enable-float128}.

@@ -23,8 +23,9 @@ Changes from versions 4.2.* to version 4.3.0:
 - The "" release.
 - New function mpfr_compound.
 - New function mpfr_trigamma.
-- New functions mpfr_set_float16 and mpfr_get_float16 (when the _Float16 data
-  type is available).
+- New functions mpfr_set_float16 and mpfr_get_float16 (when the _Float16
+  data type is available).
+- New function mpfr_buildopt_float16_p.
 - The mpfr_lgamma function allows its signp argument to be a null pointer.
 
 Changes from versions 4.1.* to version 4.2.0:

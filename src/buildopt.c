@@ -33,6 +33,16 @@ mpfr_buildopt_tls_p (void)
 }
 
 int
+mpfr_buildopt_float16_p (void)
+{
+#ifdef MPFR_WANT_FLOAT16
+  return 1;
+#else
+  return 0;
+#endif
+}
+
+int
 mpfr_buildopt_float128_p (void)
 {
 #ifdef MPFR_WANT_FLOAT128
