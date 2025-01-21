@@ -22,9 +22,10 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
-#include <stdint.h>
 
 #ifdef MPFR_WANT_FLOAT16
+
+#include <stdint.h>
 
 typedef union { _Float16 x; uint16_t n; } b16u16;
 
