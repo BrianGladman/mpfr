@@ -233,8 +233,8 @@ main (int argc, char *argv[])
 
   RND_LOOP (rnd)
     {
-      check_special (rnd);
-      check_normal (rnd);
+      check_special ((mpfr_rnd_t) rnd);
+      check_normal ((mpfr_rnd_t) rnd);
     }
 
   tests_end_mpfr ();
