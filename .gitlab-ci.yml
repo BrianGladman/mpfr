@@ -29,7 +29,7 @@ linux_gmp_clang:
   script:
     - echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
     - env DEBIAN_FRONTEND=noninteractive apt-get -y update
-    - env DEBIAN_FRONTEND=noninteractive apt-get -y install texinfo
+    - env DEBIAN_FRONTEND=noninteractive apt-get -y install texinfo clang
     - autoreconf -i
     - ./configure CC=clang
     - make
