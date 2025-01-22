@@ -24,6 +24,19 @@ linux_gmp_cxx:
   tags:
     - linux
 
+linux_gmp_clang:
+  stage: build
+  script:
+    - echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+    - env DEBIAN_FRONTEND=noninteractive apt-get -y update
+    - env DEBIAN_FRONTEND=noninteractive apt-get -y install texinfo
+    - autoreconf -i
+    - ./configure CC=clang
+    - make
+    - make check
+  tags:
+    - linux
+
 linux_gmp_Werror:
   stage: build
   script:
