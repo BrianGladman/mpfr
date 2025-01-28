@@ -3834,9 +3834,10 @@ If the result cannot be represented in the current exponent range of MPFR
 Note that unlike most functions, the result is compared to the exact one,
 not the input value @var{x}, i.e., the ternary value is propagated.
 
-As usual, if the returned ternary value is non zero, the inexact flag is set.
+As usual, if the returned ternary value is non-zero, the inexact flag is set.
 Moreover, if a second rounding occurred (because the input @var{x} was in the
-subnormal range), the underflow flag is set.
+subnormal range), the underflow flag is set, whether the result is exact or
+not.
 
 Warning! If you change @var{emin} (with @code{mpfr_set_emin}) just before
 calling @code{mpfr_subnormalize}, you need to make sure that the value is
