@@ -1093,6 +1093,18 @@ unbounded exponent range (for the rounding), has an exponent smaller
 than the minimum value of the current exponent range. (In the round-to-nearest
 mode, the halfway case is rounded toward zero.)
 
+When an underflow occurs but the result is exact, IEEE @tie{}754-2019 says
+that the underflow exception should not be signaled. To exactly mimic this
+behavior with MPFR, one can proceed as follows after a call to some MPFR
+function, assuming the underflow and inexact flags have been cleared before
+that call:
+
+@example
+if (mpfr_flags_test (MPFR_FLAGS_UNDERFLOW) &&
+   !mpfr_flags_test (MPFR_FLAGS_INEXACT))
+   mpfr_flags_clear (MPFR_FLAGS_UNDERFLOW);
+@end example
+
 Note: This is not the single possible definition of the underflow. MPFR chooses
 to consider the underflow @emph{after} rounding. The underflow before rounding
 can also be defined. For instance, consider a function that has the
