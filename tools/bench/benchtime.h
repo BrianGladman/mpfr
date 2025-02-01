@@ -1,7 +1,7 @@
 /* benchtime.h -- header file for MPFRbench
 
 Copyright 1999, 2001-2025 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 

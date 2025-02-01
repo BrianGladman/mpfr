@@ -2,7 +2,7 @@
    mpfr_nbits_uj    -- number of significant bits in an uintmax_t
 
 Copyright 2018-2025 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 

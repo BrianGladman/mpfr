@@ -1,7 +1,7 @@
 /* mpfr_eq -- Compare two floats up to a specified bit #.
 
 Copyright 1999, 2001, 2003-2004, 2006-2025 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
