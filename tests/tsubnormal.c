@@ -266,6 +266,28 @@ coverage (void)
   mpfr_clear (y);
 }
 
+/* check underflow is after rounding */
+static void
+check_underflow (void)
+{
+  mpfr_t zm;
+  mpfr_exp_t emin = mpfr_get_emin ();
+
+  mpfr_set_emin (-1073);
+  mpfr_init2 (zm, 53);
+  mpfr_flags_clear (MPFR_FLAGS_UNDERFLOW);
+  mpfr_set_str (zm, "0x3.ffffffffffffep-1024", 16, MPFR_RNDN);
+  mpfr_subnormalize (zm, +1, MPFR_RNDU);
+  /* zm should be the smallest positive normal number 2^-1022 */
+  if (mpfr_flags_test (MPFR_FLAGS_UNDERFLOW))
+    {
+      printf ("Got spurious underflow for zm=0x3.ffffffffffffep-1024\n");
+      exit (1);
+    }
+  mpfr_clear (zm);
+  mpfr_set_emin (emin);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -276,6 +298,7 @@ main (int argc, char *argv[])
   check1 ();
   check2 ();
   check3 ();
+  check_underflow ();
 
   tests_end_mpfr ();
   return 0;

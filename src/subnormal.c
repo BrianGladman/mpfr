@@ -78,16 +78,18 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mpfr_rnd_t rnd)
                        __gmpfr_emin + (mpfr_exp_t) MPFR_PREC (y) - 1)))
     MPFR_RET (old_inexact);
 
-  MPFR_SET_UNDERFLOW ();
   sign = MPFR_SIGN (y);
 
   /* We have to emulate one bit rounding if EXP(y) = emin */
   if (MPFR_GET_EXP (y) == __gmpfr_emin)
     {
       /* If this is a power of 2, we don't need rounding.
-         It handles cases when |y| = 0.1 * 2^emin */
+         It handles cases when |y| = 0.5 * 2^emin */
       if (mpfr_powerof2_raw (y))
-        MPFR_RET (old_inexact);
+        {
+          MPFR_SET_UNDERFLOW ();
+          MPFR_RET (old_inexact);
+        }
 
       /* We keep the same sign for y.
          Assuming Y is the real value and y the approximation
@@ -115,16 +117,17 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mpfr_rnd_t rnd)
           if ((old_inexact > 0 && sign > 0) ||
               (old_inexact < 0 && sign < 0))
             goto set_min;
-          /* If inexact != 0, return 0.1*2^(emin+1).
+          /* If inexact != 0, return 0.5*2^(emin+1).
              Otherwise, rounding bit = 1, sticky bit = 0 and inexact = 0
              So we have 0.1100000000000000000000000*2^emin exactly.
-             We return 0.1*2^(emin+1) according to the even-rounding
+             We return 0.5*2^(emin+1) according to the even-rounding
              rule on subnormals. Note the same holds for RNDNA. */
           goto set_min_p1;
         }
       else if (MPFR_IS_LIKE_RNDZ (rnd, MPFR_IS_NEG (y)))
         {
         set_min:
+          MPFR_SET_UNDERFLOW ();
           mpfr_setmin (y, __gmpfr_emin);
           MPFR_RET (-sign);
         }
@@ -133,6 +136,8 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mpfr_rnd_t rnd)
         set_min_p1:
           /* Note: mpfr_setmin will abort if __gmpfr_emax == __gmpfr_emin. */
           mpfr_setmin (y, __gmpfr_emin + 1);
+          if (2 < MPFR_PREC(y))
+            MPFR_SET_UNDERFLOW ();
           MPFR_RET (sign);
         }
     }
@@ -198,6 +203,8 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mpfr_rnd_t rnd)
         }
 
       inex2 = mpfr_set (y, dest, rnd);
+      if (MPFR_GET_EXP(y) < __gmpfr_emin + (mpfr_exp_t) MPFR_PREC (y) - 1)
+        MPFR_SET_UNDERFLOW ();
       MPFR_ASSERTN (inex2 == 0);
       MPFR_ASSERTN (MPFR_IS_PURE_FP (y));
       mpfr_clear (dest);
