@@ -72,7 +72,9 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mpfr_rnd_t rnd)
 {
   int sign;
 
-  /* The subnormal exponent range is [ emin, emin + MPFR_PREC(y) - 2 ] */
+  /* The subnormal exponent range is [ emin, emin + MPFR_PREC(y) - 2 ].
+     Note: if MPFR_PREC(y) is 1, the following condition is always true,
+     which corresponds to the fact that there are no subnormals. */
   if (MPFR_LIKELY (MPFR_IS_SINGULAR (y)
                    || (MPFR_GET_EXP (y) >=
                        __gmpfr_emin + (mpfr_exp_t) MPFR_PREC (y) - 1)))
