@@ -313,6 +313,12 @@ mpfr_check_range (mpfr_ptr x, int t, mpfr_rnd_t rnd_mode)
       __gmpfr_flags |= MPFR_FLAGS_OVERFLOW;
     }
   MPFR_RET (t);  /* propagate inexact ternary value, unlike most functions */
+  /* Note that MPFR_RET() on non-zero sets the inexact flag as required,
+     because MPFR_SAVE_EXPO_FREE() may unset it.
+     FIXME: Should we also ensure that the underflow flag is set when the
+     result is an inexact zero? If an inexact zero is possible without an
+     explicit underflow detection that sets the underflow flag in the code,
+     one could end up with an unset underflow flag, which is incorrect. */
 }
 
 
