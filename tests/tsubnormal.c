@@ -273,7 +273,7 @@ check_underflow (void)
   mpfr_t zm;
   mpfr_exp_t emin = mpfr_get_emin ();
 
-  mpfr_set_emin (-1073);
+  set_emin (-1073);
   mpfr_init2 (zm, 53);
   mpfr_flags_clear (MPFR_FLAGS_UNDERFLOW);
   mpfr_set_str (zm, "0x3.ffffffffffffep-1024", 16, MPFR_RNDN);
@@ -285,7 +285,7 @@ check_underflow (void)
       exit (1);
     }
   mpfr_clear (zm);
-  mpfr_set_emin (emin);
+  set_emin (emin);
 }
 
 int
