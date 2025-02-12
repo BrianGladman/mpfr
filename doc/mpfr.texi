@@ -3828,7 +3828,7 @@ The precision @tm{@PREC{}(@var{x})} of @var{x} is not modified by
 this function. @var{rnd} and @var{t} must be the rounding mode
 and the returned ternary value used when computing @var{x}
 (as in @code{mpfr_check_range}). The subnormal exponent range is
-from @var{emin} to @tm{@var{emin}+@PREC{}(@var{x})@minus{}1}.
+from @var{emin} to @tm{@var{emin}+@PREC{}(@var{x})@minus{}2}.
 If the result cannot be represented in the current exponent range of MPFR
 (due to a too small @var{emax}), the behavior is undefined.
 Note that unlike most functions, the result is compared to the exact one,
