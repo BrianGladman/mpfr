@@ -3835,9 +3835,8 @@ Note that unlike most functions, the result is compared to the exact one,
 not the input value @var{x}, i.e., the ternary value is propagated.
 
 As usual, if the returned ternary value is non-zero, the inexact flag is set.
-Moreover, if a second rounding occurred (because the input @var{x} was in the
-subnormal range), the underflow flag is set, whether the result is exact or
-not.
+The underflow flag is set if the rounded value of @var{x} is in the subnormal
+exponent range (underflow after rounding), whether the result is exact or not.
 
 Warning! If you change @var{emin} (with @code{mpfr_set_emin}) just before
 calling @code{mpfr_subnormalize}, you need to make sure that the value is
