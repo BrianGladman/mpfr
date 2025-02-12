@@ -27,7 +27,9 @@ Changes from versions 4.2.* to version 4.3.0:
   data type is available).
 - New function mpfr_buildopt_float16_p.
 - The mpfr_lgamma function allows its signp argument to be a null pointer.
-- The mpfr_subnormalize function now sets the underflow flag after rounding.
+- The mpfr_subnormalize function now sets the underflow flag after rounding
+  (the old behavior depended on the intermediate result, thus the setting of
+  the underflow flag was not consistent for real emulation of the subnormals).
 
 Changes from versions 4.1.* to version 4.2.0:
 - The "fondue savoyarde" release.
