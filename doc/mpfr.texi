@@ -3837,6 +3837,8 @@ not the input value @var{x}, i.e., the ternary value is propagated.
 As usual, if the returned ternary value is non-zero, the inexact flag is set.
 The underflow flag is set if the rounded value of @var{x} is in the subnormal
 exponent range (underflow after rounding), whether the result is exact or not.
+@c FIXME: What about the case of an inexact zero (before or in the call
+@c to mpfr_subnormalize)? See the mpfr mailing-list (2025-02-12).
 
 Warning! If you change @var{emin} (with @code{mpfr_set_emin}) just before
 calling @code{mpfr_subnormalize}, you need to make sure that the value is
