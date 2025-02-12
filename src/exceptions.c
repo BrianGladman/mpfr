@@ -318,7 +318,11 @@ mpfr_check_range (mpfr_ptr x, int t, mpfr_rnd_t rnd_mode)
      FIXME: Should we also ensure that the underflow flag is set when the
      result is an inexact zero? If an inexact zero is possible without an
      explicit underflow detection that sets the underflow flag in the code,
-     one could end up with an unset underflow flag, which is incorrect. */
+     one could end up with an unset underflow flag, which is incorrect.
+     However, note that a representable intermediate value may round to
+     infinity, while it cannot round to 0 (the exponent would necessarily
+     be less than emin); so, the check of an inexact zero would be less
+     useful. In any case, we would need clarification in the manual. */
 }
 
 
