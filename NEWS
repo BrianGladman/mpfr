@@ -31,6 +31,9 @@ Changes from versions 4.2.* to version 4.3.0:
   (the old behavior depended on the intermediate result, thus the setting of
   the underflow flag was not consistent for real emulation of the subnormals).
   See the MPFR manual for the details.
+  This very slightly changes both the API and the ABI in a corner case
+  (soname not changed as the old behavior can be surprising and almost
+  be regarded as a bug).
 
 Changes from versions 4.1.* to version 4.2.0:
 - The "fondue savoyarde" release.
