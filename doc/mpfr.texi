@@ -4723,6 +4723,17 @@ it did not follow the generic rule concerning the inexact flag (and no
 special behavior was specified). The case of the underflow flag was more
 a lack of specification.
 
+@item @code{mpfr_subnormalize} changed in MPFR@tie{}4.3.
+The underflow flag is now set after rounding. The old behavior was a
+design error (rather than a bug) as it depended on the intermediate
+result, thus the setting of the underflow flag was not consistent for
+real emulation of the subnormals. A difference occurs only when the
+magnitude of the input is the value just below the minimum positive
+normal number (for the target system), i.e. the midpoint between the
+maximum subnormal and this normal number, and this value gets rounded
+to this normal number (the underflow flag was set, and it is now left
+unchanged).
+
 @item @code{mpfr_sum} changed in MPFR@tie{}4.0.
 The @code{mpfr_sum} function has completely been rewritten for MPFR@tie{}4.0,
 with an update of the specification: the sign of an exact zero result
