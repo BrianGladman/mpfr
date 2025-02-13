@@ -30,6 +30,7 @@ Changes from versions 4.2.* to version 4.3.0:
 - The mpfr_subnormalize function now sets the underflow flag after rounding
   (the old behavior depended on the intermediate result, thus the setting of
   the underflow flag was not consistent for real emulation of the subnormals).
+  See the MPFR manual for the details.
 
 Changes from versions 4.1.* to version 4.2.0:
 - The "fondue savoyarde" release.
