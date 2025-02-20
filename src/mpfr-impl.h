@@ -708,6 +708,8 @@ static double double_zero = 0.0;
    but this is not safe if the user adds a -f option affecting conformance,
    in which case this would be a user error (however, note that the
    configure test associated with MPFR_NANISNAN will catch some issues).
+   Note that this macro may raise FP flags due to the multiplication.
+   See <https://gitlab.inria.fr/mpfr/mpfr/-/issues/2>.
 */
 # define DOUBLE_ISNAN(x) \
     (LVALUE(x) && !((((x) >= 0) + ((x) <= 0)) && -(x)*(x) <= 0))
