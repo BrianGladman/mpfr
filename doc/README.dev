@@ -402,6 +402,12 @@ To make a release (for the MPFR team):
      --enable-debug-prediction, run "timings-mpfr 100", and check that
      the output contains no WARNING.
 
+     Also check that the build remains correct, including the documentation,
+     when MPFR is built under various locales (in particular, tr_TR.utf8),
+     at least with the default configuration (note that this is different
+     from checking the testsuite with different locales). A way to easily
+     check that is to ensure that the MPFR build is reproducible by default.
+
      For various platforms and compilers, check that:
        * [make check-gmp-symbols]
          MPFR does not use GMP internal symbols (unless --with-gmp-build
