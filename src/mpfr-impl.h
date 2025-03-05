@@ -840,13 +840,12 @@ typedef union {
 
 
 /******************************************************
- *****************  _Float128 support  ****************
+ ******************  _FloatN support  *****************
  ******************************************************/
 
-/* This is standardized by IEEE 754-2008. */
-#define IEEE_FLOAT128_MANT_DIG 113
-
+/* This is standardized by IEEE 754-2019 (binary16 and binary128). */
 #define IEEE_FLOAT16_MANT_DIG 11
+#define IEEE_FLOAT128_MANT_DIG 113
 
 
 /******************************************************
