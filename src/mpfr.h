@@ -58,7 +58,7 @@ MPFR_VERSION_NUM(MPFR_VERSION_MAJOR,MPFR_VERSION_MINOR,MPFR_VERSION_PATCHLEVEL)
 /* TODO: MPFR_EXTENSION is used for
      - extensions to ISO C90 (see MPFR_DECL_INIT macro, valid in C99);
      - extensions to ISO C17 (declarations with _Decimal64, _Decimal128
-       and _Float128, which will be in ISO C23).
+       and _Float128 from ISO C23).
    Define 2 different macros MPFR_EXTENSION_C90 and MPFR_EXTENSION_C17
    in order to avoid __extension__ when the feature is standard in the
    chosen version (see __STDC_VERSION__)? */
