@@ -793,8 +793,11 @@ fi
 # End of decimal float checks
 
 dnl Check if _Float128 or __float128 is available. We also require the
-dnl compiler to support hex constants with the f128 or q suffix (this
-dnl prevents the _Float128 support with GCC's -std=c90, but who cares?).
+dnl compiler to support hex constants with the f128 or q suffix respectively.
+dnl If _Float128 is supported, then the mpfr_float128 macro should be
+dnl defined as this type. We do not define it here because this will be
+dnl done in mpfr.h, and not defining it here is the only way to ensure
+dnl that under "make check", mpfr.h really defines it.
 dnl Note: We use AC_LINK_IFELSE instead of AC_COMPILE_IFELSE since an
 dnl error may occur only at link time, such as under NetBSD:
 dnl   https://mail-index.netbsd.org/pkgsrc-users/2018/02/02/msg026220.html
@@ -821,8 +824,8 @@ return x == 0;
 ]])],
           [AC_MSG_RESULT(yes)
            AC_DEFINE([MPFR_WANT_FLOAT128],2,
-                     [Build float128 functions with float128 fallback])
-           AC_DEFINE([_Float128],[__float128],[__float128 fallback])],
+                     [Build float128 functions with __float128 fallback])
+           AC_DEFINE([mpfr_float128],[__float128],[__float128 fallback])],
           [AC_MSG_RESULT(no)
            if test "$enable_float128" = yes; then
               AC_MSG_ERROR(

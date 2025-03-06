@@ -553,8 +553,8 @@ Note that emin(m68k) = emin(x86) - 1.
                         binary128 floats (_Float128 or __float128).
                         Define it to 1 if constants have the f128 suffix.
                         Define it to 2 if constants have the q suffix; in
-                        this case, a _Float128 macro may have to be defined
-                        as __float128 (a.k.a. __float128 fallback).
+                        this case, the mpfr_float128 macro may have to be
+                        defined as __float128 (a.k.a. __float128 fallback).
 
 + MPFR_ALLOCA_MAX:      Maximum size for the use of alloca() by temporary
                         allocations (default: 16384); if set to 0, alloca()
@@ -858,13 +858,6 @@ does not conform to the C standard by default. References:
   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85957
 
 [*] https://stackoverflow.com/questions/4331200/what-do-f-and-d-mean-at-the-end-of-numeric-literals
-
-   =====================================================================
-
-In MPFR, _Float128 may be defined as __float128 if the latter is provided
-by the compiler, but not the former. In such a case, do not assume that
-_Float128 and long double are necessarily different types (as required by
-the WG14 N2579 draft "IEC 60559 interchange and extended types").
 
    =====================================================================
 

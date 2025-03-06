@@ -494,10 +494,16 @@ __MPFR_DECLSPEC int mpfr_set_decimal128 (mpfr_ptr, _Decimal128, mpfr_rnd_t);
 #endif
 __MPFR_DECLSPEC int mpfr_set_ld (mpfr_ptr, long double, mpfr_rnd_t);
 #ifdef MPFR_WANT_FLOAT128
+/* The user is free to define mpfr_float128 as another equivalent type,
+   such as __float128 if this one is supported by the current compiler
+   but _Float128 isn't. */
+# ifndef mpfr_float128
+#  define mpfr_float128 _Float128
+# endif
 MPFR_EXTENSION
-__MPFR_DECLSPEC int mpfr_set_float128 (mpfr_ptr, _Float128, mpfr_rnd_t);
+__MPFR_DECLSPEC int mpfr_set_float128 (mpfr_ptr, mpfr_float128, mpfr_rnd_t);
 MPFR_EXTENSION
-__MPFR_DECLSPEC _Float128 mpfr_get_float128 (mpfr_srcptr, mpfr_rnd_t);
+__MPFR_DECLSPEC mpfr_float128 mpfr_get_float128 (mpfr_srcptr, mpfr_rnd_t);
 #endif
 #ifdef MPFR_WANT_FLOAT16
 MPFR_EXTENSION

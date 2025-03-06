@@ -308,9 +308,15 @@ main (void)
       err = 1;
     }
 
+#ifdef MPFR_WANT_FLOAT128
+# define MPFR_F128 "yes (" MAKE_STR(mpfr_float128) ")"
+#else
+# define MPFR_F128 "no"
+#endif
+
   (printf) ("[tversion] _Float16 = %s, float128 = %s, decimal = %s\n",
             mpfr_buildopt_float16_p () ? "yes" : "no",
-            mpfr_buildopt_float128_p () ? "yes" : "no",
+            MPFR_F128,
             mpfr_buildopt_decimal_p () ? "yes"
 #if defined(DECIMAL_BID_FORMAT)
             " (BID)"

@@ -1,4 +1,4 @@
-/* mpfr_set_float128 -- convert a machine _Float128 number to
+/* mpfr_set_float128 -- convert a binary128 (a.k.a. float128) number to
                         a multiple precision floating-point number
 
 Copyright 2012-2025 Free Software Foundation, Inc.
@@ -25,8 +25,11 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #ifdef MPFR_WANT_FLOAT128
 
+/* Note: mpfr_get_float128 is a macro defined as the actual binary128 type:
+   either _Float128 or __float128. */
+
 #if MPFR_WANT_FLOAT128 == 1
-/* _Float128 type from ISO/IEC TS 18661 */
+/* _Float128 type from ISO C23 */
 # define MPFR_FLOAT128_MAX 0x1.ffffffffffffffffffffffffffffp+16383f128
 #elif MPFR_WANT_FLOAT128 == 2
 /* __float128 type (GNU C extension) */
@@ -36,12 +39,12 @@ If not, see <https://www.gnu.org/licenses/>. */
 #endif
 
 int
-mpfr_set_float128 (mpfr_ptr r, _Float128 d, mpfr_rnd_t rnd_mode)
+mpfr_set_float128 (mpfr_ptr r, mpfr_float128 d, mpfr_rnd_t rnd_mode)
 {
   mpfr_t t;
   mp_limb_t *tp;
   int inexact, shift_exp, neg, e, i;
-  _Float128 p[14], q[14];
+  mpfr_float128 p[14], q[14];
   MPFR_SAVE_EXPO_DECL (expo);
 
   /* Check for NaN */
@@ -65,7 +68,7 @@ mpfr_set_float128 (mpfr_ptr r, _Float128 d, mpfr_rnd_t rnd_mode)
       return 0;
     }
   /* Check for ZERO */
-  else if (MPFR_UNLIKELY (d == (_Float128) 0.0))
+  else if (MPFR_UNLIKELY (d == (mpfr_float128) 0.0))
     return mpfr_set_d (r, (double) d, rnd_mode);
 
   shift_exp = 0; /* invariant: remainder to deal with is d*2^shift_exp */
@@ -128,7 +131,7 @@ mpfr_set_float128 (mpfr_ptr r, _Float128 d, mpfr_rnd_t rnd_mode)
 
   for (i = MPFR_LAST_LIMB (t); i >= 0; i--)
     {
-      d *= 2 * (_Float128) MPFR_LIMB_HIGHBIT;
+      d *= 2 * (mpfr_float128) MPFR_LIMB_HIGHBIT;
       tp[i] = (mp_limb_t) d;
       d -= tp[i];
     }

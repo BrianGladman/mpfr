@@ -1,5 +1,5 @@
 /* mpfr_get_float128 -- convert a multiple precision floating-point
-                        number to a _Float128 number
+                        number to a binary128 (a.k.a. float128) number
 
 Copyright 2012-2025 Free Software Foundation, Inc.
 Contributed by the Pascaline and Caramba projects, INRIA.
@@ -24,17 +24,20 @@ If not, see <https://www.gnu.org/licenses/>. */
 
 #ifdef MPFR_WANT_FLOAT128
 
+/* Note: mpfr_get_float128 is a macro defined as the actual binary128 type:
+   either _Float128 or __float128. */
+
 /* generic code */
-_Float128
+mpfr_float128
 mpfr_get_float128 (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 {
 
   if (MPFR_UNLIKELY (MPFR_IS_SINGULAR (x)))
-    return (_Float128) mpfr_get_d (x, rnd_mode);
+    return (mpfr_float128) mpfr_get_d (x, rnd_mode);
   else /* now x is a normal non-zero number */
     {
-      _Float128 r; /* result */
-      _Float128 m;
+      mpfr_float128 r; /* result */
+      mpfr_float128 m;
       mpfr_exp_t e;  /* exponent of x (before rounding) */
       mpfr_exp_t sh; /* exponent shift, so that x/2^sh is in the double range */
       const int emin = -16381;
@@ -61,7 +64,7 @@ mpfr_get_float128 (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
 
           MPFR_SAVE_EXPO_MARK (expo);
 
-          /* First round x to the target _Float128 precision, taking the
+          /* First round x to the target binary128 precision, taking the
              reduced precision of the subnormals into account, so that all
              subsequent operations are exact (this avoids double rounding
              problems). */
@@ -82,7 +85,7 @@ mpfr_get_float128 (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
                  always work if GMP_NUMB_BITS > IEEE_FLOAT128_MANT_DIG.
                  MPFR_LIMB_HIGHBIT has the advantage to fit on 1 bit. */
               r += yp[i];
-              r *= 1 / (2 * (_Float128) MPFR_LIMB_HIGHBIT);
+              r *= 1 / (2 * (mpfr_float128) MPFR_LIMB_HIGHBIT);
             }
 
           mpfr_clear (y);
