@@ -816,10 +816,8 @@ return x == 0;
       [AC_MSG_RESULT(no)
        AC_MSG_CHECKING(if __float128 can be used as a fallback)
 dnl Use the q suffix in this case.
-       AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-#define _Float128 __float128
-]], [[
-volatile _Float128 x = 0x1.fp+16383q;
+       AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[
+volatile __float128 x = 0x1.fp+16383q;
 return x == 0;
 ]])],
           [AC_MSG_RESULT(yes)
