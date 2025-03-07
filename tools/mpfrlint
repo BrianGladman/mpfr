@@ -393,6 +393,17 @@ err-if-output \
   --msg='Do not use the HAVE_SUBNORM_* macros (for the tests, use have_subnorm_*).' \
   -t "HAVE_SUBNORM_" grep HAVE_SUBNORM_ $srctests
 
+# To allow the __float128 fallback, use mpfr_float128 instead of _Float128.
+for file in $srctests
+do
+  perl -e 'undef $/; $_ = <>;
+           s:/\*.*?\*/::sg;
+           s:# *define +mpfr_float128 +_Float128::;
+           print' $file |
+    err-if-output --msg="Use mpfr_float128 instead of _Float128." \
+                  -t "_Float128 type" grep '_Float128'
+done
+
 # In general, one needs to include mpfr-impl.h (note that some platforms
 # such as MS Windows use a config.h, which is included by mpfr-impl.h).
 for file in $c_src
