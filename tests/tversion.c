@@ -384,7 +384,7 @@ main (void)
 #else
           "?"
 #endif
-          ", Ld = "
+          ", Lf = "
 #if defined(NPRINTF_L)
           "no"
 #elif defined(PRINTF_L)
