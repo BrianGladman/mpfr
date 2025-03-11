@@ -2973,7 +2973,11 @@ The @samp{rounding} field is specific to @code{mpfr_t} arguments and should
 not be used with other types.
 
 With conversion specification not involving @samp{P} and @samp{R} types,
-@code{mpfr_printf} behaves exactly as @code{gmp_printf}.
+@code{mpfr_printf} behaves exactly as @code{gmp_vasprintf} (thus, if GMP
+uses its @code{vsnprintf} replacement, the behavior may differ from the
+C library or from other GMP formatted output functions; for instance, in
+such a case, up to GMP@tie{}6.3.0, the conversion specifiers @samp{a}/@samp{A}
+will not work).
 
 Thus the @samp{conv} specifier @samp{F} is not supported (due to the use
 of @samp{F} as the @samp{type} specifier for @code{mpf_t}), except for

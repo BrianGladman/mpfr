@@ -20,24 +20,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with the GNU MPFR Library; see the file COPYING.LESSER.
 If not, see <https://www.gnu.org/licenses/>. */
 
-/* Note: If you use a C99-compatible implementation and GMP (or MPIR)
- * has been compiled without HAVE_VSNPRINTF defined[*], then this test
- * may fail with an error like
- *   repl-vsnprintf.c:389: GNU MP assertion failed: len < total_width
- *
- * The reason is that __gmp_replacement_vsnprintf does not support %a/%A,
- * even though the C library supports it.
- *
- * [*] GMP compiled under OpenBSD 7+ is affected, but not its official port,
- * which skips the %n vsnprintf test: https://openports.se/devel/gmp
- *
- * References:
- *   https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00001.html
- *   https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00027.html
- *   https://gmplib.org/list-archives/gmp-bugs/2022-October/005200.html
- *   https://marc.info/?l=openbsd-bugs&m=167118761118904&w=2
- */
-
 /* Needed due to the tests on HAVE_STDARG and MPFR_USE_MINI_GMP */
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -233,6 +215,28 @@ native_types (void)
 
 #if __MPFR_STDC (199901L)
 
+/* If NPRINTF_A is defined, this means that GMP (or MPIR) has been compiled
+ * without HAVE_VSNPRINTF defined and that GMP's vsnprintf replacement
+ * repl-vsnprintf.c may abort due to an assertion failure like
+ *
+ *   repl-vsnprintf.c:389: GNU MP assertion failed: len < total_width
+ *
+ * This affects gmp_snprintf, gmp_vsnprintf and gmp_vasprintf. The latter
+ * is used by MPFR. So we disable the corresponding tests.
+ *
+ * The reason is that __gmp_replacement_vsnprintf does not support %a/%A,
+ * even though the C library supports it. This has been fixed in the GMP
+ * development branch on 2025-01-31.
+ *
+ * References:
+ *   https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00001.html
+ *   https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00027.html
+ *   https://gmplib.org/list-archives/gmp-bugs/2022-October/005200.html
+ *   https://gmplib.org/list-archives/gmp-bugs/2025-January/005557.html
+ */
+
+# ifndef NPRINTF_A
+
       gmp_sprintf (buf, "%a", d[k]);
       check_vsprintf (buf, "%a", d[k]);
 
@@ -244,6 +248,8 @@ native_types (void)
 
       gmp_sprintf (buf, "%lA", d[k]);
       check_vsprintf (buf, "%lA", d[k]);
+
+# endif
 
       sprintf (buf, "%le", d[k]);
       check_vsprintf (buf, "%le", d[k]);

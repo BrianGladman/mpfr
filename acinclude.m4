@@ -1724,6 +1724,60 @@ MPFR_FUNC_GMP_PRINTF_SPEC([td], [ptrdiff_t], [
     ],
     [AC_DEFINE([PRINTF_T], 1, [printf/gmp_printf can read ptrdiff_t])],
     [AC_DEFINE([NPRINTF_T], 1, [printf/gmp_printf cannot read ptrdiff_t])])
+
+AC_MSG_CHECKING(if gmp_printf supports "%a")
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#include <stdio.h>
+#include "gmp.h"
+]], [[
+  char s[256];
+
+  /* With the buggy repl-vsnprintf.c (vsnprintf replacement), one gets
+     an assertion failure like:
+       repl-vsnprintf.c:389: GNU MP assertion failed: len < total_width
+     (not all values are affected, but -1.25, used below, is).
+     The purpose of this test is to detect this bug only, assuming
+     C99 support (which will be checked in the test .c files).
+     We do not check the output, which is not fully specified. */
+  gmp_snprintf (s, 256, "%a", -1.25);
+  return 0;
+
+#if 0
+  /* A more complete program, for testing.
+     The assertion failure occurs only on the 4th case. */
+#include <stdio.h>
+#include <gmp.h>
+int main (void)
+{
+  char s[256];
+  double x[2] = { 1.25, -1.25 };
+  int i;
+  for (i = 0; i < 2; i++)
+    {
+      gmp_sprintf (s, "%a", x[i]);
+      printf ("[%s]\n", s);
+      gmp_snprintf (s, 256, "%a", x[i]);
+      printf ("[%s]\n", s);
+    }
+  return 0;
+}
+#endif
+]])],
+  [AC_MSG_RESULT(yes)
+   AC_DEFINE([PRINTF_A], 1, [printf/gmp_printf supports "%a"])],
+  [AC_MSG_RESULT(no)
+   AC_MSG_WARN([gmp_snprintf on "%a" terminated the program abnormally.])
+   AC_MSG_WARN([This is probably an assertion failure due to the buggy])
+   AC_MSG_WARN([repl-vsnprintf.c (vsnprintf replacement). References:])
+   AC_MSG_WARN([  https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00001.html])
+   AC_MSG_WARN([  https://gmplib.org/list-archives/gmp-bugs/2022-October/005200.html])
+   AC_MSG_WARN([  https://gmplib.org/list-archives/gmp-bugs/2025-January/005557.html])
+   AC_MSG_WARN([%a must not be used in the MPFR formatted output functions])
+   AC_MSG_WARN([with this version of GMP; the corresponding tests in the])
+   AC_MSG_WARN([MPFR testsuite will be disabled.])
+   AC_MSG_WARN([See 'config.log' for details.])
+   AC_DEFINE([NPRINTF_A], 1, [printf/gmp_printf does not support "%a"])],
+  [AC_MSG_RESULT(cross-compiling, do not assume anything)])
 ])
 
 dnl MPFR_CHECK_PRINTF_GROUPFLAG

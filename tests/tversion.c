@@ -394,6 +394,16 @@ main (void)
 #endif
           );
 
+  (puts) ("[tversion] gmp_snprintf/vsnprintf on \"%a\" = "
+#if defined(NPRINTF_A)
+          "no (buggy repl-vsnprintf.c?)"
+#elif defined(PRINTF_A)
+          "yes"
+#else
+          "?"
+#endif
+          );
+
   if (strcmp (mpfr_buildopt_tune_case (), MPFR_TUNE_CASE) != 0)
     {
       printf ("ERROR! mpfr_buildopt_tune_case() and MPFR_TUNE_CASE"
