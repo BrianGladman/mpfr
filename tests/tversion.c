@@ -35,6 +35,17 @@ If not, see <https://www.gnu.org/licenses/>. */
  *     implemented as a macro (#if does not work in macro arguments).
  */
 
+/* The test below is the one at the beginning of the .c files dealing
+   with the formatted output functions (src/printf.c, src/vasprintf.c,
+   tests/tfprintf.c, tests/tprintf.c, tests/tsprintf.c). */
+#if defined(HAVE_STDARG) && !defined(MPFR_USE_MINI_GMP)
+# define TV_GMP_PRINTF "yes"
+# define TV_HAVE_GMP_PRINTF
+#else
+# define TV_GMP_PRINTF "no"
+# undef TV_HAVE_GMP_PRINTF
+#endif
+
 int
 main (void)
 {
@@ -344,12 +355,7 @@ main (void)
 #else
           "no"
 #endif
-          ", printf = "
-#if defined(HAVE_STDARG) && !defined(MPFR_USE_MINI_GMP)
-          "yes"
-#else
-          "no"
-#endif
+          ", printf = " TV_GMP_PRINTF
           ", IEEE floats = "
 #if _MPFR_IEEE_FLOATS
           "yes"
@@ -357,6 +363,8 @@ main (void)
           "no"
 #endif
           );
+
+#ifdef TV_HAVE_GMP_PRINTF
 
   (puts) ("[tversion] gmp_printf: hhd = "
 #if defined(NPRINTF_HH)
@@ -403,6 +411,8 @@ main (void)
           "?"
 #endif
           );
+
+#endif  /* TV_HAVE_GMP_PRINTF */
 
   if (strcmp (mpfr_buildopt_tune_case (), MPFR_TUNE_CASE) != 0)
     {
