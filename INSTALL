@@ -735,3 +735,23 @@ can also be used:
 The relevant build projects are available here:
 
   https://github.com/BrianGladman
+
+Concerning Microsoft Visual C++, failures in tfprintf.exe and tsprintf.exe
+have been reported when MPFR is built with GMP (but not with MPIR):
+
+C:\vcpkg\buildtrees\mpfr\x64-windows-dbg\tests>tfprintf.exe
+Error in test #40: mpfr_vfprintf printed 1 characters instead of 4
+
+C:\vcpkg\buildtrees\mpfr\x64-windows-dbg\tests>tsprintf.exe
+Error in check_null, i = 0
+expected r = 1, s = { 0, 0, 1 }
+got      r = 0, s = { 0, 1, 1 }
+
+This means that using the formatted output functions with %c and the value 0
+will yield an erratic behavior.
+
+These failures could not be reproduced under Linux (neither with the system
+vsnprintf nor with GMP's vsnprintf replacement).
+
+These tests can be skipped by defining the MPFR_TESTS_SKIP_CHECK_NULL macro
+if need be.

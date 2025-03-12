@@ -412,10 +412,12 @@ bug_20090316 (FILE *fout)
 static void
 check_null (FILE *fout)
 {
+#ifndef MPFR_TESTS_SKIP_CHECK_NULL
   int n;
 
   check_vfprintf (fout, ".%c%c.%n", 0, 1, &n);
   check_length (40, n, 4, d);
+#endif
 }
 
 int
