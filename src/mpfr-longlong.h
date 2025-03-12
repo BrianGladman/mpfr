@@ -1167,7 +1167,7 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
   do {									\
     UDItype __u = (u), __v = (v);					\
     (w0) = __u * __v;							\
-    (w1) = (unsigned __int128__) __u * __v >> 64;			\
+    (w1) = (unsigned __int128) __u * __v >> 64;			\
   } while (0)
 #endif
 
