@@ -633,10 +633,11 @@ List of macros used for checking MPFR:
                         core dump.
 + MPFR_TESTS_SKIP_CHECK_NULL:
                         Define to skip the check_null() tests in
-                        tfprintf.c and tsprintf.c (failures with Visual C++
-                        under MS Windows have been reported). The goal is
-                        just to avoid a failure of the MPFR testsuite, as
-                        the bug seems to come from neither MPFR nor GMP.
+                        tfprintf.c and tsprintf.c, in case of failure
+                        due to a bug in GMP's vsnprintf replacement
+                        (see INSTALL file). The goal is just to avoid
+                        a failure of the MPFR testsuite; there is no
+                        workaround for the bug in GMP's vsnprintf!
 + MPFR_COV_CHECK:       Define to enable value coverage checking (must not
                         be used in production). This macro is for the MPFR
                         developers, in order to improve the test suite.

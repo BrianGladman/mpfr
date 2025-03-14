@@ -520,6 +520,37 @@ problem encountered, in particular the tests/test-suite.log file if
 "make check" failed. Please send us also the log of the "configure"
 (config.log).
 
+tfprintf and tsprintf failures in check_null
+--------------------------------------------
+
+If you get the failures
+
+$ ./tfprintf
+Error in test #40: mpfr_vfprintf printed 1 characters instead of 4
+
+$ ./tsprintf
+Error in check_null, i = 0
+expected r = 1, s = { 0, 0, 1 }
+got      r = 0, s = { 0, 1, 1 }
+
+the cause is probably that GMP uses a buggy vsnprintf replacement.
+The reason GMP uses its own vsnprintf replacement is that during
+configure, it detected that the vsnprintf function from the C library
+is buggy. But the replacement from GMP 6.3.0 and below also has its own
+bugs. This means that using the formatted output functions with %c and
+the value 0 will yield an erratic behavior.
+
+For the above issue, this is fixed in the GMP development branch:
+
+  https://gmplib.org/repo/gmp/rev/4ac76064639e
+
+You can have details at
+  https://gmplib.org/list-archives/gmp-bugs/2023-December/005420.html
+  https://gitlab.inria.fr/mpfr/mpfr/-/commit/390e51ef85
+
+These tests can be skipped by defining the MPFR_TESTS_SKIP_CHECK_NULL macro,
+but you should rather get a fixed vsnprintf replacement.
+
 
 Notes about ABI
 ===============
@@ -735,23 +766,3 @@ can also be used:
 The relevant build projects are available here:
 
   https://github.com/BrianGladman
-
-Concerning Microsoft Visual C++, failures in tfprintf.exe and tsprintf.exe
-have been reported when MPFR is built with GMP (but not with MPIR):
-
-C:\vcpkg\buildtrees\mpfr\x64-windows-dbg\tests>tfprintf.exe
-Error in test #40: mpfr_vfprintf printed 1 characters instead of 4
-
-C:\vcpkg\buildtrees\mpfr\x64-windows-dbg\tests>tsprintf.exe
-Error in check_null, i = 0
-expected r = 1, s = { 0, 0, 1 }
-got      r = 0, s = { 0, 1, 1 }
-
-This means that using the formatted output functions with %c and the value 0
-will yield an erratic behavior.
-
-These failures could not be reproduced under Linux (neither with the system
-vsnprintf nor with GMP's vsnprintf replacement).
-
-These tests can be skipped by defining the MPFR_TESTS_SKIP_CHECK_NULL macro
-if need be.
