@@ -248,10 +248,10 @@ To make a release (for the MPFR team):
      Note: First, make sure that all the pending commits have been done.
      Push the changes with "git push".
 
-  5) Create an annotated tag whose name corresponds to the content of
+  5) Create a signed tag whose name corresponds to the content of
      the VERSION file:
        $ tag=$(cat VERSION)
-       $ git tag -m "GNU MPFR $tag tag." $tag
+       $ git tag -s -m "GNU MPFR $tag tag." $tag
      and push it:
        $ git push origin $tag
      Note: in case of error, see the git-tag(1) man page.
