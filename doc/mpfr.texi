@@ -3854,12 +3854,13 @@ Note that unlike most functions, the result is compared to the exact one,
 not the input value @var{x}, i.e., the ternary value is propagated.
 
 As usual, if the returned ternary value is non-zero, the inexact flag is set.
-The underflow flag is set if the rounded value of @var{x} is in the subnormal
+The underflow flag is set if the input value of @var{x} (which is assumed to
+be the rounding of some function with unbounded exponent and full precision)
+is in the subnormal
 exponent range (underflow after rounding), whether the result is exact or not.
-Contrary to the inexact flag, if the underflow flag was set when @var{x} was
-generated but has been cleared before the call to @code{mpfr_subnormalize},
-then it may be left unset.
-@c https://sympa.inria.fr/sympa/arc/mpfr/2025-02/msg00019.html
+For the underflow flag, it is assumed that the same rounding was
+used for the computation of @var{x} and in @code{mpfr_subnormalize},
+otherwise the behavior is undefined.
 
 Warning! If you change @var{emin} (with @code{mpfr_set_emin}) just before
 calling @code{mpfr_subnormalize}, you need to make sure that the value is

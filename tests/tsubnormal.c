@@ -27,7 +27,10 @@ static const struct {
   mpfr_rnd_t rnd;
   const char *out;
   int j;
-} tab[] = { /* 4th field: use the mpfr_dump format, in case of error. */
+} tab[] = {
+  /* 2nd field: old_inex value */
+  /* 4th field: use the mpfr_dump format, in case of error. */
+  /* 5th field: inexact field */
   {"1E1",  0, MPFR_RNDN, "0.100000000E2", 0},
   {"1E1", -1, MPFR_RNDZ, "0.100000000E2", -1},
   {"1E1", -1, MPFR_RNDD, "0.100000000E2", -1},
@@ -272,18 +275,39 @@ check_underflow (void)
 {
   mpfr_t zm;
   mpfr_exp_t emin = mpfr_get_emin ();
+  int Inex[] = {-1, 0, +1};
 
   set_emin (-1073);
   mpfr_init2 (zm, 53);
-  mpfr_flags_clear (MPFR_FLAGS_UNDERFLOW);
-  mpfr_set_str (zm, "0x3.ffffffffffffep-1024", 16, MPFR_RNDN);
-  mpfr_subnormalize (zm, +1, MPFR_RNDU);
-  /* zm should be the smallest positive normal number 2^-1022 */
-  if (mpfr_flags_test (MPFR_FLAGS_UNDERFLOW))
+  for (int i = 0; i < 3; i++)
     {
-      printf ("Got spurious underflow for zm=0x3.ffffffffffffep-1024\n");
-      exit (1);
+      mpfr_flags_clear (MPFR_FLAGS_UNDERFLOW);
+      mpfr_set_str (zm, "0x3.ffffffffffffep-1024", 16, MPFR_RNDN);
+      mpfr_subnormalize (zm, Inex[i], MPFR_RNDU);
+      if (!mpfr_flags_test (MPFR_FLAGS_UNDERFLOW))
+        {
+          printf ("Missing underflow for zm=0x3.ffffffffffffep-1024\n");
+          printf ("old_inex = %d\n", Inex[i]);
+          printf ("after mpfr_subnormalize, zm=");
+          mpfr_dump (zm);
+          printf ("\n");
+          exit (1);
+        }
+
+      mpfr_flags_clear (MPFR_FLAGS_UNDERFLOW);
+      mpfr_set_str (zm, "0x1p-1022", 16, MPFR_RNDN);
+      mpfr_subnormalize (zm, Inex[i], MPFR_RNDU);
+      if (mpfr_flags_test (MPFR_FLAGS_UNDERFLOW))
+        {
+          printf ("Spurious underflow for zm=0x1p-1022\n");
+          printf ("old_inex = %d\n", Inex[i]);
+          printf ("after mpfr_subnormalize, zm=");
+          mpfr_dump (zm);
+          printf ("\n");
+          exit (1);
+        }
     }
+
   mpfr_clear (zm);
   set_emin (emin);
 }
