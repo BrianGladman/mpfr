@@ -2759,13 +2759,29 @@ extern "C" {
    of __mpfr_ubf_struct will lead to a break of the aliasing rules at some
    point. A solution might be to define something like
      typedef struct {
-       __mpfr_struct m;
+       __mpfr_struct _mpfr_m;
        mpz_t _mpfr_zexp;
      } __mpfr_ubf_struct;
-   and manipulate it with a mpfr_ptr pointer to the member m. This would
-   be very similar to
+   and manipulate it with a mpfr_ptr pointer to the member _mpfr_m.
+   This would be very similar to
      https://stackoverflow.com/questions/63518693/struct-extension-in-c
      https://www.codementor.io/@arpitbhayani/powering-inheritance-in-c-using-structure-composition-176sygr724
+
+   The drawback is that if the compiler does not support type-generic
+   expressions (with _Generic, new in ISO C11), it seems no longer
+   possible to do pointer type checking with a type-generic macros,
+   previously done with code like
+
+     #define MPFR_ZEXP(x)                            \
+       ((void) sizeof ((x)->_mpfr_exp),              \
+        ((mpfr_ubf_ptr) (x))->_mpfr_zexp)
+
+   That said, a version with _Generic could be used conditionally (with
+   support detected at configure time), and as long as one develops and/or
+   tests MPFR with at least a compiler that supports _Generic, type issues
+   with such macros will be detected. Moreover, the use of _Generic would
+   be cleaner and give a clearer error message if an incorrect type is
+   provided.
 
    Note: The condition "use mpfr_ptr to access the usual mpfr_t members and
    mpfr_ubf_ptr to access the additional member _mpfr_zexp" may be ignored
