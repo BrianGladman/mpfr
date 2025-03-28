@@ -3924,11 +3924,11 @@ fixed-point arithmetic rounded at @m{2^{-42},two to the power @minus{}42}
 @}
 @end example
 
-When an underflow occurs but the result is exact, IEEE@tie{}754-2019 says
-that the underflow exception should not be signaled. To exactly mimic
-this behavior with MPFR, one can proceed as follows after a call to
-@code{mpfr_subnormalize}, assuming the underflow and inexact flags have
-been cleared before that call:
+When an underflow occurs but the result is exact, IEEE@tie{}754-2019
+specifies that under default exception handling, the underflow flag is
+not raised. To exactly mimic this behavior with MPFR, one can proceed
+as follows after a call to @code{mpfr_subnormalize}, assuming the
+underflow and inexact flags have been cleared before that call:
 
 @example
 if (mpfr_flags_test (MPFR_FLAGS_UNDERFLOW) &&
