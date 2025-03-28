@@ -35,40 +35,37 @@ If not, see <https://www.gnu.org/licenses/>. */
    Just round it again and merge the ternary values.
 
    Set the inexact flag if the returned ternary value is non-zero.
+
    Set the underflow flag if the first rounding (input of mpfr_subnormalize,
-   with unbounded exponent range and default precision) was in the subnormal
-   range. This corresponds to "underflow after rounding". See
-   https://sympa.inria.fr/sympa/arc/mpfr/2009-06/msg00000.html
-   https://sympa.inria.fr/sympa/arc/mpfr/2009-06/msg00008.html
-   https://sympa.inria.fr/sympa/arc/mpfr/2009-06/msg00010.html
+   with extended exponent range and default precision) is non-zero and is
+   in the subnormal range.
+   See
+     https://sympa.inria.fr/sympa/arc/mpfr/2009-06/msg00000.html
+     https://sympa.inria.fr/sympa/arc/mpfr/2009-06/msg00008.html
+     https://sympa.inria.fr/sympa/arc/mpfr/2009-06/msg00010.html
 
-   FIXME: This specification for the underflow flag is a bad idea because
-   it yields an inconsistency, as described below, assuming rounding to
-   nearest or toward +infinity (or away from zero).
+   Assuming that the user does not touch the underflow flag between
+   the first rounding and the call to mpfr_subnormalize, this
+   corresponds to "underflow after rounding", as explained below.
+   Note that the underflow flag is set in all underflow cases,
+   while in IEEE 754, under the default exception handling, the
+   underflow flag is not set for the exact underflow cases.
 
-   1. Assume that the smallest positive normal number is obtained from below
-   during the first rounding. Due to the choice of the exponent range, MPFR
-   will not raise the underflow flag (note that this is not due to the fact
-   that MPFR considers underflow after rounding, i.e. this would be the
-   same behavior if MPFR were considering underflow before rounding), and
-   mpfr_subnormalize will do nothing in this case. So the underflow flag
-   will not be set. The behavior in this case corresponds to underflow
-   after rounding.
+   Explanation:
+     * If the first rounding yields an underflow, then this will be a
+       real underflow as the exponent range is larger than the one of
+       the emulated system. The underflow flag is set during this first
+       rounding.
+     * If the first rounding does not yield an underflow, then this is
+       like the computation were done with an unbounded exponent range,
+       and mpfr_subnormalize sets the underflow flag only if its input
+       is non-zero and is in the subnormal range, which corresponds to
+       the definition of "underflow after rounding".
 
-   2. Now assume that the value obtained after the first rounding is the
-   MPFR number preceding the smallest positive normal number. This number
-   has one more bit than required (it has p bits "1", while just below the
-   smallest positive normal number, the actual precision is p-1), so that
-   mpfr_subnormalize will round it to the smallest positive normal number,
-   and due to this rounding, according to the above specification of
-   mpfr_subnormalize, the underflow flag will be set, which corresponds
-   to underflow before rounding.
-
-   In short, we have neither underflow after rounding nor underflow before
-   rounding, but a mix of them. We can change the specification to emulate
-   either of them, but the most efficient choice would be after rounding
-   (the current "do nothing" case would still be fast). If need be, we
-   could add mpfr_subnormalize_br to emulate underflow before rounding.
+   Note that as documented, if the first rounding is an inexact zero,
+   mpfr_subnormalize will not set the underflow flag. So, if the user
+   has cleared the underflow flag after the first rounding, this will
+   not correspond to "underflow after rounding".
 */
 
 int

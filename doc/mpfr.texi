@@ -3854,13 +3854,13 @@ Note that unlike most functions, the result is compared to the exact one,
 not the input value @var{x}, i.e., the ternary value is propagated.
 
 As usual, if the returned ternary value is non-zero, the inexact flag is set.
-The underflow flag is set if the input value of @var{x} (which is assumed to
-be the rounding of some function with unbounded exponent and full precision)
-is in the subnormal
-exponent range (underflow after rounding), whether the result is exact or not.
-For the underflow flag, it is assumed that the same rounding was
-used for the computation of @var{x} and in @code{mpfr_subnormalize},
-otherwise the behavior is undefined.
+
+The underflow flag is set if the input value @var{x} (which is normally
+the rounding of some function with an extended exponent range and full
+precision) is in the subnormal exponent range, whether the result is
+exact or not. Assuming that the user has not cleared the underflow flag
+just before calling @code{mpfr_subnormalize}, this is equivalent to
+underflow after rounding.
 
 Warning! If you change @var{emin} (with @code{mpfr_set_emin}) just before
 calling @code{mpfr_subnormalize}, you need to make sure that the value is
@@ -4742,17 +4742,6 @@ implementation up to MPFR@tie{}3.0.0 did not change the flags. In particular,
 it did not follow the generic rule concerning the inexact flag (and no
 special behavior was specified). The case of the underflow flag was more
 a lack of specification.
-
-@item @code{mpfr_subnormalize} changed in MPFR@tie{}4.3.
-The underflow flag is now set after rounding. The old behavior was a
-design error (rather than a bug) as it depended on the intermediate
-result, thus the setting of the underflow flag was not consistent for
-real emulation of the subnormals. A difference occurs only when the
-magnitude of the input is the value just below the minimum positive
-normal number (for the target system), i.e. the midpoint between the
-maximum subnormal and this normal number, and this value gets rounded
-to this normal number (the underflow flag was set, and it is now left
-unchanged).
 
 @item @code{mpfr_sum} changed in MPFR@tie{}4.0.
 The @code{mpfr_sum} function has completely been rewritten for MPFR@tie{}4.0,

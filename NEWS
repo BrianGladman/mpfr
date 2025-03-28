@@ -27,13 +27,6 @@ Changes from versions 4.2.* to version 4.3.0:
   data type is available).
 - New function mpfr_buildopt_float16_p.
 - The mpfr_lgamma function allows its signp argument to be a null pointer.
-- The mpfr_subnormalize function now sets the underflow flag after rounding
-  (the old behavior depended on the intermediate result, thus the setting of
-  the underflow flag was not consistent for real emulation of the subnormals).
-  See the MPFR manual for the details.
-  This very slightly changes both the API and the ABI in a corner case
-  (soname not changed as the old behavior can be surprising and almost
-  be regarded as a bug).
 - In order to resolve a portability issue with the _Float128 fallback to
   __float128 for binary128 support (e.g. with Clang and glibc 2.41), the
   prototypes of the corresponding conversion functions had to be changed,
