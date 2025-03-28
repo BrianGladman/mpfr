@@ -2765,6 +2765,7 @@ extern "C" {
    and manipulate it with a mpfr_ptr pointer to the member m. This would
    be very similar to
      https://stackoverflow.com/questions/63518693/struct-extension-in-c
+     https://www.codementor.io/@arpitbhayani/powering-inheritance-in-c-using-structure-composition-176sygr724
 
    Note: The condition "use mpfr_ptr to access the usual mpfr_t members and
    mpfr_ubf_ptr to access the additional member _mpfr_zexp" may be ignored
