@@ -887,13 +887,14 @@ __MPFR_DECLSPEC int mpfr_total_order_p (mpfr_srcptr, mpfr_srcptr);
   MPFR_EXTENSION mp_limb_t __gmpfr_local_tab_##_x[((_p)-1)/GMP_NUMB_BITS+1]; \
   MPFR_EXTENSION mpfr_t _x = {{(_p),1,__MPFR_EXP_NAN,__gmpfr_local_tab_##_x}}
 
+/* Macros with a variable number of arguments have been introduced in C99. */
 #if MPFR_USE_C99_FEATURE
-/* C99 & C11 version: functions with multiple inputs supported */
+/* C99+ version */
 #define mpfr_round_nearest_away(func, rop, ...)                         \
   (mpfr_round_nearest_away_begin(rop),                                  \
    mpfr_round_nearest_away_end((rop), func((rop), __VA_ARGS__, MPFR_RNDN)))
 #else
-/* C90 version: function with one input supported */
+/* C90 version */
 #define mpfr_round_nearest_away(func, rop, op)                          \
   (mpfr_round_nearest_away_begin(rop),                                  \
    mpfr_round_nearest_away_end((rop), func((rop), (op), MPFR_RNDN)))
