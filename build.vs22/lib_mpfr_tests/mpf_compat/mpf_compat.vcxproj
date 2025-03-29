@@ -100,6 +100,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <ForcedIncludeFiles>..\..\..\..\mpir\lib\$(IntDir)\config.h</ForcedIncludeFiles>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <AdditionalDependencies>..\$(IntDir)lib_tests.lib;..\..\..\lib\$(IntDir)mpfr.lib;..\..\..\..\mpir\lib\$(IntDir)mpir.lib</AdditionalDependencies>
@@ -143,6 +144,7 @@
       </PrecompiledHeader>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <ForcedIncludeFiles>..\..\..\..\mpir\lib\$(IntDir)\config.h</ForcedIncludeFiles>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <AdditionalDependencies>..\$(IntDir)lib_tests.lib;..\..\..\lib\$(IntDir)mpfr.lib;..\..\..\..\mpir\lib\$(IntDir)mpir.lib</AdditionalDependencies>

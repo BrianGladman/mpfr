@@ -120,7 +120,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <ProgramDataBaseFileName>$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Lib>
@@ -178,8 +178,10 @@
       <PreprocessorDefinitions>WIN32;_WIN32;HAVE_CONFIG_H;NDEBUG;_LIB;_GMP_IEEE_FLOATS;_CRT_SECURE_NO_WARNINGS;MPFR_HAVE_GMP_IMPL</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <ProgramDataBaseFileName>$(TargetDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <ExpandAttributedSource>
+      </ExpandAttributedSource>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>..\..\..\mpir\lib\$(IntDir)mpir.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -266,7 +268,6 @@
     <ClCompile Include="..\..\src\exp3.c" />
     <ClCompile Include="..\..\src\exp_2.c" />
     <ClCompile Include="..\..\src\expm1.c" />
-    <ClCompile Include="..\..\src\extract.c" />
     <ClCompile Include="..\..\src\factorial.c" />
     <ClCompile Include="..\..\src\fits_intmax.c" />
     <ClCompile Include="..\..\src\fits_sint.c" />
@@ -293,6 +294,7 @@
     <ClCompile Include="..\..\src\get_exp.c" />
     <ClCompile Include="..\..\src\get_f.c" />
     <ClCompile Include="..\..\src\get_float128.c" />
+    <ClCompile Include="..\..\src\get_float16.c" />
     <ClCompile Include="..\..\src\get_flt.c" />
     <ClCompile Include="..\..\src\get_ld.c" />
     <ClCompile Include="..\..\src\get_q.c" />
@@ -400,6 +402,7 @@
     <ClCompile Include="..\..\src\set_exp.c" />
     <ClCompile Include="..\..\src\set_f.c" />
     <ClCompile Include="..\..\src\set_float128.c" />
+    <ClCompile Include="..\..\src\set_float16.c" />
     <ClCompile Include="..\..\src\set_flt.c" />
     <ClCompile Include="..\..\src\set_inf.c" />
     <ClCompile Include="..\..\src\set_ld.c" />
@@ -447,6 +450,7 @@
     <ClCompile Include="..\..\src\tanh.c" />
     <ClCompile Include="..\..\src\tanu.c" />
     <ClCompile Include="..\..\src\total_order.c" />
+    <ClCompile Include="..\..\src\trigamma.c" />
     <ClCompile Include="..\..\src\ubf.c" />
     <ClCompile Include="..\..\src\uceil_exp2.c" />
     <ClCompile Include="..\..\src\uceil_log2.c" />

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30523.141
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35919.96 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dll_mpfr_tests", "dll_mpfr_tests", "{FED52033-9973-40F8-9300-E2EBE7D76A09}"
 EndProject
@@ -1107,6 +1107,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "texp10m1", "dll_mpfr_tests\texp10m1\texp10m1.vcxproj", "{5277A682-04AE-45EA-958D-B99891BA7393}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tpowr", "dll_mpfr_tests\tpowr\tpowr.vcxproj", "{AB417934-BEB4-4A2B-81B1-23CA8DCBAB06}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tset_float16", "dll_mpfr_tests\tset_float16\tset_float16.vcxproj", "{1DF61CCF-44A8-4799-A409-95286EA62491}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ttrigamma", "dll_mpfr_tests\ttrigamma\ttrigamma.vcxproj", "{13419CB6-972C-4C9A-80FF-7C3F8983A988}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -2700,6 +2704,22 @@ Global
 		{AB417934-BEB4-4A2B-81B1-23CA8DCBAB06}.Release|Win32.Build.0 = Release|Win32
 		{AB417934-BEB4-4A2B-81B1-23CA8DCBAB06}.Release|x64.ActiveCfg = Release|x64
 		{AB417934-BEB4-4A2B-81B1-23CA8DCBAB06}.Release|x64.Build.0 = Release|x64
+		{1DF61CCF-44A8-4799-A409-95286EA62491}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1DF61CCF-44A8-4799-A409-95286EA62491}.Debug|Win32.Build.0 = Debug|Win32
+		{1DF61CCF-44A8-4799-A409-95286EA62491}.Debug|x64.ActiveCfg = Debug|x64
+		{1DF61CCF-44A8-4799-A409-95286EA62491}.Debug|x64.Build.0 = Debug|x64
+		{1DF61CCF-44A8-4799-A409-95286EA62491}.Release|Win32.ActiveCfg = Release|Win32
+		{1DF61CCF-44A8-4799-A409-95286EA62491}.Release|Win32.Build.0 = Release|Win32
+		{1DF61CCF-44A8-4799-A409-95286EA62491}.Release|x64.ActiveCfg = Release|x64
+		{1DF61CCF-44A8-4799-A409-95286EA62491}.Release|x64.Build.0 = Release|x64
+		{13419CB6-972C-4C9A-80FF-7C3F8983A988}.Debug|Win32.ActiveCfg = Debug|Win32
+		{13419CB6-972C-4C9A-80FF-7C3F8983A988}.Debug|Win32.Build.0 = Debug|Win32
+		{13419CB6-972C-4C9A-80FF-7C3F8983A988}.Debug|x64.ActiveCfg = Debug|x64
+		{13419CB6-972C-4C9A-80FF-7C3F8983A988}.Debug|x64.Build.0 = Debug|x64
+		{13419CB6-972C-4C9A-80FF-7C3F8983A988}.Release|Win32.ActiveCfg = Release|Win32
+		{13419CB6-972C-4C9A-80FF-7C3F8983A988}.Release|Win32.Build.0 = Release|Win32
+		{13419CB6-972C-4C9A-80FF-7C3F8983A988}.Release|x64.ActiveCfg = Release|x64
+		{13419CB6-972C-4C9A-80FF-7C3F8983A988}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2901,6 +2921,8 @@ Global
 		{3BA30ED9-C973-4D79-A392-EB6CDA8F2E5E} = {FED52033-9973-40F8-9300-E2EBE7D76A09}
 		{5277A682-04AE-45EA-958D-B99891BA7393} = {FED52033-9973-40F8-9300-E2EBE7D76A09}
 		{AB417934-BEB4-4A2B-81B1-23CA8DCBAB06} = {FED52033-9973-40F8-9300-E2EBE7D76A09}
+		{1DF61CCF-44A8-4799-A409-95286EA62491} = {FED52033-9973-40F8-9300-E2EBE7D76A09}
+		{13419CB6-972C-4C9A-80FF-7C3F8983A988} = {FED52033-9973-40F8-9300-E2EBE7D76A09}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DF0C069F-3E76-403F-BEAC-2692113BE006}

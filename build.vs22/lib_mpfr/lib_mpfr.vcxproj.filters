@@ -197,9 +197,6 @@
     <ClCompile Include="..\..\src\exp_2.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\extract.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\factorial.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -786,6 +783,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\powr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\get_float16.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\set_float16.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\trigamma.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
