@@ -1,7 +1,7 @@
 /* mpfr_fpif -- Binary export & import of MPFR numbers
    (floating-point interchange format)
 
-Copyright 2012-2024 Free Software Foundation, Inc.
+Copyright 2012-2025 Free Software Foundation, Inc.
 Contributed by Olivier Demengeon.
 
 This file is part of the GNU MPFR Library.
@@ -17,9 +17,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 #include "mpfr-impl.h"
 
@@ -292,7 +291,7 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
  */
 static unsigned char*
 mpfr_fpif_store_exponent (unsigned char *buffer, size_t *buffer_size,
-                          mpfr_ptr x)
+                          mpfr_srcptr x)
 {
   unsigned char *result;
   mpfr_uexp_t uexp;
@@ -457,7 +456,8 @@ mpfr_fpif_read_exponent_from_file (mpfr_ptr x, FILE * fh)
  *        format
  */
 static unsigned char*
-mpfr_fpif_store_limbs (unsigned char *buffer, size_t *buffer_size, mpfr_ptr x)
+mpfr_fpif_store_limbs (unsigned char *buffer, size_t *buffer_size,
+                       mpfr_srcptr x)
 {
   unsigned char *result;
   mpfr_prec_t precision;
@@ -523,7 +523,7 @@ mpfr_fpif_read_limbs (mpfr_ptr x, unsigned char *buffer, size_t nb_byte)
  * return 0 if successful
  */
 int
-mpfr_fpif_export (FILE *fh, mpfr_ptr x)
+mpfr_fpif_export (FILE *fh, mpfr_srcptr x)
 {
   int status;
   unsigned char *buf;

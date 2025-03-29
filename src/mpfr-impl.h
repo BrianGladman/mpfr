@@ -1,7 +1,7 @@
 /* Utilities for MPFR developers, not exported.
 
-Copyright 1999-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 1999-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -16,9 +16,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 #ifndef __MPFR_IMPL_H__
 #define __MPFR_IMPL_H__
@@ -486,6 +485,17 @@ __MPFR_DECLSPEC extern const mpfr_t __gmpfr_const_log2_RNDU;
        https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2270.pdf
    Note: Evaluating expr might yield side effects, but such side effects
    must not change the results (except by yielding an assertion failure).
+   If MPFR_ASSERT* is used as a left expression of a comma operator, make
+   sure to protect the full expression with parentheses in order to avoid
+   a compilation error when it appears in a function or macro argument.
+   For instance, do not write
+     bp[MPFR_ASSERTD (k >= 0), k]
+   but
+     bp[(MPFR_ASSERTD (k >= 0), k)]
+   because
+     MPFR_UNLIKELY (bp[MPFR_ASSERTD (k >= 0), k] == 0)
+   would be invalid (it may also be better to put the assertion earlier
+   to improve the readability of the code, if possible).
 */
 #ifndef MPFR_WANT_ASSERT
 # define MPFR_WANT_ASSERT 0
@@ -698,6 +708,8 @@ static double double_zero = 0.0;
    but this is not safe if the user adds a -f option affecting conformance,
    in which case this would be a user error (however, note that the
    configure test associated with MPFR_NANISNAN will catch some issues).
+   Note that this macro may raise FP flags due to the multiplication.
+   See <https://gitlab.inria.fr/mpfr/mpfr/-/issues/2>.
 */
 # define DOUBLE_ISNAN(x) \
     (LVALUE(x) && !((((x) >= 0) + ((x) <= 0)) && -(x)*(x) <= 0))
@@ -828,10 +840,11 @@ typedef union {
 
 
 /******************************************************
- *****************  _Float128 support  ****************
+ ******************  _FloatN support  *****************
  ******************************************************/
 
-/* This is standardized by IEEE 754-2008. */
+/* This is standardized by IEEE 754-2019 (binary16 and binary128). */
+#define IEEE_FLOAT16_MANT_DIG 11
 #define IEEE_FLOAT128_MANT_DIG 113
 
 
@@ -1645,7 +1658,7 @@ do {                                                                  \
    static assertion. */
 #define IS_SIGNED(X) ((X) * 0 - 1 < 0)
 
-#define mpfr_get_d1(x) mpfr_get_d(x,__gmpfr_default_rounding_mode)
+#define mpfr_get_d1(x) mpfr_get_d((x), __gmpfr_default_rounding_mode)
 
 /* Store in r the size in bits of the mpz_t z */
 #define MPFR_MPZ_SIZEINBASE2(r, z)                      \
@@ -1793,6 +1806,13 @@ typedef struct {
 /*
  * Note: due to the labels, one cannot use a macro MPFR_RNDRAW* more than
  * once in a function (otherwise these labels would not be unique).
+ *
+ * Moreover, these macros have "complex" arguments (handlers and extra),
+ * which can take code. One should make sure that such code does not use
+ * commas that are not inside parentheses (this must be parentheses, not
+ * brackets); otherwise the comma just separates the macro arguments,
+ * and the compilation would fail as there would be more arguments than
+ * expected by the macro definition.
  */
 
 /*
@@ -2734,6 +2754,34 @@ extern "C" {
 
    (see changeset r13820 in the ubf2 branch). So, for the time being,
    as long as the code does not break, do not change anything.
+
+   [Added on 2024-09-30] The above suggestion may not be correct. Any use
+   of __mpfr_ubf_struct will lead to a break of the aliasing rules at some
+   point. A solution might be to define something like
+     typedef struct {
+       __mpfr_struct _mpfr_m;
+       mpz_t _mpfr_zexp;
+     } __mpfr_ubf_struct;
+   and manipulate it with a mpfr_ptr pointer to the member _mpfr_m.
+   This would be very similar to
+     https://stackoverflow.com/questions/63518693/struct-extension-in-c
+     https://www.codementor.io/@arpitbhayani/powering-inheritance-in-c-using-structure-composition-176sygr724
+
+   The drawback is that if the compiler does not support type-generic
+   expressions (with _Generic, new in ISO C11), it seems no longer
+   possible to do pointer type checking with a type-generic macros,
+   previously done with code like
+
+     #define MPFR_ZEXP(x)                            \
+       ((void) sizeof ((x)->_mpfr_exp),              \
+        ((mpfr_ubf_ptr) (x))->_mpfr_zexp)
+
+   That said, a version with _Generic could be used conditionally (with
+   support detected at configure time), and as long as one develops and/or
+   tests MPFR with at least a compiler that supports _Generic, type issues
+   with such macros will be detected. Moreover, the use of _Generic would
+   be cleaner and give a clearer error message if an incorrect type is
+   provided.
 
    Note: The condition "use mpfr_ptr to access the usual mpfr_t members and
    mpfr_ubf_ptr to access the additional member _mpfr_zexp" may be ignored

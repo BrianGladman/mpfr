@@ -1,8 +1,8 @@
 /* mpfr_subnormalize -- Subnormalize a floating point number
    emulating sub-normal numbers.
 
-Copyright 2005-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 2005-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -17,9 +17,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 #include "mpfr-impl.h"
 
@@ -36,11 +35,37 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
    Just round it again and merge the ternary values.
 
    Set the inexact flag if the returned ternary value is non-zero.
-   Set the underflow flag if a second rounding occurred (whether this
-   rounding is exact or not). See
+
+   Set the underflow flag if the first rounding (input of mpfr_subnormalize,
+   with extended exponent range and default precision) is non-zero and is
+   in the subnormal range.
+   See
      https://sympa.inria.fr/sympa/arc/mpfr/2009-06/msg00000.html
      https://sympa.inria.fr/sympa/arc/mpfr/2009-06/msg00008.html
      https://sympa.inria.fr/sympa/arc/mpfr/2009-06/msg00010.html
+
+   Assuming that the user does not touch the underflow flag between
+   the first rounding and the call to mpfr_subnormalize, this
+   corresponds to "underflow after rounding", as explained below.
+   Note that the underflow flag is set in all underflow cases,
+   while in IEEE 754, under the default exception handling, the
+   underflow flag is not set for the exact underflow cases.
+
+   Explanation:
+     * If the first rounding yields an underflow, then this will be a
+       real underflow as the exponent range is larger than the one of
+       the emulated system. The underflow flag is set during this first
+       rounding.
+     * If the first rounding does not yield an underflow, then this is
+       like the computation were done with an unbounded exponent range,
+       and mpfr_subnormalize sets the underflow flag only if its input
+       is non-zero and is in the subnormal range, which corresponds to
+       the definition of "underflow after rounding".
+
+   Note that as documented, if the first rounding is an inexact zero,
+   mpfr_subnormalize will not set the underflow flag. So, if the user
+   has cleared the underflow flag after the first rounding, this will
+   not correspond to "underflow after rounding".
 */
 
 int
@@ -48,7 +73,9 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mpfr_rnd_t rnd)
 {
   int sign;
 
-  /* The subnormal exponent range is [ emin, emin + MPFR_PREC(y) - 2 ] */
+  /* The subnormal exponent range is [ emin, emin + MPFR_PREC(y) - 2 ].
+     Note: if MPFR_PREC(y) is 1, the following condition is always true,
+     which corresponds to the fact that there are no subnormals. */
   if (MPFR_LIKELY (MPFR_IS_SINGULAR (y)
                    || (MPFR_GET_EXP (y) >=
                        __gmpfr_emin + (mpfr_exp_t) MPFR_PREC (y) - 1)))
@@ -61,7 +88,7 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mpfr_rnd_t rnd)
   if (MPFR_GET_EXP (y) == __gmpfr_emin)
     {
       /* If this is a power of 2, we don't need rounding.
-         It handles cases when |y| = 0.1 * 2^emin */
+         It handles cases when |y| = 0.5 * 2^emin */
       if (mpfr_powerof2_raw (y))
         MPFR_RET (old_inexact);
 
@@ -91,10 +118,10 @@ mpfr_subnormalize (mpfr_ptr y, int old_inexact, mpfr_rnd_t rnd)
           if ((old_inexact > 0 && sign > 0) ||
               (old_inexact < 0 && sign < 0))
             goto set_min;
-          /* If inexact != 0, return 0.1*2^(emin+1).
+          /* If inexact != 0, return 0.5*2^(emin+1).
              Otherwise, rounding bit = 1, sticky bit = 0 and inexact = 0
              So we have 0.1100000000000000000000000*2^emin exactly.
-             We return 0.1*2^(emin+1) according to the even-rounding
+             We return 0.5*2^(emin+1) according to the even-rounding
              rule on subnormals. Note the same holds for RNDNA. */
           goto set_min_p1;
         }

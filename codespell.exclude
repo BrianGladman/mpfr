@@ -3,3 +3,6 @@
   LOG_PRINT (MPFR_LOG_TIME_F, "%s:TIM %dms\n", __mpfr_log_fname,        \
    (of any type). Thanks to Wojtek Lerch and Tim Rentsch for the idea.
               printf ("\nd=");
+% num:=numer(e); den:=denom(e);
+         f := (numer(l[i-1])+a*numer(e))/(denom(l[i-1])+a*denom(e));
+         f := (numer(l[i-2])+a*numer(l[i-1]))/(denom(l[i-2])+a*denom(l[i-1]));

@@ -1,8 +1,8 @@
 /* tsprintf.c -- test file for mpfr_sprintf, mpfr_vsprintf, mpfr_snprintf,
    and mpfr_vsnprintf
 
-Copyright 2007-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 2007-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -17,27 +17,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
-
-/* Note: If you use a C99-compatible implementation and GMP (or MPIR)
- * has been compiled without HAVE_VSNPRINTF defined[*], then this test
- * may fail with an error like
- *   repl-vsnprintf.c:389: GNU MP assertion failed: len < total_width
- *
- * The reason is that __gmp_replacement_vsnprintf does not support %a/%A,
- * even though the C library supports it.
- *
- * [*] GMP compiled under OpenBSD 7+ is affected, but not its official port,
- * which skips the %n vsnprintf test: https://openports.se/devel/gmp
- *
- * References:
- *   https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00001.html
- *   https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00027.html
- *   https://gmplib.org/list-archives/gmp-bugs/2022-October/005200.html
- *   https://marc.info/?l=openbsd-bugs&m=167118761118904&w=2
- */
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 /* Needed due to the tests on HAVE_STDARG and MPFR_USE_MINI_GMP */
 #ifdef HAVE_CONFIG_H
@@ -234,6 +215,28 @@ native_types (void)
 
 #if __MPFR_STDC (199901L)
 
+/* If NPRINTF_A is defined, this means that GMP (or MPIR) has been compiled
+ * without HAVE_VSNPRINTF defined and that GMP's vsnprintf replacement
+ * repl-vsnprintf.c may abort due to an assertion failure like
+ *
+ *   repl-vsnprintf.c:389: GNU MP assertion failed: len < total_width
+ *
+ * This affects gmp_snprintf, gmp_vsnprintf and gmp_vasprintf. The latter
+ * is used by MPFR. So we disable the corresponding tests.
+ *
+ * The reason is that __gmp_replacement_vsnprintf does not support %a/%A,
+ * even though the C library supports it. This has been fixed in the GMP
+ * development branch on 2025-01-31.
+ *
+ * References:
+ *   https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00001.html
+ *   https://sympa.inria.fr/sympa/arc/mpfr/2022-10/msg00027.html
+ *   https://gmplib.org/list-archives/gmp-bugs/2022-October/005200.html
+ *   https://gmplib.org/list-archives/gmp-bugs/2025-January/005557.html
+ */
+
+# ifndef NPRINTF_A
+
       gmp_sprintf (buf, "%a", d[k]);
       check_vsprintf (buf, "%a", d[k]);
 
@@ -245,6 +248,8 @@ native_types (void)
 
       gmp_sprintf (buf, "%lA", d[k]);
       check_vsprintf (buf, "%lA", d[k]);
+
+# endif
 
       sprintf (buf, "%le", d[k]);
       check_vsprintf (buf, "%le", d[k]);
@@ -1701,6 +1706,7 @@ large_prec_for_g (void)
 static void
 check_null (void)
 {
+#ifndef MPFR_TESTS_SKIP_CHECK_NULL
   int i;
 
   for (i = 0; i < 2; i++)
@@ -1734,6 +1740,7 @@ check_null (void)
           exit (1);
         }
     }
+#endif
 }
 
 #if defined(HAVE_LOCALE_H) && defined(HAVE_SETLOCALE)

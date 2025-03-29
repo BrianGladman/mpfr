@@ -1,7 +1,7 @@
 /* mpfr_eint, mpfr_eint1 -- the exponential integral
 
-Copyright 2005-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 2005-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -16,9 +16,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 #define MPFR_NEED_LONGLONG_H
 #include "mpfr-impl.h"
@@ -75,7 +74,7 @@ mpfr_eint_aux (mpfr_ptr y, mpfr_srcptr x)
       mpz_tdiv_q_2exp (m, m, MPFR_PREC (x) - w);  /* one still has m != 0 */
       MPFR_LOG_MSG (("e=%" MPFR_EXP_FSPEC "d\n", (mpfr_eexp_t) e));
     }
-  /* Remove trailing zeroes from m: this will speed up much cases where
+  /* Remove trailing zeros from m: this will speed up much cases where
      x is a small integer divided by a power of 2.
      Note: As shown above, m != 0. This is needed for the "e += ..." below,
      otherwise n would take the largest value of mp_bitcnt_t and could be

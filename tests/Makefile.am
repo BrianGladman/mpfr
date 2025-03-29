@@ -1,5 +1,5 @@
-# Copyright 2000-2024 Free Software Foundation, Inc.
-# Contributed by the AriC and Caramba projects, INRIA.
+# Copyright 2000-2025 Free Software Foundation, Inc.
+# Contributed by the Pascaline and Caramba projects, INRIA.
 
 # This file is part of the GNU MPFR Library.
 
@@ -70,12 +70,12 @@ TESTS_NO_TVERSION = tabort_prec_max tassert tabort_defalloc1            \
      tnext tnrandom tnrandom_chisq tout_str toutimpl tpow tpow3 tpowr   \
      tpow_all tpow_z tprec_round tprintf trandom trandom_deviate        \
      trec_sqrt treldiff tremquo trint trndna troot trootn_si trootn_ui  \
-     tsec tsech tset_d tset_f tset_float128 tset_ld tset_q              \
+     tsec tsech tset_d tset_f tset_float16 tset_float128 tset_ld tset_q \
      tset_si tset_sj tset_str tset_z tset_z_2exp tsi_op tsin tsin_cos   \
      tsinh tsinh_cosh tsinu tsprintf tsqr tsqrt tsqrt_ui tstckintc      \
      tstdint tstrtofr tsub tsub1sp tsub_d tsub_ui tsubnormal tsum tswap \
-     ttan ttanh ttanu ttotal_order ttrunc tui_div tui_pow tui_sub       \
-     turandom tvalist ty0 ty1 tyn tzeta tzeta_ui
+     ttan ttanh ttanu ttotal_order ttrigamma ttrunc tui_div tui_pow     \
+     tui_sub turandom tvalist ty0 ty1 tyn tzeta tzeta_ui
 
 check_PROGRAMS = tversion $(TESTS_NO_TVERSION)
 

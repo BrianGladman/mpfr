@@ -1,7 +1,7 @@
 /* test file for digamma function
 
-Copyright 2009-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 2009-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -16,9 +16,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 #include "mpfr-test.h"
 
@@ -130,11 +129,77 @@ bug20210215 (void)
   mpfr_clear (y);
 }
 
+/* exercise the special case in the code for very small x */
+static void
+test_tiny (void)
+{
+  int p;
+
+  for (p = MPFR_PREC_MIN; p <= 10; p++)
+    {
+      /* the special code needs EXP(x) < -2, thus |x| < 2^-3 */
+      mpfr_t x, y, z, t;
+      mpfr_init2 (x, p);
+      mpfr_init2 (y, p);
+      mpfr_init2 (z, p);
+      mpfr_init2 (t, p + 20);
+      mpfr_set_ui_2exp (x, 1, -5, MPFR_RNDN); /* x = 2^-5 */
+      while (mpfr_cmp_ui_2exp (x, 1, -3) < 0)
+        {
+          int rnd;
+          RND_LOOP (rnd)
+            {
+              mpfr_digamma (y, x, (mpfr_rnd_t) rnd);
+              mpfr_digamma (t, x, MPFR_RNDN);
+              if (mpfr_can_round (t, 0, MPFR_RNDN, (mpfr_rnd_t) rnd, p))
+                {
+                  mpfr_set (z, t, (mpfr_rnd_t) rnd);
+                  if (! mpfr_equal_p (y, z))
+                    {
+                      printf ("Error for x=");
+                      mpfr_dump (x);
+                      printf ("Expected  z=");
+                      mpfr_dump (z);
+                      printf ("Got       y=");
+                      mpfr_dump (z);
+                      exit (1);
+                    }
+                }
+              /* check also -x */
+              mpfr_neg (x, x, MPFR_RNDN);
+              mpfr_digamma (y, x, (mpfr_rnd_t) rnd);
+              mpfr_digamma (t, x, MPFR_RNDN);
+              if (mpfr_can_round (t, 0, MPFR_RNDN, (mpfr_rnd_t) rnd, p))
+                {
+                  mpfr_set (z, t, (mpfr_rnd_t) rnd);
+                  if (! mpfr_equal_p (y, z))
+                    {
+                      printf ("Error for x=");
+                      mpfr_dump (x);
+                      printf ("Expected  z=");
+                      mpfr_dump (z);
+                      printf ("Got       y=");
+                      mpfr_dump (z);
+                      exit (1);
+                    }
+                }
+              mpfr_neg (x, x, MPFR_RNDN); /* restore x > 0 */
+            }
+          mpfr_nextabove (x);
+        }
+      mpfr_clear (x);
+      mpfr_clear (y);
+      mpfr_clear (z);
+      mpfr_clear (t);
+    }
+}
+
 int
 main (int argc, char *argv[])
 {
   tests_start_mpfr ();
 
+  test_tiny ();
   special ();
   bug20210206 ();
   bug20210208 ();

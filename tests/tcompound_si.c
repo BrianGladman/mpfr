@@ -1,7 +1,7 @@
 /* Test file for mpfr_compound_si.
 
-Copyright 2021-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 2021-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -16,9 +16,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 /* TODO: Generate and test cases that are very close to the overflow
    and underflow thresholds (for all rounding modes), both below and
@@ -499,6 +498,7 @@ DEFN(4)
 DEFN(5)
 DEFN(17)
 DEFN(120)
+DEFN(LONG_MAX)
 
 #define TEST_FUNCTION mpfr_compound2
 #define test_generic test_generic_compound2
@@ -524,6 +524,10 @@ DEFN(120)
 #define test_generic test_generic_compound120
 #include "tgeneric.c"
 
+#define TEST_FUNCTION mpfr_compoundLONG_MAX
+#define test_generic test_generic_compoundLONG_MAX
+#include "tgeneric.c"
+
 int
 main (void)
 {
@@ -542,6 +546,7 @@ main (void)
   test_generic_compound5 (MPFR_PREC_MIN, 100, 100);
   test_generic_compound17 (MPFR_PREC_MIN, 100, 100);
   test_generic_compound120 (MPFR_PREC_MIN, 100, 100);
+  test_generic_compoundLONG_MAX (MPFR_PREC_MIN, 100, 100);
 
   /* Note: For small n, we need a psup high enough to avoid too many
      "f exact while f^(-1) inexact" occurrences in bad_cases(). */
@@ -557,6 +562,8 @@ main (void)
              0, -256, 255, 4, 128, 80, 40);
   bad_cases (mpfr_compound120, inv_compound120, "mpfr_compound120",
              0, -256, 255, 4, 128, 80, 40);
+  bad_cases (mpfr_compoundLONG_MAX, inv_compoundLONG_MAX,
+             "mpfr_compoundLONG_MAX", 0, -256, 255, 4, 128, 80, 40);
 
   ofuf_thresholds (mpfr_compound2, inv_compound2, "mpfr_compound2",
                    999, 999, 0, POSOF);

@@ -1,5 +1,5 @@
-Copyright 1999-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 1999-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -14,9 +14,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>.
 
 Table of contents:
 1. Documentation
@@ -34,20 +33,10 @@ Table of contents:
 
 - add a description of the algorithms used and a proof of correctness
 
-- when mp*_srcptr is used in a prototype, add "const" in the prototype
-  in the manual, like what is now done in the GMP manual, i.e.
-    mpfr_srcptr -> const mpfr_t
-    mpz_srcptr  -> const mpz_t
-    mpq_srcptr  -> const mpq_t
-    mpf_srcptr  -> const mpf_t
-
 
 ##############################################################################
 2. Compiler/library detection
 ##############################################################################
-
-- update ICC detection.
-  * Use only __INTEL_COMPILER instead of the obsolete macro __ICC?
 
 
 ##############################################################################
@@ -393,6 +382,16 @@ Table of contents:
   (but the same rules as FMA/FMS could be chosen, based on 1/±0 = ±Inf and
   1/±Inf = ±0).
 
+- Givens rotation x/sqrt(x^2+y^2)
+  https://en.wikipedia.org/wiki/Givens_rotation
+  Exact/midpoint cases are not possible in any precision, except for
+  x = 0 or y = 0. Indeed, assume that for x ≠ 0 and y ≠ 0, there is
+  z = x/sqrt(x^2+y^2) that is an integer multiplied by a power of 2.
+  Without loss of generality, assume that x and y are positive integers,
+  not both even. One has x^2 = z^2·(x^2+y^2). The 2-adic valuations of
+  x^2 and z^2 are even, so the one of x^2+y^2 too. But x^2+y^2 is 1 or 2
+  mod 4, meaning that its valuation is 0 or 1, thus 0. This implies that
+  z is an integer. Impossible as this would give z^2·(x^2+y^2) > x^2.
 
 ##############################################################################
 5. Efficiency
@@ -628,7 +627,8 @@ Table of contents:
   to say "on systems that support it".
 
 - add generic bad cases for functions that don't have an inverse
-  function that is implemented (use a single Newton iteration).
+  function that is implemented (use a single Newton iteration, or
+  the secant method if the derivative is unknown or too complex).
 
 - add bad cases for the internal error bound (by using a dichotomy
   between a bad case for the correct rounding and some input value

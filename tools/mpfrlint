@@ -393,6 +393,17 @@ err-if-output \
   --msg='Do not use the HAVE_SUBNORM_* macros (for the tests, use have_subnorm_*).' \
   -t "HAVE_SUBNORM_" grep HAVE_SUBNORM_ $srctests
 
+# To allow the __float128 fallback, use mpfr_float128 instead of _Float128.
+for file in $srctests
+do
+  perl -e 'undef $/; $_ = <>;
+           s:/\*.*?\*/::sg;
+           s:# *define +mpfr_float128 +_Float128::;
+           print' $file |
+    err-if-output --msg="Use mpfr_float128 instead of _Float128." \
+                  -t "_Float128 type" grep '_Float128'
+done
+
 # In general, one needs to include mpfr-impl.h (note that some platforms
 # such as MS Windows use a config.h, which is included by mpfr-impl.h).
 for file in $c_src
@@ -420,7 +431,10 @@ err-if-output --msg='Use mpn_sqr instead of mpn_mul_n.' "mpn mul/sqr" \
 
 # Detect a Ziv loop that does not use the MPFR_ZIV_* macros, which may
 # give a bug like the one in rec_sqrt.c, found and fixed in 2023-04.
-# This is a heuristic; it assumes GNU style with correct indentation.
+# This is a heuristic: a for/while loop containing mpfr_can_round or
+# mpfr_round_p (case insensitive) is assumed to be a Ziv loop; it also
+# assumes GNU style with correct indentation to detect the end of the
+# loop (as no real parsing is done).
 # This can be silenced by using MPFR_ZIV_NEXT in a comment in the loop.
 # A false positive may actually be a bad indentation, which should be
 # fixed anyway.
@@ -512,6 +526,14 @@ grep __gmp_ tests/*.c | \
 grep -E '[^a-z_](m|re)alloc *\(' tests/*.c | \
   err-if-output -t "alloc" grep -Ev '^tests/(memory|talloc-cache).c:'
 
+# In function prototypes, "..." must be used instead of "@dots{}".
+# This is important for HTML generation, as with GNU Texinfo 7.1,
+# the "…" Unicode character is generated with "@dots{}" instead of
+# the 3 dots "..." (in C source, it is "..." that is correct, so
+# this is what is expected).
+err-if-output --msg='Use "..." instead of "@dots{}" in function prototypes.' \
+  -t "@dots{} in prototypes" grep '@deftypefun.*@dots' doc/mpfr.texi
+
 err-if-output --dir=doc "check-typography" ./check-typography
 
 rndmodes1=(${(o)$(perl -ne '/return\s*"(MPFR_\S+)"/ and print "$1\n"' src/print_rnd_mode.c)})
@@ -587,8 +609,8 @@ Minimal GMP version mismatch:
   doc/mpfr.texi:  $gmpv4
 EOF
 
-doc=(FAQ.html Makefile.am README.dev add-with-carry.c check-typography \
-     faq.xsl fdl.texi mini-gmp mpfr.texi sum.txt update-faq)
+doc=(FAQ.html Makefile.am README.dev add-with-carry.c algorithms.tex
+     check-typography faq.xsl fdl.texi mini-gmp mpfr.texi sum.txt update-faq)
 doc=(doc/${^doc})
 files=(AUTHORS BUGS INSTALL NEWS README TODO $doc examples $srctests)
 
@@ -614,6 +636,20 @@ if which codespell > /dev/null 2> /dev/null; then
 else
   echo "Warning! codespell is not installed. Cannot check spelling." >&2
 fi
+
+# Contrary to "zeroed" and "zeroing", which are sometimes used, "zeroes"
+# as a verb (third-person singular) is rare in practice. Most often, this
+# word appears as a noun (plural of "zero") instead of "zeros", which is
+# the most common spelling and what we should use. So let's warn about it
+# (in case of false positive, we should add an exception with "grep -v").
+# Note: that's why in SCOWL (Spell Checker Oriented Word Lists)[*], "zero"
+# is in english-words.10 and "zeros" in english-words.20, but "zeroes" is
+# only in *variant_2-words.20 (as a variant of the plural of "zero") and
+# special-hacker.50 (as a verb).
+# [*] http://wordlist.aspell.net/
+err-if-output \
+  --msg='Suspicious word "zeroes": correct only as a verb; plural of "zero" is "zeros".' \
+  -t "zeroes" grep -ir zeroes $files
 
 err-if-output --msg='Say "positive infinity" and "negative infinity".' -t \
   "+/- infinity" grep -Eir "(plus|minus) *infinity" $files

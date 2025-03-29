@@ -1,7 +1,7 @@
 /* auxiliary functions for MPFR tests.
 
-Copyright 1999-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 1999-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -16,9 +16,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 #ifndef __MPFR_TEST_H__
 #define __MPFR_TEST_H__
@@ -195,6 +194,13 @@ int test_version (void);
 /* Memory handling */
 #define DEFAULT_MEMORY_LIMIT (1UL << 22)
 extern size_t tests_memory_limit;
+extern int tests_memory_disabled;
+void *tests_allocate (size_t);
+void *tests_reallocate (void *, size_t, size_t);
+void tests_free (void *, size_t);
+size_t tests_get_totalsize (void);
+size_t tests_get_maxsize (void);
+void tests_reset_maxsize (void);
 void tests_memory_start (void);
 void tests_memory_end (void);
 
@@ -329,12 +335,6 @@ extern gmp_randstate_t  mpfr_rands;
         gmp_randclear (mpfr_rands);    \
       }                                 \
   } while (0)
-
-/* Memory Allocation */
-extern int tests_memory_disabled;
-void *tests_allocate (size_t);
-void *tests_reallocate (void *, size_t, size_t);
-void tests_free (void *, size_t);
 
 #if defined (__cplusplus)
 }

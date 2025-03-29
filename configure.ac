@@ -4,8 +4,8 @@ dnl WARNING! C code starting with # (preprocessor directives) must not
 dnl be indented!
 
 AC_COPYRIGHT([
-Copyright 1999-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 1999-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -20,9 +20,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>.
 ])
 
 dnl Add check-news when it checks for more than 15 lines
@@ -74,7 +73,7 @@ dnl Alternatively, the test program could output the result to a file and
 dnl return with the 0 exit status if it could do that successfully.
 dnl
 dnl [*] 2.8.2 Exit Status for Commands
-dnl https://pubs.opengroup.org/onlinepubs/9699919799//utilities/V3_chap02.html#tag_18_08_02
+dnl https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html#tag_19_08_02
 
 test_CFLAGS=${CFLAGS+set}
 
@@ -277,7 +276,7 @@ AC_ARG_ENABLE(decimal-float,
 
 dnl Warning! Not to be confused with _Decimal128. Thus it is better
 dnl to say binary128 in the description. It can correspond to either
-dnl _Float128 (ISO/IEC TS 18661) or __float128 (old type name).
+dnl _Float128 (ISO C23) or __float128 (old type name).
 AC_ARG_ENABLE(float128,
    [  --disable-float128      explicitly disable binary128 support
   --enable-float128       build conversion functions from/to binary128
@@ -456,12 +455,10 @@ dnl Warning: This test is *only* for CFLAGS settings.
 dnl If the compiler is ICC, add some specific flags, except on MS-Windows.
 dnl Don't add warnings flags (Otherwise you'll get more than 20000 warnings).
 dnl Add -long_double flags? Don't use -pc64 !
-dnl Notes (VL):
-dnl   * With icc 10.1 20080212 on itanium, the __ICC macro is not defined,
-dnl     even when the -icc option is used (contrary to what is documented
-dnl     on the icc man page).
-dnl   * When ICC is correctly detected (__ICC macro defined), unsetting
-dnl     the GCC variable confuses libtool. See:
+dnl Notes (some might be obsolete):
+dnl   * the old __ICC macro is now replaced by __INTEL_COMPILER
+dnl   * When ICC is correctly detected (__INTEL_COMPILER macro defined),
+dnl     unsetting the GCC variable confuses libtool. See:
 dnl       https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=485421
 dnl   * If need be, the gcc predefined macros __GNUC_* can be disabled
 dnl     thanks to the -no-gcc option.
@@ -474,7 +471,7 @@ dnl     option has been introduced in ICC 9.0 for Linux (2005-06):
 dnl     https://climserv.ipsl.polytechnique.fr/documentation/intel-icc/ReleaseNotes.htm
 AC_MSG_CHECKING(for non-MS-Windows ICC)
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#if (!defined(__ICC) && !defined(__INTEL_COMPILER)) || defined(_WIN32)
+#if !defined(__INTEL_COMPILER) || defined(_WIN32)
 # error "Not a non-MS-Windows ICC"
 error
 #endif

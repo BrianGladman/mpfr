@@ -1,7 +1,7 @@
 /* Memory allocation used during tests.
 
-Copyright 2001-2003, 2006-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 2001-2003, 2006-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -16,9 +16,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 /* Note: this file originally came from GMP's tests/memory.c
    (some features have been added). */
@@ -74,6 +73,7 @@ size_t tests_memory_limit = DEFAULT_MEMORY_LIMIT;
    must not be run. */
 static struct header  *tests_memory_list;
 static size_t tests_total_size = 0;
+static size_t tests_max_size = 0;
 MPFR_LOCK_DECL(mpfr_lock_memory)
 
 static void *
@@ -153,6 +153,8 @@ tests_addsize (size_t size)
       fflush (NULL);
       abort ();
     }
+  if (tests_total_size > tests_max_size)
+    tests_max_size = tests_total_size;
 }
 
 void *
@@ -295,6 +297,24 @@ tests_free (void *ptr, size_t size)
   tests_free_nosize (ptr);
 
   MPFR_UNLOCK_WRITE(mpfr_lock_memory);
+}
+
+size_t
+tests_get_totalsize (void)
+{
+  return tests_total_size;
+}
+
+size_t
+tests_get_maxsize (void)
+{
+  return tests_max_size;
+}
+
+void
+tests_reset_maxsize (void)
+{
+  tests_max_size = 0;
 }
 
 void

@@ -1,7 +1,7 @@
 /* check_mparam - check a mparam.h file
 
-Copyright 2018-2024 Free Software Foundation, Inc.
-Contributed by the Arenaire and Caramel projects, INRIA.
+Copyright 2018-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -14,9 +14,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with this program; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+along with this program; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 /* To check some mparam.h tables:
    1) make a symbolic link to the corresponding mparam.h or

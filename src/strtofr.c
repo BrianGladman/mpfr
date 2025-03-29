@@ -1,7 +1,7 @@
 /* mpfr_strtofr -- set a floating-point number from a string
 
-Copyright 2004-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 2004-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -16,9 +16,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 /* FIXME: MPFR_SADD_OVERFLOW is sometimes called with
      MPFR_EXP_MIN+2, MPFR_EXP_MAX-2
@@ -51,7 +50,7 @@ struct parsed_string {
   int            base;     /* base of the string */
   unsigned char *mantissa; /* raw significand (without any point) */
   unsigned char *mant;     /* stripped significand (without starting and
-                              ending zeroes). This points inside the area
+                              ending zeros). This points inside the area
                               allocated for the mantissa field. */
   size_t         prec;     /* length of mant (zero for +/-0) */
   size_t         alloc;    /* allocation size of mantissa */

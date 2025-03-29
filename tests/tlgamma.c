@@ -1,7 +1,7 @@
 /* mpfr_tlgamma -- test file for lgamma function
 
-Copyright 2005-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 2005-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -16,21 +16,29 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 #include "mpfr-test.h"
 
 static int
 mpfr_lgamma_nosign (mpfr_ptr y, mpfr_srcptr x, mpfr_rnd_t rnd)
 {
-  int inex, sign;
+  int inex, sign = 0;
 
   inex = mpfr_lgamma (y, &sign, x, rnd);
   if (!MPFR_IS_SINGULAR (y))
     {
-      MPFR_ASSERTN (sign == 1 || sign == -1);
+      /* Note: sign has been initialized to a value different from 1 and -1,
+         so that we can detect here when it is not explicitly set to 1 or -1
+         in mpfr_lgamma. */
+      if (sign != 1 && sign != -1)
+        {
+          printf ("Error in mpfr_lgamma_nosign: sign = %d\n", sign);
+          printf ("x = ");
+          mpfr_dump (x);
+          exit (1);
+        }
       if (sign == -1 && (rnd == MPFR_RNDN || rnd == MPFR_RNDZ))
         {
           mpfr_neg (y, y, MPFR_RNDN);
@@ -127,6 +135,15 @@ special (void)
   if (MPFR_IS_NAN (y) || mpfr_cmp_ui (y, 0) || MPFR_IS_NEG (y) || sign != 1)
     {
       printf ("Error for lgamma(2)\n");
+      exit (1);
+    }
+
+  /* test with signp=NULL */
+  mpfr_set_ui (x, 2, MPFR_RNDN);
+  mpfr_lgamma (y, NULL, x, MPFR_RNDN);
+  if (MPFR_IS_NAN (y) || mpfr_cmp_ui (y, 0) || MPFR_IS_NEG (y))
+    {
+      printf ("Error for lgamma(2) with signp=NULL\n");
       exit (1);
     }
 

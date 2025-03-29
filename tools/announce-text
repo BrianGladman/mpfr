@@ -286,17 +286,20 @@ cat Changes
 
 if [ $vers = $base ]; then
   cat <<EOF
-You can send success and failure reports to <mpfr@inria.fr>, and give
-us the canonical system name (by running the "./config.guess" script),
-the processor and the compiler version, in order to complete the
-"Platforms Known to Support MPFR" section of the MPFR $vers web page.
+You can send success and failure reports to <mpfr@inria.fr> (please
+remove the other mailing-list addresses if they appear in the reply
+to this message), and give us the canonical system name (by running
+the "./config.guess" script), the processor and the compiler version,
+in order to complete the "Platforms Known to Support MPFR" section of
+the MPFR $vers web page.
 
 Regards,
 EOF
 else
   cat <<EOF
 Please send success and failure reports with "./config.guess" output
-to <mpfr@inria.fr>.
+to <mpfr@inria.fr> (remove the other mailing-list addresses if they
+appear in the reply to this message).
 
 If no problems are found, GNU MPFR $base should be released
 around $(date --iso-8601 --date='7 days').

@@ -1,5 +1,5 @@
-Copyright 2002-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 2002-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -14,9 +14,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>.
 
 
 Notes for the MPFR developers and Git users
@@ -36,7 +35,10 @@ usual way (see the INSTALL file, but note that there are no patches to
 apply, and the URLs are not valid since the corresponding version has
 not been released yet).
 
-To generate mpfr.info, you need texinfo version 4.2 (or higher).
+To generate mpfr.info, you need GNU Texinfo version 4.2 (or higher).
+Note that old Texinfo versions are no longer tested (this is useless
+for releases, as the mpfr.info file is provided by the tarball). So
+the actual requirement might be stronger. Please report any issue.
 
 ===========================================================================
 
@@ -246,10 +248,10 @@ To make a release (for the MPFR team):
      Note: First, make sure that all the pending commits have been done.
      Push the changes with "git push".
 
-  5) Create an annotated tag whose name corresponds to the content of
+  5) Create a signed tag whose name corresponds to the content of
      the VERSION file:
        $ tag=$(cat VERSION)
-       $ git tag -m "GNU MPFR $tag tag." $tag
+       $ git tag -s -m "GNU MPFR $tag tag." $tag
      and push it:
        $ git push origin $tag
      Note: in case of error, see the git-tag(1) man page.
@@ -400,6 +402,12 @@ To make a release (for the MPFR team):
      --enable-debug-prediction, run "timings-mpfr 100", and check that
      the output contains no WARNING.
 
+     Also check that the build remains correct, including the documentation,
+     when MPFR is built under various locales (in particular, tr_TR.utf8),
+     at least with the default configuration (note that this is different
+     from checking the testsuite with different locales). A way to easily
+     check that is to ensure that the MPFR build is reproducible by default.
+
      For various platforms and compilers, check that:
        * [make check-gmp-symbols]
          MPFR does not use GMP internal symbols (unless --with-gmp-build
@@ -543,6 +551,10 @@ Note that emin(m68k) = emin(x86) - 1.
 
 + MPFR_WANT_FLOAT128:   Define to build conversion functions from/to
                         binary128 floats (_Float128 or __float128).
+                        Define it to 1 if constants have the f128 suffix.
+                        Define it to 2 if constants have the q suffix; in
+                        this case, the mpfr_float128 macro may have to be
+                        defined as __float128 (a.k.a. __float128 fallback).
 
 + MPFR_ALLOCA_MAX:      Maximum size for the use of alloca() by temporary
                         allocations (default: 16384); if set to 0, alloca()
@@ -619,6 +631,13 @@ List of macros used for checking MPFR:
                         with the MPFR_TESTS_TIMEOUT environment variable.
 + MPFR_TESTS_ABORT:     Define to replace exit(1) by abort(), thus with a
                         core dump.
++ MPFR_TESTS_SKIP_CHECK_NULL:
+                        Define to skip the check_null() tests in
+                        tfprintf.c and tsprintf.c, in case of failure
+                        due to a bug in GMP's vsnprintf replacement
+                        (see INSTALL file). The goal is just to avoid
+                        a failure of the MPFR testsuite; there is no
+                        workaround for the bug in GMP's vsnprintf!
 + MPFR_COV_CHECK:       Define to enable value coverage checking (must not
                         be used in production). This macro is for the MPFR
                         developers, in order to improve the test suite.
@@ -698,10 +717,10 @@ ISO C Names and corresponding headers:
   http://www.schweikhardt.net/identifiers.html
 
 The C language:
-  https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf (C99)
+  https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf (C99 + TC3)
   https://www.open-std.org/jtc1/sc22/wg14/www/C99RationaleV5.10.pdf
   https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf (C11 draft)
-  https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3096.pdf (C2x draft)
+  https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3220.pdf (≈ C23)
   http://home.datacomm.ch/t_wolf/tw/c/c9x_changes.html
 
 About undefined behavior:
@@ -740,10 +759,16 @@ with code like MPFR_EXP_MIN/n).
 
    =====================================================================
 
-Don't use "near" and "far" as variable names since they are "Keywords"
-for some C compiler (Old DOS compiler). Also don't use "pm", which is used
-by the C compiler 'sharp' to design variables that should be stored in the
-flash memory. Don't use "new", which is reserved in C++.
+Don't use the following identifiers since they are keywords for some
+compilers:
+  - "bool", "true" and "false": keywords in ISO C23.
+  - "near" and "far": keywords in some old DOS compiler.
+  - "pm", which is used by the C compiler 'sharp' to design variables
+    that should be stored in the flash memory.
+  - "new", which is reserved in C++.
+
+Note: This list is not exhaustive; these are just the simplest keywords,
+which are likely to be used by mistake.
 
 Check C++ reserved keywords, e.g. from
 
@@ -840,13 +865,6 @@ does not conform to the C standard by default. References:
   https://gcc.gnu.org/bugzilla/show_bug.cgi?id=85957
 
 [*] https://stackoverflow.com/questions/4331200/what-do-f-and-d-mean-at-the-end-of-numeric-literals
-
-   =====================================================================
-
-In MPFR, _Float128 may be defined as __float128 if the latter is provided
-by the compiler, but not the former. In such a case, do not assume that
-_Float128 and long double are necessarily different types (as required by
-the WG14 N2579 draft "IEC 60559 interchange and extended types").
 
    =====================================================================
 
@@ -963,6 +981,9 @@ expensive. In particular, for code that is based on the mpz layer of GMP,
 do not use mpz_init, but mpz_init2 with the estimated maximum size; it is
 better to overestimate this size a bit than underestimating it.
 
+Memory usage can be checked (ignoring fragmentation and overhead) in the
+tests with tests_get_totalsize, tests_get_maxsize and tests_reset_maxsize.
+
 ===========================================================================
 
 Do not use C99-only features, such as empty macro arguments or C++-style
@@ -974,6 +995,30 @@ When testing a "boolean" macro M (i.e. which is normally either equal
 to 1 or undefined), do not use #if M, but #ifdef M or #if defined(M).
 With icc, the form #if M triggers a warning ("remark #193: zero used
 for undefined preprocessing identifier").
+
+===========================================================================
+
+Make sure that if code may appear in a function or macro argument, any
+comma is inside parentheses (this must be parentheses, not brackets),
+so that the comma is not interpreted as separating arguments.
+
+For instance, do not write
+  bp[MPFR_ASSERTD (k >= 0), k]
+but
+  bp[(MPFR_ASSERTD (k >= 0), k)]
+because
+  MPFR_UNLIKELY (bp[MPFR_ASSERTD (k >= 0), k] == 0)
+would be invalid (it may also be better to put the assertion earlier
+to improve the readability of the code, if possible).
+
+This mainly concerns the MPFR_ASSERT* macros (which are likely to be
+followed by a comma operator) and macros that can take non-expression
+code (such as MPFR_RNDRAW_GEN and MPFR_FAST_COMPUTE_IF_SMALL_INPUT).
+
+A really misused comma should generally yield a compilation error,
+thus would easily be detected. But this might not be the case if the
+occurrence is in conditionally compiled code or if this is combined
+with some other mistake.
 
 ===========================================================================
 
@@ -1542,7 +1587,7 @@ Makefile portability
 
 Due to the various "make" implementations, the "make" rules must follow
 the POSIX standard:
-  https://pubs.opengroup.org/onlinepubs/9699919799/utilities/make.html
+  https://pubs.opengroup.org/onlinepubs/9799919799/utilities/make.html
 
 The GNU Autoconf manual has a chapter "Portable Make Programming".
 
@@ -1590,8 +1635,8 @@ of the tests/Makefile.am file.
 
 /* Test file for mpfr_func.
 
-Copyright 2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -1606,9 +1651,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 #include "mpfr-test.h"
 

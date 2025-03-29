@@ -1,8 +1,8 @@
 /* mpfr_random2 -- Generate a positive random mpfr_t of specified size, with
    long runs of consecutive ones and zeros in the binary representation.
 
-Copyright 1999, 2001-2004, 2006-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 1999, 2001-2004, 2006-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -17,9 +17,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 #include "mpfr-test.h"
 
@@ -79,7 +78,7 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mpfr_exp_t exp,
   ran >>= MPFR_LOG2_GMP_NUMB_BITS;      /* Ideally   log2(GMP_NUMB_BITS) */
   ran_nbits = BITS_PER_RANDCALL - MPFR_LOG2_GMP_NUMB_BITS; /* Ideally - log2(GMP_NUMB_BITS) */
 
-  /* Bit 0 of ran chooses string of ones/string of zeroes.
+  /* Bit 0 of ran chooses string of ones/string of zeros.
      Make most significant limb be non-zero by setting bit 0 of RAN.  */
   ran |= 1;
   ri = xn - 1;
@@ -114,7 +113,7 @@ mpfr_random2 (mpfr_ptr x, mp_size_t size, mpfr_exp_t exp,
         }
       else
         {
-          /* Generate a string of nb zeroes.  */
+          /* Generate a string of nb zeros.  */
           if (nb > bit_pos)
             {
               xp[ri--] = acc;

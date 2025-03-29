@@ -1,8 +1,8 @@
 /* buildopt.c -- functions giving information about options used during the
    mpfr library compilation
 
-Copyright 2009-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 2009-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -17,9 +17,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 #include "mpfr-impl.h"
 
@@ -27,6 +26,16 @@ int
 mpfr_buildopt_tls_p (void)
 {
 #ifdef MPFR_USE_THREAD_SAFE
+  return 1;
+#else
+  return 0;
+#endif
+}
+
+int
+mpfr_buildopt_float16_p (void)
+{
+#ifdef MPFR_WANT_FLOAT16
   return 1;
 #else
   return 0;

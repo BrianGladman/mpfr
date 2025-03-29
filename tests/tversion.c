@@ -1,7 +1,7 @@
 /* Test file for mpfr_version.
 
-Copyright 2004-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 2004-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -16,9 +16,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 #include <errno.h>
 
@@ -35,6 +34,17 @@ https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
  *     must be put around the function name, in case this function is also
  *     implemented as a macro (#if does not work in macro arguments).
  */
+
+/* The test below is the one at the beginning of the .c files dealing
+   with the formatted output functions (src/printf.c, src/vasprintf.c,
+   tests/tfprintf.c, tests/tprintf.c, tests/tsprintf.c). */
+#if defined(HAVE_STDARG) && !defined(MPFR_USE_MINI_GMP)
+# define TV_GMP_PRINTF "yes"
+# define TV_HAVE_GMP_PRINTF
+#else
+# define TV_GMP_PRINTF "no"
+# undef TV_HAVE_GMP_PRINTF
+#endif
 
 int
 main (void)
@@ -135,20 +145,9 @@ main (void)
           );
 #endif
 
-#if defined(__ICC) || defined(__INTEL_COMPILER)
-  (puts) ("[tversion] Intel compiler: __ICC = "
-#if defined(__ICC)
-          MAKE_STR(__ICC)
-#else
-          "undef"
-#endif
-          ", __INTEL_COMPILER = "
 #if defined(__INTEL_COMPILER)
-          MAKE_STR(__INTEL_COMPILER)
-#else
-          "undef"
-#endif
-          );
+  (puts) ("[tversion] Intel compiler: __INTEL_COMPILER = "
+          MAKE_STR(__INTEL_COMPILER));
 #endif
 
 #if defined(_WIN32) || defined(_MSC_VER)
@@ -260,6 +259,17 @@ main (void)
     }
 
   if (
+#ifdef MPFR_WANT_FLOAT16
+      !
+#endif
+      mpfr_buildopt_float16_p ())
+    {
+      printf ("ERROR! mpfr_buildopt_float16_p() and macros"
+              " do not match!\n");
+      err = 1;
+    }
+
+  if (
 #ifdef MPFR_WANT_FLOAT128
       !
 #endif
@@ -309,18 +319,26 @@ main (void)
       err = 1;
     }
 
-  (printf) ("[tversion] TLS = %s, float128 = %s, decimal = %s,"
-            " GMP internals = %s\n",
-            mpfr_buildopt_tls_p () ? "yes" : "no",
-            mpfr_buildopt_float128_p () ? "yes" : "no",
+#ifdef MPFR_WANT_FLOAT128
+# define MPFR_F128 "yes (" MAKE_STR(mpfr_float128) ")"
+#else
+# define MPFR_F128 "no"
+#endif
+
+  (printf) ("[tversion] _Float16 = %s, float128 = %s, decimal = %s\n",
+            mpfr_buildopt_float16_p () ? "yes" : "no",
+            MPFR_F128,
             mpfr_buildopt_decimal_p () ? "yes"
 #if defined(DECIMAL_BID_FORMAT)
             " (BID)"
 #elif defined(DECIMAL_DPD_FORMAT)
             " (DPD)"
 #endif
-            : "no",
-            mpfr_buildopt_gmpinternals_p () ? "yes" : "no");
+            : "no");
+
+  (printf) ("[tversion] GMP internals = %s, TLS = %s\n",
+            mpfr_buildopt_gmpinternals_p () ? "yes" : "no",
+            mpfr_buildopt_tls_p () ? "yes" : "no");
 
 #ifdef MPFR_THREAD_LOCK_METHOD
 # define LOCK_METHOD " (lock method: " MPFR_THREAD_LOCK_METHOD ")"
@@ -337,12 +355,7 @@ main (void)
 #else
           "no"
 #endif
-          ", printf = "
-#if defined(HAVE_STDARG) && !defined(MPFR_USE_MINI_GMP)
-          "yes"
-#else
-          "no"
-#endif
+          ", printf = " TV_GMP_PRINTF
           ", IEEE floats = "
 #if _MPFR_IEEE_FLOATS
           "yes"
@@ -350,6 +363,8 @@ main (void)
           "no"
 #endif
           );
+
+#ifdef TV_HAVE_GMP_PRINTF
 
   (puts) ("[tversion] gmp_printf: hhd = "
 #if defined(NPRINTF_HH)
@@ -377,7 +392,7 @@ main (void)
 #else
           "?"
 #endif
-          ", Ld = "
+          ", Lf = "
 #if defined(NPRINTF_L)
           "no"
 #elif defined(PRINTF_L)
@@ -386,6 +401,18 @@ main (void)
           "?"
 #endif
           );
+
+  (puts) ("[tversion] gmp_snprintf/vsnprintf on \"%a\" = "
+#if defined(NPRINTF_A)
+          "no (buggy repl-vsnprintf.c?)"
+#elif defined(PRINTF_A)
+          "yes"
+#else
+          "?"
+#endif
+          );
+
+#endif  /* TV_HAVE_GMP_PRINTF */
 
   if (strcmp (mpfr_buildopt_tune_case (), MPFR_TUNE_CASE) != 0)
     {

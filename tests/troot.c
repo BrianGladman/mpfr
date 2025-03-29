@@ -1,7 +1,7 @@
 /* Test file for mpfr_root (also used for mpfr_rootn_ui).
 
-Copyright 2005-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 2005-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -16,9 +16,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 /* Note: troot.c is included by trootn_ui.c with TF = mpfr_rootn_ui */
 #ifdef TF
@@ -486,23 +485,40 @@ main (int argc, char *argv[])
   mpfr_prec_t p;
   unsigned long k;
 
-  if (argc == 3) /* troot prec k */
+  /* Use nonzero memtest to test memory usage too (recommended).
+     This might affect the CPU time, but this does not seem to
+     be the case, even in very small precision. */
+  if (argc == 4) /* troot memtest prec k */
     {
+      size_t ss1, ss2;
       double st1, st2;
-      unsigned long k;
-      int l;
+      unsigned long m;
+      int n;
       mpfr_t y;
-      p = strtoul (argv[1], NULL, 10);
-      k = strtoul (argv[2], NULL, 10);
+
+      m = strtoul (argv[1], NULL, 10);
+      p = strtoul (argv[2], NULL, 10);
+      k = strtoul (argv[3], NULL, 10);
+      if (m)
+        {
+          tests_memory_limit = (size_t) -1;  /* no memory limit */
+          tests_start_mpfr ();
+        }
       mpfr_init2 (x, p);
       mpfr_init2 (y, p);
       mpfr_const_pi (y, MPFR_RNDN);
       TF (x, y, k, MPFR_RNDN); /* to warm up cache */
+      tests_reset_maxsize ();
       st1 = cputime ();
-      for (l = 0; cputime () - st1 < 1.0; l++)
-        TF (x, y, k, MPFR_RNDN);
-      st1 = (cputime () - st1) / l;
-      printf ("%-15s took %.2es\n", MAKE_STR(TF), st1);
+      for (n = 0; n == 0 || cputime () - st1 < 1.0; n++)
+        {
+          TF (x, y, k, MPFR_RNDN);
+          if (n == 0)
+            ss1 = tests_get_maxsize ();
+        }
+      st1 = (cputime () - st1) / n;
+      printf ("%-15s took %12.8fs (max size: %lu)\n", MAKE_STR(TF),
+              st1, (unsigned long) ss1);
 
       /* compare with x^(1/k) = exp(1/k*log(x)) */
       /* first warm up cache */
@@ -511,18 +527,25 @@ main (int argc, char *argv[])
       mpfr_div_ui (y, y, k, MPFR_RNDN);
       mpfr_exp (y, y, MPFR_RNDN);
 
+      tests_reset_maxsize ();
       st2 = cputime ();
-      for (l = 0; cputime () - st2 < 1.0; l++)
+      for (n = 0; n == 0 || cputime () - st2 < 1.0; n++)
         {
           mpfr_log (y, x, MPFR_RNDN);
           mpfr_div_ui (y, y, k, MPFR_RNDN);
           mpfr_exp (y, y, MPFR_RNDN);
+          if (n == 0)
+            ss2 = tests_get_maxsize ();
         }
-      st2 = (cputime () - st2) / l;
-      printf ("exp(1/k*log(x)) took %.2es\n", st2);
+      st2 = (cputime () - st2) / n;
+      printf ("exp(1/k*log(x)) took %12.8fs (max size: %lu)\n",
+              st2, (unsigned long) ss2);
 
       mpfr_clear (x);
       mpfr_clear (y);
+
+      if (m)
+        tests_end_mpfr ();
       return 0;
     }
 

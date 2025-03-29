@@ -556,23 +556,7 @@ $(1-\epsilon)^n \geq 1-n\epsilon$, which is true.
 
 \subsection{The {\tt mpfr\_add} function}
 
-\begin{verbatim}
-   mpfr_add (A, B, C, rnd)
-   /* on suppose B et C de me^me signe, et EXP(B) >= EXP(C) */
-
-   0. d = EXP(B) - EXP(C) /* d >= 0 par hypothe`se */
-   1. Soient B1 les prec(A) premiers bits de B, et B0 le reste
-             C1 les bits de C correspondant a` B1, C0 le reste
-   /* B0, C1, C0 peuvent e^tre vides, mais pas B1 */
-
-          <----------- A ---------->
-          <----------- B1 ---------><------ B0 ----->
-             <---------- C1 -------><------------ C0 ----------->
-
-   2. A <- B1 + (C1 >> d)
-   3. q <- compute_carry (B0, C0, rnd)
-   4. A <- A + q
-\end{verbatim}
+See \cite{lefevre:inria-00000026}.
 
 \subsection{The {\tt mpfr\_cmp2} function}
 
@@ -3100,7 +3084,7 @@ Return $s \cdot 2^{-w}$.
 Note: in $t \leftarrow {\rm trunc}(t m 2^e/k)$,
 we first compute $tm$ exactly, then if $e$ is negative,
 we first divide by $2^{-e}$ and
-truncate, then divide by $k$ and truncate; this gives the same answer than
+truncate, then divide by $k$ and truncate; this gives the same answer as
 dividing once by $k 2^{-e}$, but it is more efficient.
 Let $\epsilon_k$ be the absolute difference between $t$ and
 $2^w x^k/k!$ at step $k$.
@@ -3752,7 +3736,7 @@ When $z \rightarrow 0^+$, $Y_n(z)$ tends to $-\infty$; when $z \rightarrow
 We deduce from \cite[Eq.~(9.23)]{Temme96}:
 \[ Y_n(-z) = (-1)^n [Y_n(z) + 2 i J_n(z)], \]
 which shows that for $z > 0$, $Y_n(-z)$ is real only when $z$ is a zero of
-$J_n(z)$; assuming those zeroes are irrational, $Y_n(z)$ is thus NaN for
+$J_n(z)$; assuming those zeros are irrational, $Y_n(z)$ is thus NaN for
 $z$ negative.
 
 Formula 9.1.11 from \cite{AbSt73} gives:

@@ -1,7 +1,7 @@
 /* Test file for mpfr_init2, mpfr_inits, mpfr_inits2 and mpfr_clears.
 
-Copyright 2003, 2006-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 2003, 2006-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -16,9 +16,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 #include "mpfr-test.h"
 
@@ -35,8 +34,18 @@ main (void)
   mpfr_inits2 (200, a, b, c, (mpfr_ptr) 0);
   mpfr_clears (a, b, c, (mpfr_ptr) 0);
 
-  /* test for precision 2^31-1, see
-     https://gforge.inria.fr/tracker/index.php?func=detail&aid=13918 */
+  /* Test for precision 2^31-1 (old bug 13918 on InriaForge, 2012-02-22),
+     if allowed (see the constraint on MPFR_PREC_MAX below).
+     On 32-bit Linux machines, the prec+GMP_NUMB_BITS-1 in the old formula
+     to compute the number of limbs was yielding an integer overflow and a
+     segmentation fault as a consequence. 2 corrections were done:
+       - The formula was changed to (prec-1)/GMP_NUMB_BITS+1 in r8025
+         (commit 757fa1f7de3168bc6ab4156c60b53260c6680bd7).
+       - The value of MPFR_PREC_MAX was decreased by 256 in r8035
+         (commit 16cc1b4621933873e646970523a494460884f187),
+         which makes this test a bit obsolete since large_prec will not be
+         larger than MPFR_PREC_MAX (thus precision 2^31-1 will no longer be
+         tested on 32-bit machines. */
   large_prec = 2147483647;
   if (getenv ("MPFR_CHECK_LARGEMEM") != NULL)
     {

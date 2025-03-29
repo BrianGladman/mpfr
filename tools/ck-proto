@@ -1,0 +1,127 @@
+#!/usr/bin/env perl
+
+# Check the consistency of function prototypes between "mpfr.h" and
+# "mpfr.texi".
+
+# Note: this script must not be used to build MPFR due to the
+# dependency on perl, but this is OK for "make dist".
+
+# Copyright 2024-2025 Free Software Foundation, Inc.
+# This script is free software; the Free Software Foundation
+# gives unlimited permission to copy and/or distribute it,
+# with or without modifications, as long as this notice is preserved.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY, to the extent permitted by law; without
+# even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE.
+
+use strict;
+use Cwd;
+
+if (! -d 'src')
+  {
+    getcwd() =~ m,/tools$,
+      or die "Execute $0 from the MPFR source directory\n";
+    chdir '..' or die "$!\n$0: can't change cwd\n";
+  }
+
+my $err = 0;
+my (%alias,%f,%fh,%ft);
+
+open FILE, '<', 'src/mpfr.h' or die;
+my $file = do { local $/; <FILE> };
+close FILE or die;
+while ($file =~ /\n__MPFR_DECLSPEC +([^;]*);/g)
+  {
+    my $decl = $1;
+    $decl =~ s/^MPFR_RETURNS_NONNULL\s+//;
+    my ($r,$f,$args) =
+      $decl =~ /^(\S.*?\S)\s+(\S+)\s+\(([^)]+)\)/
+      or die "$0: error in mpfr.h on the function prototype\n$decl\n";
+    # First, ignore functions used only for macros.
+    # Note: the mpfr_sgn function is used only for the mpfr_cmp_ui macro
+    # (not to be confused with the documented mpfr_sgn macro).
+    next if $f =~ /^mpfr_(cmp3|set4|sgn|round_nearest_away_(begin|end))$/;
+    next if $f eq 'mpfr_get_d1'; # deprecated, documentation removed in 2007
+    my @args = ($r);
+    foreach my $arg (split /,\s*/, $args)
+      {
+        $arg =~ s/ +\*/\*/;
+        $arg =~ s/mp(fr?|q|z)_ptr$/mp\1_t/;
+        $arg =~ s/mp(fr?|q|z)_srcptr/const mp\1_t/;
+        push @args, $arg;
+      }
+    defined $fh{$f} and die "$0: $f given twice in mpfr.h";
+    foreach my $arg (@args)
+      {
+        $arg =~ s/long(\**)$/long int\1/;
+      }
+    $fh{$f} = \@args;
+    $f{$f} = 1;
+  }
+while ($file =~ /^#define (\S+) (\S+)$/mg)
+  {
+    defined $fh{$2} or next;
+    $alias{$1} = 1;
+  }
+
+open FILE , '<', 'doc/mpfr.texi' or die;
+while (<FILE>)
+  {
+    /^\@deftypefun/ or next;
+    my ($r,$f,$args) = /^\@deftypefunx? +(\S+|\{[^}]+\}) (\S+) \((.+)\)$/
+      or die "$0: error in mpfr.texi line $.\n";
+    $r =~ s/^\{(.+)\}$/\1/;
+    my @args = ($r);
+    foreach my $arg (split /, /, $args)
+      {
+        $arg eq '...' || $arg eq 'void'
+          || $arg =~ s/^(\S[^@]*\S) ?\@var\{[^}]+\}(\@fptt\{\[\]\})?$/
+                      $1.($2 && '*')/e
+          or die "$0: error in mpfr.texi line $. (bad argument)\n";
+        $arg =~ s/ +\*/\*/;
+        push @args, $arg;
+      }
+    defined $ft{$f} and die "$0: $f given twice in mpfr.texi";
+    $ft{$f} = \@args;
+    $f{$f} = 1;
+  }
+close FILE or die;
+
+foreach my $f (sort keys %f)
+  {
+    next if defined $alias{$f};
+    if (!defined $fh{$f})
+      {
+        warn
+          "function $f is documented in mpfr.texi but not declared in mpfr.h\n";
+        $err = 1;
+        next;
+      }
+    if (!defined $ft{$f})
+      {
+        warn
+          "function $f is declared in mpfr.h but not documented in mpfr.texi\n";
+        $err = 1;
+        next;
+      }
+    my @fh = @{$fh{$f}};
+    my @ft = @{$ft{$f}};
+    if ($#fh eq $#ft)
+      {
+        foreach my $i (0..$#fh)
+          {
+            next if $fh[$i] eq $ft[$i];
+            warn "function $f, argument $i: $fh[$i] <> $ft[$i]\n";
+            $err = 1;
+          }
+      }
+    else
+      {
+        warn "function $f: inconsistent number of arguments\n";
+        $err = 1;
+      }
+  }
+
+exit $err;

@@ -1,7 +1,7 @@
 /* Test file for mpfr_subnormalize.
 
-Copyright 2005-2024 Free Software Foundation, Inc.
-Contributed by the AriC and Caramba projects, INRIA.
+Copyright 2005-2025 Free Software Foundation, Inc.
+Contributed by the Pascaline and Caramba projects, INRIA.
 
 This file is part of the GNU MPFR Library.
 
@@ -16,9 +16,8 @@ or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
 License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the GNU MPFR Library; see the file COPYING.LESSER.  If not, see
-https://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
-51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA. */
+along with the GNU MPFR Library; see the file COPYING.LESSER.
+If not, see <https://www.gnu.org/licenses/>. */
 
 #include "mpfr-test.h"
 
@@ -28,7 +27,10 @@ static const struct {
   mpfr_rnd_t rnd;
   const char *out;
   int j;
-} tab[] = { /* 4th field: use the mpfr_dump format, in case of error. */
+} tab[] = {
+  /* 2nd field: old_inex value */
+  /* 4th field: use the mpfr_dump format, in case of error. */
+  /* 5th field: inexact field */
   {"1E1",  0, MPFR_RNDN, "0.100000000E2", 0},
   {"1E1", -1, MPFR_RNDZ, "0.100000000E2", -1},
   {"1E1", -1, MPFR_RNDD, "0.100000000E2", -1},
@@ -267,6 +269,49 @@ coverage (void)
   mpfr_clear (y);
 }
 
+/* check underflow is after rounding */
+static void
+check_underflow (void)
+{
+  mpfr_t zm;
+  mpfr_exp_t emin = mpfr_get_emin ();
+  int Inex[] = {-1, 0, +1};
+
+  set_emin (-1073);
+  mpfr_init2 (zm, 53);
+  for (int i = 0; i < 3; i++)
+    {
+      mpfr_flags_clear (MPFR_FLAGS_UNDERFLOW);
+      mpfr_set_str (zm, "0x3.ffffffffffffep-1024", 16, MPFR_RNDN);
+      mpfr_subnormalize (zm, Inex[i], MPFR_RNDU);
+      if (!mpfr_flags_test (MPFR_FLAGS_UNDERFLOW))
+        {
+          printf ("Missing underflow for zm=0x3.ffffffffffffep-1024\n");
+          printf ("old_inex = %d\n", Inex[i]);
+          printf ("after mpfr_subnormalize, zm=");
+          mpfr_dump (zm);
+          printf ("\n");
+          exit (1);
+        }
+
+      mpfr_flags_clear (MPFR_FLAGS_UNDERFLOW);
+      mpfr_set_str (zm, "0x1p-1022", 16, MPFR_RNDN);
+      mpfr_subnormalize (zm, Inex[i], MPFR_RNDU);
+      if (mpfr_flags_test (MPFR_FLAGS_UNDERFLOW))
+        {
+          printf ("Spurious underflow for zm=0x1p-1022\n");
+          printf ("old_inex = %d\n", Inex[i]);
+          printf ("after mpfr_subnormalize, zm=");
+          mpfr_dump (zm);
+          printf ("\n");
+          exit (1);
+        }
+    }
+
+  mpfr_clear (zm);
+  set_emin (emin);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -277,6 +322,7 @@ main (int argc, char *argv[])
   check1 ();
   check2 ();
   check3 ();
+  check_underflow ();
 
   tests_end_mpfr ();
   return 0;

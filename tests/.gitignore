@@ -164,6 +164,7 @@
 /tset_d
 /tset_exp
 /tset_f
+/tset_float16
 /tset_float128
 /tset_ld
 /tset_q
@@ -197,6 +198,7 @@
 /ttan
 /ttanh
 /ttanu
+/ttrigamma
 /ttrunc
 /tui_div
 /tui_pow
