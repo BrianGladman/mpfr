@@ -67,8 +67,7 @@ mpfr_get_float16 (mpfr_srcptr x, mpfr_rnd_t rnd_mode)
       m = mpfr_get_si (y, rnd_mode);
       /* the result is m*2^-24 */
       MPFR_ASSERTD(-0x400 <= m && m <= 0x400);
-      if (m == -0x400 || m == 0x400) /* result is normal */
-        return (m < 0) ? -0x1p-14f16 : 0x1p-14f16;
+      // the code below also works in the case where |m| = 0x400
       v.n = (mpfr_signbit (y)) ? 0x8000 + (-m) : m;
     }
   else

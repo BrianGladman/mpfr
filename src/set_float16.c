@@ -32,12 +32,12 @@ int
 mpfr_set_float16 (mpfr_ptr r, _Float16 d, mpfr_rnd_t rnd_mode)
 {
   b16u16 v;
-  int e, signbit;
+  int e, sbit;
   int16_t m;
 
   v.x = d;
   e = (v.n >> 10) & 0x1f;
-  signbit = v.n >> 15;
+  sbit = v.n >> 15;
   m = v.n & 0x3ff;
 
   /*
@@ -60,7 +60,7 @@ mpfr_set_float16 (mpfr_ptr r, _Float16 d, mpfr_rnd_t rnd_mode)
         }
       /* INF case */
       MPFR_SET_INF (r);
-      if (signbit) /* sign bit is set */
+      if (sbit) /* sign bit is set */
         MPFR_SET_NEG (r);
       else
         MPFR_SET_POS (r);
@@ -75,7 +75,7 @@ mpfr_set_float16 (mpfr_ptr r, _Float16 d, mpfr_rnd_t rnd_mode)
   else
     m += 0x400; /* add implicit bit */
 
-  if (signbit)
+  if (sbit)
     m = -m;
 
   /* d = m * 2^(e-25) */

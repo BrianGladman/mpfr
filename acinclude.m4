@@ -852,10 +852,30 @@ volatile double d;
 v.x = 0x1.fp+5f16;
 d = (double) v.x;
 v.x = (_Float16) d;
-return v.n == 0;
+return v.n != 0x53c0 || d != 0x1.fp+5;
 ]])],
       [AC_MSG_RESULT(yes)
        AC_DEFINE([MPFR_WANT_FLOAT16],1,[Build _Float16 functions])],
+      [AC_MSG_RESULT(no)])
+
+dnl Check if __bf16 is available and if the conversion functions,
+dnl which use the optional uint16_t type, can be compiled.
+dnl Also check whether it is possible to convert between __bf16
+dnl and double.
+AC_MSG_CHECKING(if __bf16 is supported)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <stdint.h>
+typedef union { __bf16 x; uint16_t n; } b16u16;
+]], [[
+volatile b16u16 v;
+volatile double d;
+v.x = 2.0;
+d = (double) v.x;
+v.x = (__bf16) d;
+return v.n != 0x4000 || d != 2.0;
+]])],
+      [AC_MSG_RESULT(yes)
+       AC_DEFINE([MPFR_WANT_BFLOAT16],1,[Build __bf16 functions])],
       [AC_MSG_RESULT(no)])
 
 dnl Check if Static Assertions are supported.

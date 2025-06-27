@@ -3,6 +3,7 @@
 
 Copyright 2012-2025 Free Software Foundation, Inc.
 Contributed by Olivier Demengeon.
+Contributed by Matteo Nicoli.
 
 This file is part of the GNU MPFR Library.
 
@@ -71,6 +72,30 @@ If not, see <https://www.gnu.org/licenses/>. */
 #define MPFR_KIND_NAN 121
 #define MPFR_MAX_EMBEDDED_EXPONENT 47
 #define MPFR_EXTERNAL_EXPONENT 94
+
+struct ext_data;
+
+typedef int (*io_fn) (struct ext_data *, unsigned char *, size_t);
+
+struct ext_data {
+  io_fn _mpfr_io_fn;
+};
+typedef struct ext_data *ext_data_ptr;
+
+struct ext_data_file {
+  struct ext_data base;
+  FILE *fh;
+};
+typedef struct ext_data_file *ext_data_file_ptr;
+
+struct ext_data_memory {
+  struct ext_data base;
+  unsigned char *arena;
+  size_t bytes_consumed;
+  size_t bytes_size;
+};
+typedef struct ext_data_memory *ext_data_memory_ptr;
+
 
 /* Begin: Low level helper functions */
 
@@ -221,16 +246,16 @@ mpfr_fpif_store_precision (unsigned char *buffer, size_t *buffer_size,
  * return the precision stored in the binary buffer, 0 in case of error
  */
 static mpfr_prec_t
-mpfr_fpif_read_precision_from_file (FILE *fh)
+mpfr_fpif_read_precision_from_file (ext_data_ptr h)
 {
   mpfr_prec_t precision;
   size_t precision_size;
   unsigned char buffer[BUFFER_SIZE];
 
-  if (fh == NULL)
+  if (h == NULL)
     return 0;
 
-  if (fread (buffer, 1, 1, fh) != 1)
+  if (h->_mpfr_io_fn (h, buffer, 1) != 1)
     return 0;
 
   precision_size = buffer[0];
@@ -241,7 +266,7 @@ mpfr_fpif_read_precision_from_file (FILE *fh)
   MPFR_ASSERTD (precision_size <= BUFFER_SIZE);
 
   /* Read the precision in little-endian format. */
-  if (fread (buffer, precision_size, 1, fh) != 1)
+  if (h->_mpfr_io_fn (h, buffer, precision_size) != 1)
     return 0;
 
   /* Justification of the #if below. */
@@ -372,7 +397,7 @@ mpfr_fpif_store_exponent (unsigned char *buffer, size_t *buffer_size,
  *   than 128 bits).
  */
 static int
-mpfr_fpif_read_exponent_from_file (mpfr_ptr x, FILE * fh)
+mpfr_fpif_read_exponent_from_file (mpfr_ptr x, ext_data_ptr h)
 {
   mpfr_exp_t exponent;
   mpfr_uexp_t uexp;
@@ -380,9 +405,9 @@ mpfr_fpif_read_exponent_from_file (mpfr_ptr x, FILE * fh)
   int sign;
   unsigned char buffer[sizeof(mpfr_exp_t)];
 
-  MPFR_ASSERTD(fh != NULL);
+  MPFR_ASSERTD (h != NULL);
 
-  if (fread (buffer, 1, 1, fh) != 1)
+  if (h->_mpfr_io_fn (h, buffer, 1) != 1)
     return 1;
 
   /* sign value that can be used with MPFR_SET_SIGN,
@@ -406,7 +431,7 @@ mpfr_fpif_read_exponent_from_file (mpfr_ptr x, FILE * fh)
                          exponent_size > sizeof(mpfr_exp_t)))
         return 1;
 
-      if (MPFR_UNLIKELY (fread (buffer, exponent_size, 1, fh) != 1))
+      if (MPFR_UNLIKELY (h->_mpfr_io_fn (h, buffer, exponent_size) != 1))
         return 1;
 
       uexp = 0;
@@ -516,21 +541,59 @@ mpfr_fpif_read_limbs (mpfr_ptr x, unsigned char *buffer, size_t nb_byte)
                          sizeof(mp_limb_t), sizeof(mp_limb_t));
 }
 
-/* External Function */
-/*
- * fh : IN : file handler
- * x : IN : MPFR number to put in the file
- * return 0 if successful
- */
-int
-mpfr_fpif_export (FILE *fh, mpfr_srcptr x)
+static int
+read_from_file (ext_data_ptr h, unsigned char *buffer, size_t size)
+{
+  ext_data_file_ptr ext_data_file = (ext_data_file_ptr) h;
+  return fread (buffer, size, 1, ext_data_file->fh);
+}
+
+static int
+read_from_memory (ext_data_ptr h, unsigned char *buffer, size_t size)
+{
+  ext_data_memory_ptr ext_data_memory = (ext_data_memory_ptr) h;
+  if (ext_data_memory->arena == NULL)
+    return 0;
+
+  if (ext_data_memory->bytes_consumed + size >= ext_data_memory->bytes_size)
+    return 0;
+
+  memcpy (buffer, ext_data_memory->arena + ext_data_memory->bytes_consumed, size);
+  ext_data_memory->bytes_consumed += size;
+  return 1;
+}
+
+static int
+write_to_file (ext_data_ptr h, unsigned char *buffer, size_t size)
+{
+  ext_data_file_ptr ext_data_file = (ext_data_file_ptr) h;
+  return fwrite (buffer, size, 1, ext_data_file->fh);
+}
+
+static int
+write_to_memory (ext_data_ptr h, unsigned char *buffer, size_t size)
+{
+  ext_data_memory_ptr ext_data_memory = (ext_data_memory_ptr) h;
+  if (buffer == NULL)
+    return 0;
+
+  if (ext_data_memory->bytes_consumed + size >= ext_data_memory->bytes_size)
+    return 0;
+
+  memcpy (ext_data_memory->arena + ext_data_memory->bytes_consumed, buffer, size);
+  ext_data_memory->bytes_consumed += size;
+  return 1;
+}
+
+static int
+mpfr_fpif_export_aux (ext_data_ptr h, mpfr_srcptr x)
 {
   int status;
   unsigned char *buf;
   unsigned char *bufResult;
   size_t used_size, buf_size;
 
-  if (fh == NULL)
+  if (h == NULL)
     return -1;
 
   buf_size = MAX_VARIABLE_STORAGE(sizeof(mpfr_exp_t), mpfr_get_prec (x));
@@ -540,7 +603,7 @@ mpfr_fpif_export (FILE *fh, mpfr_srcptr x)
   used_size = buf_size;
   buf = mpfr_fpif_store_precision (buf, &used_size, mpfr_get_prec (x));
   used_size > buf_size ? buf_size = used_size : 0;
-  status = fwrite (buf, used_size, 1, fh);
+  status = h->_mpfr_io_fn (h, buf, used_size);
   if (status != 1)
     {
       mpfr_free_func (buf, buf_size);
@@ -552,7 +615,7 @@ mpfr_fpif_export (FILE *fh, mpfr_srcptr x)
      mpfr_fpif_store_exponent, an assertion failed */
   buf = bufResult;
   used_size > buf_size ? buf_size = used_size : 0;
-  status = fwrite (buf, used_size, 1, fh);
+  status = h->_mpfr_io_fn (h, buf, used_size);
   if (status != 1)
     {
       mpfr_free_func (buf, buf_size);
@@ -564,7 +627,7 @@ mpfr_fpif_export (FILE *fh, mpfr_srcptr x)
       used_size = buf_size;
       buf = mpfr_fpif_store_limbs (buf, &used_size, x);
       used_size > buf_size ? buf_size = used_size : 0;
-      status = fwrite (buf, used_size, 1, fh);
+      status = h->_mpfr_io_fn (h, buf, used_size);
       if (status != 1)
         {
           mpfr_free_func (buf, buf_size);
@@ -576,30 +639,24 @@ mpfr_fpif_export (FILE *fh, mpfr_srcptr x)
   return 0;
 }
 
-/*
- * x : IN/OUT : MPFR number extracted from the file, its precision is reset to
- *              be able to hold the number
- * fh : IN : file handler
- * Return 0 if the import was successful.
- */
-int
-mpfr_fpif_import (mpfr_ptr x, FILE *fh)
+static int
+mpfr_fpif_import_aux (mpfr_ptr x, ext_data_ptr h)
 {
   int status;
   mpfr_prec_t precision;
   unsigned char *buffer;
   size_t used_size;
 
-  precision = mpfr_fpif_read_precision_from_file (fh);
+  precision = mpfr_fpif_read_precision_from_file (h);
   if (precision == 0) /* precision = 0 means an error */
     return -1;
-  MPFR_ASSERTD(fh != NULL); /* checked by mpfr_fpif_read_precision_from_file */
+  MPFR_ASSERTD(h != NULL); /* checked by mpfr_fpif_read_precision_from_file */
   if (precision > MPFR_PREC_MAX)
     return -1;
   MPFR_STAT_STATIC_ASSERT (MPFR_PREC_MIN == 1);  /* as specified */
   mpfr_set_prec (x, precision);
 
-  status = mpfr_fpif_read_exponent_from_file (x, fh);
+  status = mpfr_fpif_read_exponent_from_file (x, h);
   if (status != 0)
     {
       mpfr_set_nan (x);
@@ -620,7 +677,7 @@ mpfr_fpif_import (mpfr_ptr x, FILE *fh)
       used_size = (precision + 7) >> 3; /* ceil(precision/8) */
       buffer = (unsigned char*) mpfr_allocate_func (used_size);
       MPFR_ASSERTN(buffer != NULL);
-      status = fread (buffer, used_size, 1, fh);
+      status = h->_mpfr_io_fn (h, buffer, used_size);
       if (status != 1)
         {
           mpfr_free_func (buffer, used_size);
@@ -632,4 +689,90 @@ mpfr_fpif_import (mpfr_ptr x, FILE *fh)
     }
 
   return 0;
+}
+
+/* External Functions */
+
+/*
+ * x : IN/OUT : MPFR number extracted from the file, its precision is reset to
+ *              be able to hold the number
+ * fh : IN : file handler
+ * Return 0 if the import was successful.
+ */
+int
+mpfr_fpif_import (mpfr_ptr x, FILE *fh)
+{
+  struct ext_data_file ext = { 0 };
+
+  if (fh == NULL)
+    return -1;
+
+  ext.base._mpfr_io_fn = read_from_file;
+  ext.fh = fh;
+
+  return mpfr_fpif_import_aux(x, (ext_data_ptr) &ext);
+}
+
+/*
+ * x : IN/OUT : MPFR number extracted from the memory buffer, its precision is
+ *              reset to be able to hold the number
+ * buffer : IN : memory buffer
+ * buffer_size : IN : size (in bytes) of the memory buffer
+ * Return 0 if the import was successful.
+ */
+int
+mpfr_fpif_import_mem (mpfr_ptr x, unsigned char *buffer, size_t buffer_size)
+{
+  struct ext_data_memory ext = { 0 };
+
+  if (buffer == NULL)
+    return -1;
+
+  ext.base._mpfr_io_fn = read_from_memory;
+  ext.arena = buffer;
+  ext.bytes_consumed = 0;
+  ext.bytes_size = buffer_size;
+
+  return mpfr_fpif_import_aux(x, (ext_data_ptr) &ext);
+}
+
+/*
+ * fh : IN : file handler
+ * x : IN : MPFR number to put in the file
+ * return 0 if successful
+ */
+int
+mpfr_fpif_export (FILE *fh, mpfr_srcptr x)
+{
+  struct ext_data_file ext = { 0 };
+
+  if (fh == NULL)
+    return -1;
+
+  ext.base._mpfr_io_fn = write_to_file;
+  ext.fh = fh;
+
+  return mpfr_fpif_export_aux((ext_data_ptr) &ext, x);
+}
+
+/*
+ * buffer : IN : memory buffer
+ * buffer_size : IN : size (in bytes) of memory buffer
+ * x : IN : MPFR number to put in the memory buffer
+ * return 0 if successful
+ */
+int
+mpfr_fpif_export_mem (unsigned char *buffer, size_t buffer_size, mpfr_srcptr x)
+{
+  struct ext_data_memory ext = { 0 };
+
+  if (buffer == NULL)
+    return -1;
+
+  ext.base._mpfr_io_fn = write_to_memory;
+  ext.arena = buffer;
+  ext.bytes_consumed = 0;
+  ext.bytes_size = buffer_size;
+
+  return mpfr_fpif_export_aux((ext_data_ptr) &ext, x);
 }

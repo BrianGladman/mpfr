@@ -21,11 +21,14 @@ If not, see <https://www.gnu.org/licenses/>.
 
 Changes from versions 4.2.* to version 4.3.0:
 - The "" release.
+- New functions mpfr_fpif_import_mem and mpfr_fpif_export_mem.
 - New function mpfr_compound.
 - New function mpfr_trigamma.
 - New functions mpfr_set_float16 and mpfr_get_float16 (when the _Float16
   data type is available).
-- New function mpfr_buildopt_float16_p.
+- New functions mpfr_set_bfloat16 and mpfr_get_bfloat16 (when the __bf16
+  data type is available).
+- New functions mpfr_buildopt_float16_p and mpfr_buildopt_bfloat16_p.
 - The mpfr_lgamma function allows its signp argument to be a null pointer.
 - In order to resolve a portability issue with the _Float128 fallback to
   __float128 for binary128 support (e.g. with Clang and glibc 2.41), the

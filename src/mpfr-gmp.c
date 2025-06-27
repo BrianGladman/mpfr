@@ -309,6 +309,8 @@ mpfr_allocate_func (size_t alloc_size)
   void * (*allocate_func) (size_t);
   void * (*reallocate_func) (void *, size_t, size_t);
   void   (*free_func) (void *, size_t);
+
+  MPFR_ASSERTD (alloc_size > 0);
   /* Always calling with the 3 arguments smooths branch prediction. */
   mp_get_memory_functions (&allocate_func, &reallocate_func, &free_func);
   return (*allocate_func) (alloc_size);
@@ -320,6 +322,8 @@ mpfr_reallocate_func (void * ptr, size_t old_size, size_t new_size)
   void * (*allocate_func) (size_t);
   void * (*reallocate_func) (void *, size_t, size_t);
   void   (*free_func) (void *, size_t);
+
+  MPFR_ASSERTD (new_size > 0);
   /* Always calling with the 3 arguments smooths branch prediction. */
   mp_get_memory_functions (&allocate_func, &reallocate_func, &free_func);
   return (*reallocate_func) (ptr, old_size, new_size);
@@ -331,6 +335,8 @@ mpfr_free_func (void *ptr, size_t size)
   void * (*allocate_func) (size_t);
   void * (*reallocate_func) (void *, size_t, size_t);
   void   (*free_func) (void *, size_t);
+
+  MPFR_ASSERTD (size > 0);
   /* Always calling with the 3 arguments smooths branch prediction. */
   mp_get_memory_functions (&allocate_func, &reallocate_func, &free_func);
   (*free_func) (ptr, size);

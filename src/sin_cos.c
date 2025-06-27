@@ -331,6 +331,9 @@ sin_bs_aux (mpz_t Q0, mpz_t S0, mpz_t C0, mpz_srcptr p, mpfr_prec_t r,
   mult[0] = r - pp_s + r0 - p_s;
   /* we have x^3 < 1/2^mult[0] */
 
+  /* accu[k] is some bound for the k-th term, more precisely the k-th term
+     is bounded by 1/2^accu[k] */
+  accu[0] = 0;
   for (i = 2, k = 0, prec_i_have = mult[0]; prec_i_have < prec; i += 2)
     {
       /* i is even here */
@@ -366,7 +369,8 @@ sin_bs_aux (mpz_t Q0, mpz_t S0, mpz_t C0, mpz_srcptr p, mpfr_prec_t r,
       MPFR_MPZ_SIZEINBASE2(mult[k], Q[k]);
       mult[k] += 2 * r - size_ptoj[1] - 1;
       /* the absolute contribution of the next term is 1/2^accu[k] */
-      accu[k] = (k == 0) ? mult[k] : mult[k] + accu[k-1];
+      MPFR_ASSERTD(k > 0);
+      accu[k] = mult[k] + accu[k-1];
       prec_i_have = accu[k]; /* the current term is < 1/2^accu[k] */
       j = (i + 2) / 2;
       l = 1;

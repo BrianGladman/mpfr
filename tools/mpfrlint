@@ -565,14 +565,6 @@ GFDL versions differ:
   mpfr.texi: $fdlv2
 EOF
 
-err-if-output "ck-copyright-notice" tools/ck-copyright-notice
-
-if which gcc > /dev/null 2> /dev/null; then
-  err-if-output "ck-mparam" tools/ck-mparam
-else
-  echo "Warning! gcc is not installed. Cannot run ck-mparam." >&2
-fi
-
 # Note about the TZ value: GMT0 and UTC0 are both specified by POSIX,
 # and UTC0 is the preferred value, but old systems only accept GMT0.
 # The "0" is important ("GMT" alone does not work on Tru64 Unix).
@@ -657,9 +649,16 @@ err-if-output --msg='Say "positive infinity" and "negative infinity".' -t \
 err-if-output --msg='Say "same as".' -t \
   "same than" grep -Eir "same +(\w+ +)?than" $files
 
-err-if-output "ck-clz_tab" tools/ck-clz_tab
+# Run various check tools (some of them are also run by
+# "make dist" / "make distcheck"; see dist-hook in Makefile.am).
+# doc/check-typography is run earlier, to group it with other doc tests.
 err-if-output "ck-inits-clears" tools/ck-inits-clears
 err-if-output "ck-version-info" tools/ck-version-info
+err-if-output "ck-copyright-notice" tools/ck-copyright-notice
+err-if-output "ck-news" tools/ck-news
+err-if-output "ck-proto" tools/ck-proto
+err-if-output "ck-clz_tab" tools/ck-clz_tab
+err-if-output "ck-mparam" tools/ck-mparam
 
 ############################################################################
 

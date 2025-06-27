@@ -2,6 +2,7 @@
 
 Copyright 2012-2025 Free Software Foundation, Inc.
 Contributed by Olivier Demengeon.
+Contributed by Matteo Nicoli.
 
 This file is part of the GNU MPFR Library.
 
@@ -33,7 +34,7 @@ If not, see <https://www.gnu.org/licenses/>. */
    fprintf). */
 
 static void
-doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
+fh_doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
 {
   const char *filenameCompressed = FILE_NAME_RW;
   const char *data = FILE_NAME_R;
@@ -63,7 +64,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
   fh = fopen (filenameCompressed, "w");
   if (fh == NULL)
     {
-      perror ("doit");
+      perror ("fh_doit");
       fprintf (stderr, "Failed to open \"%s\" for writing\n",
                filenameCompressed);
       exit (1);
@@ -89,7 +90,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
 
   if (fclose (fh) != 0)
     {
-      perror ("doit");
+      perror ("fh_doit");
       fprintf (stderr, "Failed to close \"%s\"\n", filenameCompressed);
       exit (1);
     }
@@ -98,7 +99,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
   fh = fopen (filenameCompressed, "r");
   if (fh == NULL)
     {
-      perror ("doit");
+      perror ("fh_doit");
       fprintf (stderr, "Failed to open \"%s\" for reading\n",
                filenameCompressed);
       exit (1);
@@ -122,7 +123,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
         py = mpfr_get_prec (y);
         if (px != py)
           {
-            printf ("doit failed on written number %d, neg=%d:"
+            printf ("fh_doit failed on written number %d, neg=%d:"
                     " bad precision\n", i, neg);
             printf ("expected %ld\n", (long) px);
             printf ("got      %ld\n", (long) py);
@@ -130,7 +131,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
           }
         if (MPFR_SIGN (x[i]) != MPFR_SIGN (y))
           {
-            printf ("doit failed on written number %d, neg=%d:"
+            printf ("fh_doit failed on written number %d, neg=%d:"
                     " bad sign\n", i, neg);
             printf ("expected %d\n", (int) MPFR_SIGN (x[i]));
             printf ("got      %d\n", (int) MPFR_SIGN (y));
@@ -138,7 +139,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
           }
         if (! SAME_VAL (x[i], y))
           {
-            printf ("doit failed on written number %d, neg=%d\n", i, neg);
+            printf ("fh_doit failed on written number %d, neg=%d\n", i, neg);
             printf ("expected "); mpfr_dump (x[i]);
             printf ("got      "); mpfr_dump (y);
             exit (1);
@@ -155,7 +156,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
   fh = src_fopen (data, "r");
   if (fh == NULL)
     {
-      perror ("doit");
+      perror ("fh_doit");
       fprintf (stderr, "Failed to open \"%s\" in srcdir for reading\n", data);
       exit (1);
     }
@@ -176,7 +177,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
       py = mpfr_get_prec (y);
       if (px != py)
         {
-          printf ("doit failed on data number %d, neg=%d:"
+          printf ("fh_doit failed on data number %d, neg=%d:"
                   " bad precision\n", i, neg);
           printf ("expected %ld\n", (long) px);
           printf ("got      %ld\n", (long) py);
@@ -184,7 +185,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
         }
       if (MPFR_SIGN (x[i]) != MPFR_SIGN (y))
         {
-          printf ("doit failed on data number %d, neg=%d:"
+          printf ("fh_doit failed on data number %d, neg=%d:"
                   " bad sign\n", i, neg);
           printf ("expected %d\n", (int) MPFR_SIGN (x[i]));
           printf ("got      %d\n", (int) MPFR_SIGN (y));
@@ -192,8 +193,8 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
         }
       if (! SAME_VAL (x[i], y))
         {
-          printf ("doit failed on data number %d, neg=%d, at offset 0x%lx\n",
-                  i, neg, (unsigned long) pos);
+          printf ("fh_doit failed on data number %d, neg=%d, at"
+                  " offset 0x%lx\n", i, neg, (unsigned long) pos);
           printf ("expected "); mpfr_dump (x[i]);
           printf ("got      "); mpfr_dump (y);
           exit (1);
@@ -211,7 +212,7 @@ doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
 #define BAD 10
 
 static void
-check_bad (void)
+fh_check_bad (void)
 {
   const char *filenameCompressed = FILE_NAME_RW;
   int status;
@@ -233,13 +234,13 @@ check_bad (void)
   status = mpfr_fpif_export (NULL, x);
   if (status == 0)
     {
-      printf ("mpfr_fpif_export did not fail with a NULL file\n");
+      printf ("mpfr_fpif_export did not fail with a null FILE pointer\n");
       exit (1);
     }
   status = mpfr_fpif_import (x, NULL);
   if (status == 0)
     {
-      printf ("mpfr_fpif_import did not fail with a NULL file\n");
+      printf ("mpfr_fpif_import did not fail with a null FILE pointer\n");
       exit (1);
     }
 
@@ -388,7 +389,7 @@ check_bad (void)
 
 /* exercise error when precision > MPFR_PREC_MAX */
 static void
-extra (void)
+fh_extra (void)
 {
   const char *data = FILE_NAME_R2;
   mpfr_t x;
@@ -412,6 +413,121 @@ extra (void)
   mpfr_clear (x);
 }
 
+static void
+mem_doit (int argc, char *argv[], mpfr_prec_t p1, mpfr_prec_t p2)
+{
+  int status;
+  mpfr_t x[9];
+  mpfr_t y;
+  int i, neg;
+  unsigned char buffer[1024];
+
+  mpfr_init2 (x[0], p1);
+  mpfr_init2 (x[8], p1);
+  mpfr_inits2 (p2, x[1], x[2], x[3], x[4], x[5], x[6], x[7], (mpfr_ptr) 0);
+  mpfr_set_str1 (x[0], "45.2564215000000018562786863185465335845947265625");
+  mpfr_set_str1 (x[1], "45.2564215000000018562786863185465335845947265625");
+  mpfr_set_str1 (x[2], "45.2564215000000018562786863185465335845947265625");
+  mpfr_set_exp (x[2], -48000);
+  mpfr_set_inf (x[3], 1);
+  mpfr_set_zero (x[4], 1);
+  mpfr_set_nan (x[5]);
+  mpfr_set_ui (x[6], 104348, MPFR_RNDN);
+  mpfr_set_ui (x[7], 33215, MPFR_RNDN);
+  mpfr_div (x[8], x[6], x[7], MPFR_RNDN);
+  mpfr_div (x[6], x[6], x[7], MPFR_RNDN);
+
+  for (neg = 0; neg < 2; neg++)
+    {
+      for (i = 0; i < 9; i++)
+        {
+          mpfr_prec_t px, py;
+
+          if (neg)
+            MPFR_CHANGE_SIGN (x[i]);
+
+          status = mpfr_fpif_export_mem (buffer, 1024, x[i]);
+          if (status != 0)
+            {
+              printf ("Failed to export number %d, neg=%d\n", i, neg);
+              exit (1);
+            }
+
+          if (neg)
+            MPFR_CHANGE_SIGN (x[i]);
+
+          /* we then read back the buffer and check we get the
+             same numbers x[i] */
+
+          if (neg)
+            MPFR_CHANGE_SIGN (x[i]);
+
+          mpfr_init2 (y, 2);
+          /* Set the sign bit of y to the opposite of the expected one.
+             Thus, if mpfr_fpif_import forgets to set the sign, this will
+             be detected. */
+          MPFR_SET_SIGN (y, - MPFR_SIGN (x[i]));
+          mpfr_fpif_import_mem (y, buffer, 1024);
+          px = mpfr_get_prec (x[i]);
+          py = mpfr_get_prec (y);
+          if (px != py)
+            {
+              printf ("mem_doit failed on written number %d, neg=%d:"
+                      " bad precision\n", i, neg);
+              printf ("expected %ld\n", (long) px);
+              printf ("got      %ld\n", (long) py);
+              exit (1);
+            }
+          if (MPFR_SIGN (x[i]) != MPFR_SIGN (y))
+            {
+              printf ("mem_doit failed on written number %d, neg=%d:"
+                      " bad sign\n", i, neg);
+              printf ("expected %d\n", (int) MPFR_SIGN (x[i]));
+              printf ("got      %d\n", (int) MPFR_SIGN (y));
+              exit (1);
+            }
+          if (! SAME_VAL (x[i], y))
+            {
+              printf ("mem_doit failed on written number %d, neg=%d\n",
+                      i, neg);
+              printf ("expected "); mpfr_dump (x[i]);
+              printf ("got      "); mpfr_dump (y);
+              exit (1);
+            }
+          mpfr_clear (y);
+
+          if (neg)
+            MPFR_CHANGE_SIGN (x[i]);
+        }
+    }
+
+  for (i = 0; i < 9; i++)
+    mpfr_clear (x[i]);
+}
+
+static void
+mem_check_bad (void)
+{
+  int status;
+  mpfr_t x;
+
+  mpfr_init2 (x, 2);
+  status = mpfr_fpif_export_mem (NULL, 0, x);
+  if (status == 0)
+    {
+      printf ("mpfr_fpif_export did not fail with a NULL buffer pointer\n");
+      exit (1);
+    }
+  status = mpfr_fpif_import_mem (x, NULL, 0);
+  if (status == 0)
+    {
+      printf ("mpfr_fpif_import did not fail with a NULL buffer pointer\n");
+      exit (1);
+    }
+
+  mpfr_clear (x);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -423,10 +539,14 @@ main (int argc, char *argv[])
 
   tests_start_mpfr ();
 
-  extra ();
-  doit (argc, argv, 130, 2048);
-  doit (argc, argv, 1, 53);
-  check_bad ();
+  fh_extra ();
+  fh_doit (argc, argv, 130, 2048);
+  fh_doit (argc, argv, 1, 53);
+  fh_check_bad ();
+
+  mem_doit (argc, argv, 130, 2048);
+  mem_doit (argc, argv, 1, 53);
+  mem_check_bad ();
 
   tests_end_mpfr ();
 

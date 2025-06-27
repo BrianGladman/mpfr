@@ -1360,8 +1360,9 @@ typedef union { mp_size_t s; mp_limb_t l; } mpfr_size_limb_t;
 #define MPFR_TMP_FREE(x) TMP_FREE
 #endif
 
-#define MPFR_TMP_LIMBS_ALLOC(N) \
-  ((mp_limb_t *) MPFR_TMP_ALLOC ((size_t) (N) * MPFR_BYTES_PER_MP_LIMB))
+#define MPFR_TMP_LIMBS_ALLOC(N)                                         \
+  (MPFR_ASSERTD ((N) > 0),                                              \
+   (mp_limb_t *) MPFR_TMP_ALLOC ((size_t) (N) * MPFR_BYTES_PER_MP_LIMB))
 
 /* The temporary var doesn't have any size field, but it doesn't matter
  * since only functions dealing with the Heap care about it */
@@ -2772,9 +2773,9 @@ extern "C" {
    possible to do pointer type checking with a type-generic macros,
    previously done with code like
 
-     #define MPFR_ZEXP(x)                            \
-       ((void) sizeof ((x)->_mpfr_exp),              \
-        ((mpfr_ubf_ptr) (x))->_mpfr_zexp)
+   | #define MPFR_ZEXP(x)                            \
+   |   ((void) sizeof ((x)->_mpfr_exp),              \
+   |    ((mpfr_ubf_ptr) (x))->_mpfr_zexp)
 
    That said, a version with _Generic could be used conditionally (with
    support detected at configure time), and as long as one develops and/or

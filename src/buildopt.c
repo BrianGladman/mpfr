@@ -43,6 +43,17 @@ mpfr_buildopt_float16_p (void)
 }
 
 int
+mpfr_buildopt_bfloat16_p (void)
+{
+#ifdef MPFR_WANT_BFLOAT16
+  return 1;
+#else
+  return 0;
+#endif
+}
+
+
+int
 mpfr_buildopt_float128_p (void)
 {
 #ifdef MPFR_WANT_FLOAT128

@@ -732,7 +732,17 @@ About undefined behavior:
   https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3128.pdf
 
 Type punning, strict aliasing, and optimization:
-  https://blog.regehr.org/archives/959
+  https://blog.regehr.org/archives/959 and the comments
+  (The union trick is actually valid.)
+
+N3519 "Understanding Effective Type Aliasing in C" by Eskil Steenberg:
+  https://www.open-std.org/jtc1/sc22/wg14/www/docs/n3519.pdf
+but "So my conclusion is: struct and union members have the effective type
+of the member." seems incorrect.
+
+Related to that, struct extension and inheritance:
+  https://stackoverflow.com/questions/63518693/struct-extension-in-c
+  https://www.codementor.io/@arpitbhayani/powering-inheritance-in-c-using-structure-composition-176sygr724
 
 To allow MPFR to be built on some buggy compiler, try to follow
 these rules:
@@ -769,6 +779,13 @@ compilers:
 
 Note: This list is not exhaustive; these are just the simplest keywords,
 which are likely to be used by mistake.
+
+Do not use reserved identifiers that have an external definition, even
+if the associated headers is not included (see ISO C23 7.1.3p1). This
+comprises the functions from the C library (including the math library,
+if any). There does not seem to be an easy way to detect them; perhaps
+GCC will do that:
+  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=51437
 
 Check C++ reserved keywords, e.g. from
 
@@ -1056,9 +1073,15 @@ MPFR_LOG_STAT:     Log how many times Ziv failed.
 MPFR_LOG_ALLOCA:   Log the alloca() amounts.
 MPFR_LOG_ALL:      Log everything
 
-Define them. Run your program, and view `mpfr.log`.
+Define them. Run your program, and view `mpfr.log` (default).
 
 For example, just define MPFR_LOG_ALL, run you program, and view `mpfr.log`.
+
+Security note: The default file name is "mpfr.log", thus relative to the
+current directory. Be careful if you do not have exclusive write access.
+Currently, the file is opened with fopen(...,"w") and it is not possible
+to use a different mode. Future MPFR versions might use security features
+by default if they become widely available (like NetBSD's "f" and "l").
 
 Note: The running time may be much longer. If logging is used on the
 test suite with a default timeout, it may be necessary to increase the
@@ -1071,46 +1094,29 @@ This feature is available only for gcc >= 3.0 and glibc >= 2.0.
 To achieve this, these macros have been added:
 
 +++ MPFR_LOG_VAR(y)
- Log a MPFR variable if requested (INTERNAL).
- Example:
-   mpfr_t y;
-   MPFR_LOG_VAR (y);
+Log a MPFR variable if requested (INTERNAL).
+Example:
+  mpfr_t y;
+  MPFR_LOG_VAR (y);
 
 +++ MPFR_LOG_MSG(x)
- Log another message (a warning for example)
+Log another message (a warning for example).
 Example:
- MPFR_LOG_MSG (("WARNING: Unchecked code\n", 0));
+  MPFR_LOG_MSG (("WARNING: Unchecked code\n", 0));
 The 0 is here a dummy value, because there must be at least an argument
 after the format string.
 
-+++ MPFR_LOG_BEGIN(x)
- Add this macro at the beginning of a function.
-Example:
- int dodo (mpfr_t x, mpfr_t op, int cnt, mpfr_rnd_t rnd) {
-  [decl]
-  MPFR_LOG_BEGIN (("op[%Pd]=%.*Rg rnd=%s",
-                    mpfr_get_prec(op), mpfr_log_prec, op, RND2STR(rnd)));
-
-+++ MPFR_LOG_END(x)
- Add this macro at the end of a function.
-Example:
- MPFR_LOG_END (("x[%Pd]=%.*Rg i=%d", mpfr_get_prec (x), mpfr_log_prec, x, i));
- return i;
-}
-
 +++ MPFR_LOG_FUNC (begin,end)
-  Add this macro at the beginning of a function. It does
-the same job as MPFR_LOG_BEGIN and MPFR_LOG_END but it is smatter
-since it intercepts the return itself to put the end statement.
-Example
- MPFR_LOG_FUNC (
+Add this macro at the beginning of a function. It logs the first message
+at the entry of the function and the second message just before the
+function returns.
+Example:
+  MPFR_LOG_FUNC (
     ("op[%Pd]=%.*Rg rnd=%d", op, mpfr_get_prec (op), mpfr_log_prec, op),
     ("x[%Pd]=%.*Rg inexact=%d", mpfr_get_prec (x), mpfr_log_prec, x, i));
 
-
-The double brackets "((" and "))" are needed since MPFR must still
-compile with non GNU compiler, so Macros with variable # of args
-are not allowed.
+The double brackets "((" and "))" are needed since MPFR must compile with
+old compiler, so macros with variable number of arguments are not allowed.
 
 It uses the extension of the mpfr_printf function: %Rf to display a mpfr_t.
 %Ru is used to display the precision of a mpfr_t.
@@ -1150,7 +1156,7 @@ mpfr_toto (mpfr_ptr rop, mpfr_srcptr op, mpfr_rnd_t rnd)
   MPFR_SAVE_EXPO_DECL (expo);
 
   /* Log it if requested */
-  MPFR_LOG_BEGIN
+  MPFR_LOG_FUNC
     (("op[%Pd]=%.*Rg rnd=%d", mpfr_get_prec (op), mpfr_log_prec, op, rnd),
      ("rop[%Pd]=%.*Rg inexact=%d",
        mpfr_get_prec (rop), mpfr_log_prec, rop, inexact));

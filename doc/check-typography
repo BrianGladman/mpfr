@@ -25,9 +25,9 @@ cat <<EOF
 [check-typography] Warning! Possibly incorrect typography.
 Make it explicit to avoid ambiguities:
   * Punctuation not ending a sentence: use @: after the punctuation
-    (Texinfo manual: Section 12.3.2 "Not Ending a Sentence").
+    (Texinfo manual: Section "Not Ending a Sentence").
   * Punctuation ending a sentence: use @ before the punctuation
-    (Texinfo manual: Section 12.3.3 "Ending a Sentence").
+    (Texinfo manual: Section "Ending a Sentence").
 Affected lines in mpfr.texi:
 $o
 [check-typography] End of the warning message.

@@ -163,7 +163,7 @@ check_special (mpfr_rnd_t rnd)
   mpfr_clear (x);
 }
 
-/* check all normal numbers */
+/* check all subnormal and normal numbers */
 static void
 check_normal (mpfr_rnd_t rnd)
 {

@@ -275,11 +275,12 @@ check_underflow (void)
 {
   mpfr_t zm;
   mpfr_exp_t emin = mpfr_get_emin ();
-  int Inex[] = {-1, 0, +1};
+  int i;
+  int Inex[] = { -1, 0, +1 };
 
   set_emin (-1073);
   mpfr_init2 (zm, 53);
-  for (int i = 0; i < 3; i++)
+  for (i = 0; i < 3; i++)
     {
       mpfr_flags_clear (MPFR_FLAGS_UNDERFLOW);
       mpfr_set_str (zm, "0x3.ffffffffffffep-1024", 16, MPFR_RNDN);
