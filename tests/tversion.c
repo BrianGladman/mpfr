@@ -270,6 +270,17 @@ main (void)
     }
 
   if (
+#ifdef MPFR_WANT_BFLOAT16
+      !
+#endif
+      mpfr_buildopt_bfloat16_p ())
+    {
+      printf ("ERROR! mpfr_buildopt_bfloat16_p() and macros"
+              " do not match!\n");
+      err = 1;
+    }
+
+  if (
 #ifdef MPFR_WANT_FLOAT128
       !
 #endif
@@ -325,8 +336,10 @@ main (void)
 # define MPFR_F128 "no"
 #endif
 
-  (printf) ("[tversion] _Float16 = %s, float128 = %s, decimal = %s\n",
+  (printf) ("[tversion] _Float16 = %s, bfloat16 (__bf16) = %s\n"
+            "[tversion] float128 = %s, decimal = %s\n",
             mpfr_buildopt_float16_p () ? "yes" : "no",
+            mpfr_buildopt_bfloat16_p () ? "yes" : "no",
             MPFR_F128,
             mpfr_buildopt_decimal_p () ? "yes"
 #if defined(DECIMAL_BID_FORMAT)
