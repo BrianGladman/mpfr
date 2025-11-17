@@ -32,8 +32,8 @@ http://www.gnu.org/licenses/ or write to the Free Software Foundation, Inc.,
 #    include "../src/x86_64/core2/mparam.h"
 #    define MPFR_TUNE_CASE "src/x86_64/core2/mparam.h"
 #  elif 1
-#    include "../src/x86_64/corei5/mparam.h"
-#    define MPFR_TUNE_CASE "src/x86_64/corei5/mparam.h"
+#    include "../src/x86_64/mparam.h"
+#    define MPFR_TUNE_CASE "src/x86_64/mparam.h"
 #  elif 0
 #    include "../src/amd/amdfam10/mparam.h"
 #    define MPFR_TUNE_CASE "src/amd/amdfam10/mparam.h"
