@@ -10,8 +10,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+# along with this program; if not, see <https://www.gnu.org/licenses/>.
 # the following two entries, extracted from Gonnet's test suite, are wrong
 # indeed, for x < 0, y(n,x) is NaN. This is due to a bug in Maple, which
 # gives a real value for BesselY(1,2.0^(-1022)) [version 6 to 11]

@@ -10,8 +10,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+# along with this program; if not, see <https://www.gnu.org/licenses/>.
 53 53 n -0x1FFFFFFFFFFFFEp-53 -0x125E4F7B2737FAp-48
 53 53 n -0x1FFFFFFFFFFFFDp-53 -0x122A69334DB8C9p-48
 53 53 n -0x1FFFFFF903C06Bp-53 -0x12D9C0FCB85B59p-49

@@ -197,9 +197,6 @@
     <ClCompile Include="..\..\src\exp_2.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\extract.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\factorial.c">
       <Filter>Source Files</Filter>
     </ClCompile>
